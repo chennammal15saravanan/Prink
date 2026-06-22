@@ -1,0 +1,68 @@
+[
+  {
+    "id": "#1042",
+    "customer": "John Doe",
+    "product": "Coffee Mug Wrap",
+    "productType": "mug",
+    "dpi": "300 DPI",
+    "dpiStatus": "ok",
+    "uploadStatus": "ready",
+    "date": "Jun 16, 2026",
+    "phone": "+91 98765 43210"
+  },
+  {
+    "id": "#1043",
+    "customer": "Jane Smith",
+    "product": "Stretch Canvas 12×16",
+    "productType": "canvas",
+    "dpi": "150 DPI",
+    "dpiStatus": "low",
+    "uploadStatus": "awaiting",
+    "date": "Jun 16, 2026",
+    "phone": "+91 87654 32109"
+  },
+  {
+    "id": "#1044",
+    "customer": "Robert Lee",
+    "product": "Stretch Canvas 12×16",
+    "productType": "canvas",
+    "dpi": "300 DPI",
+    "dpiStatus": "ok",
+    "uploadStatus": "ready",
+    "date": "Jun 15, 2026",
+    "phone": "+91 76543 21098"
+  },
+  {
+    "id": "#1045",
+    "customer": "Emily Davis",
+    "product": "Coffee Mug Wrap",
+    "productType": "mug",
+    "dpi": "No Image",
+    "dpiStatus": "none",
+    "uploadStatus": "pending",
+    "date": "Jun 15, 2026",
+    "phone": "+91 65432 10987"
+  },
+  {
+    "id": "#1046",
+    "customer": "Priya Singh",
+    "product": "Photo Frame 8×10",
+    "productType": "frame",
+    "dpi": "300 DPI",
+    "dpiStatus": "ok",
+    "uploadStatus": "ready",
+    "date": "Jun 14, 2026",
+    "phone": "+91 54321 09876"
+  },
+  {
+    "id": "#1047",
+    "customer": "Ravi Kumar",
+    "product": "Wall Calendar 2027",
+    "productType": "calendar",
+    "dpi": "72 DPI",
+    "dpiStatus": "low",
+    "uploadStatus": "awaiting",
+    "date": "Jun 14, 2026",
+    "phone": "+91 43210 98765"
+  }
+]

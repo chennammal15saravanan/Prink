@@ -1,0 +1,16 @@
+[
+  {
+    "id": "usr_admin",
+    "email": "admin@theprink.com",
+    "passwordHash": "$2b$10$PBYEhLfR2Ogb4zEEYprPMO4yhqVvlPVhx7jIlOC.V/SVWkedCcNs.",
+    "role": "admin",
+    "name": "Super Admin"
+  },
+  {
+    "id": "usr_printer",
+    "email": "printer@theprink.com",
+    "passwordHash": "$2b$10$PBYEhLfR2Ogb4zEEYprPMO5W789sZEHc1g1zN2bVp8PEwJ5AeAd1W",
+    "role": "printer",
+    "name": "Primary Press Operator"
+  }
+]
