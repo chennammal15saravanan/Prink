@@ -1,0 +1,50 @@
+[
+  {
+    "sku": "MUG-CLASSIC",
+    "templateId": "t1",
+    "productType": "mug",
+    "customizationRules": {
+      "maxPhotos": 3
+    }
+  },
+  {
+    "sku": "MUG-11OZ",
+    "templateId": "t1",
+    "productType": "mug",
+    "customizationRules": {
+      "maxPhotos": 3
+    }
+  },
+  {
+    "sku": "CANVAS-12X16",
+    "templateId": "t2",
+    "productType": "canvas",
+    "customizationRules": {
+      "maxPhotos": 5
+    }
+  },
+  {
+    "sku": "FRAME-8X10",
+    "templateId": "t3",
+    "productType": "frame",
+    "customizationRules": {
+      "maxPhotos": 1
+    }
+  },
+  {
+    "sku": "CAL-2027",
+    "templateId": "t4",
+    "productType": "calendar",
+    "customizationRules": {
+      "maxPhotos": 12
+    }
+  },
+  {
+    "sku": "BOOK-ROSE",
+    "templateId": "t5",
+    "productType": "photobook",
+    "customizationRules": {
+      "maxPhotos": 30
+    }
+  }
+]

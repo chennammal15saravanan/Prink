@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import type { Order, AdminSection, ActivityLog, TemplateItem, PrinterQueueItem, ProductType } from '../types';
+import type { Order, AdminSection, ActivityLog, TemplateItem, PrinterQueueItem, ProductType, SkuMapping, CanvasElement } from '../types';
 import { useToast } from '../context/ToastContext';
 import logoBlack from '../assets/logos/logo-black.png';
 import whiteLogo from '../assets/logos/white-logo.png';
 import websiteLogo from '../assets/logos/website-logo.png';
+
 
 // ─── Seed Data ───────────────────────────────────────────────────────────────
 
@@ -44,6 +45,7 @@ const SECTIONS: { id: AdminSection; icon: string; label: string }[] = [
   { id: 'orders',     icon: 'bi-cart3',               label: 'Orders'         },
   { id: 'monitor',    icon: 'bi-activity',            label: 'Upload Monitor' },
   { id: 'templates',  icon: 'bi-file-earmark-image',  label: 'Templates'      },
+  { id: 'sku-mappings', icon: 'bi-tags-fill',          label: 'SKU Mapping Rules' },
   { id: 'queue',      icon: 'bi-printer',             label: 'Print Queue'    },
   { id: 'reports',    icon: 'bi-graph-up',            label: 'Reports'        },
   { id: 'workflow',   icon: 'bi-diagram-3-fill',      label: 'Workflow Pipeline' },
@@ -178,7 +180,21 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
   const [upscalerRunning, setUpscalerRunning] = useState(false);
 
   // Sidebar collapsed (mobile)
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+
+  // SKU Mappings States
+  const [skuMappings, setSkuMappings] = useState<SkuMapping[]>([]);
+  const [showSkuModal, setShowSkuModal] = useState(false);
+  const [editingMapping, setEditingMapping] = useState<Partial<SkuMapping> | null>(null);
+
+  // Database Templates States
+  const [dbTemplates, setDbTemplates] = useState<TemplateItem[]>([]);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<Partial<TemplateItem> | null>(null);
+
+  // Review states
+  const [reviewingOrder, setReviewingOrder] = useState<Order | null>(null);
+  const [reviewComments, setReviewComments] = useState('');
 
   // Workflow Pipeline simulation states
   const [selectedWorkflowStep, setSelectedWorkflowStep] = useState(0);
@@ -194,7 +210,26 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
   const [isSimulatingPDF, setIsSimulatingPDF] = useState(false);
   const [s3Health, setS3Health] = useState<'idle' | 'checking' | 'healthy'>('idle');
 
-  const simulateWebhook = () => {
+  // Sync state changes to Header drawer navigation
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('portal-state-change', { detail: { page: section } }));
+  }, [section]);
+
+  // Listen to navigation events from Header drawer navigation
+  useEffect(() => {
+    const handleNav = (e: any) => {
+      if (e.detail && e.detail.page) {
+        const validSections = ['overview', 'orders', 'monitor', 'templates', 'queue', 'reports', 'workflow', 'settings'];
+        if (validSections.includes(e.detail.page)) {
+          setSection(e.detail.page as AdminSection);
+        }
+      }
+    };
+    window.addEventListener('portal-navigate', handleNav);
+    return () => window.removeEventListener('portal-navigate', handleNav);
+  }, []);
+
+  const simulateWebhook = async () => {
     setIsSimulatingWebhook(true);
     const newLog = (type: 'system' | 'success' | 'info' | 'error', text: string) => {
       setWorkflowLogs(prev => [
@@ -202,25 +237,47 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
         { id: Math.random().toString(), time: new Date().toLocaleTimeString(), type, text }
       ]);
     };
-    newLog('info', "Simulating incoming Shopify webhook payload...");
-    setTimeout(() => {
-      const newOrderNum = 1048 + Math.floor(Math.random() * 100);
+    newLog('info', "Triggering sample Shopify webhook with demo order payload...");
+    try {
+      const res = await fetch('/api/shopify/mock-webhook', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      if (res.ok) {
+        const data = await res.json();
+        newLog('success', `MongoDB record created: Order ${data.order?.id} (${data.order?.customer})`);
+        newLog('success', `SKU detected: ${data.order?.sku || 'N/A'} → ${data.order?.productType} editor`);
+        newLog('info', `WhatsApp link generated: ${data.whatsapp?.uploadLink || 'N/A'}`);
+        showToast(`Mock Shopify Order ${data.order?.id} created for ${data.order?.customer}! WhatsApp link ready.`, 'success');
+        await fetchOrders();
+      } else {
+        throw new Error('Server returned error');
+      }
+    } catch {
+      // Fallback: local simulation
+      const SAMPLE_PRODUCTS = [
+        { product: 'Classic Coffee Mug Wrap', productType: 'mug' as ProductType, sku: 'MUG-CLASSIC' },
+        { product: 'Stretch Canvas 12×16', productType: 'canvas' as ProductType, sku: 'CANVAS-12X16' },
+        { product: 'Premium Photo Frame 8×10', productType: 'frame' as ProductType, sku: 'FRAME-8X10' },
+      ];
+      const SAMPLE_NAMES = ['Sarah Connor', 'Priya Sharma', 'Rahul Mehta', 'Ananya Patel'];
+      const sample = SAMPLE_PRODUCTS[Math.floor(Math.random() * SAMPLE_PRODUCTS.length)];
+      const name = SAMPLE_NAMES[Math.floor(Math.random() * SAMPLE_NAMES.length)];
+      const newOrderNum = 1048 + Math.floor(Math.random() * 500);
       const newOrder: Order = {
-        id: `#${newOrderNum}`,
-        customer: ['Sarah Connor', 'Tony Stark', 'Bruce Wayne', 'Peter Parker'][Math.floor(Math.random() * 4)],
-        product: ['Stretch Canvas 12×16', 'Coffee Mug Wrap', 'Photo Frame 8×10'][Math.floor(Math.random() * 3)],
-        productType: ['canvas', 'mug', 'frame'][Math.floor(Math.random() * 3)] as ProductType,
+        id: `SP-${newOrderNum}`,
+        customer: name,
+        product: sample.product,
+        productType: sample.productType,
+        sku: sample.sku,
         dpi: 'No Image',
         dpiStatus: 'none',
         uploadStatus: 'pending',
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        phone: '+91 99887 76655'
+        phone: '+91 98765 43210'
       };
       setOrders(prev => [newOrder, ...prev]);
-      newLog('success', `Created MongoDB record for Order ${newOrder.id} (${newOrder.customer})`);
-      showToast(`Shopify Webhook simulated: Order ${newOrder.id} created!`, 'success');
-      setIsSimulatingWebhook(false);
-    }, 1500);
+      newLog('success', `[Offline Mode] Created local record for Order ${newOrder.id} (${newOrder.customer})`);
+      showToast(`Demo Order ${newOrder.id} simulated for ${newOrder.customer}!`, 'success');
+    }
+    setIsSimulatingWebhook(false);
   };
 
   const simulateWhatsApp = () => {
@@ -337,10 +394,211 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
     }
   };
 
+  const fetchSkuMappings = async () => {
+    try {
+      const res = await fetch('/api/sku-mappings', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSkuMappings(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch SKU mappings:', err);
+    }
+  };
+
+  const fetchDbTemplates = async () => {
+    try {
+      const res = await fetch('/api/templates', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDbTemplates(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch templates:', err);
+    }
+  };
+
+  // ── fetchSettings ────────────────────────────────────────────────────────────
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/settings', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setToggles({
+          whatsapp:     data.whatsappEnabled     ?? true,
+          email:        data.emailEnabled         ?? true,
+          lowDpi:       data.lowDpiAlertsEnabled  ?? true,
+          dailySummary: data.dailySummaryEnabled  ?? false,
+          autoUpscale:  data.autoUpscaleEnabled   ?? true,
+        });
+        if (data.dpiThreshold) setDpiThreshold(data.dpiThreshold);
+        if (data.maxFileMB)    setMaxFileMB(data.maxFileMB);
+      }
+    } catch (err) {
+      console.error('Failed to fetch settings:', err);
+    }
+  };
+
+  const saveSkuMapping = async () => {
+    if (!editingMapping?.sku || !editingMapping?.productType) {
+      showToast('SKU and Product Type are required.', 'warning');
+      return;
+    }
+    try {
+      const isNew = !editingMapping.id;
+      const url = isNew ? '/api/sku-mappings' : `/api/sku-mappings/${editingMapping.id}`;
+      const method = isNew ? 'POST' : 'PUT';
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+        },
+        body: JSON.stringify(editingMapping)
+      });
+      if (res.ok) {
+        showToast(`SKU Mapping ${isNew ? 'created' : 'updated'} successfully!`, 'success');
+        setShowSkuModal(false);
+        fetchSkuMappings();
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to save SKU mapping.', 'error');
+      }
+    } catch (err) {
+      console.error('Error saving SKU mapping:', err);
+    }
+  };
+
+  const deleteSkuMapping = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this SKU mapping?')) return;
+    try {
+      const res = await fetch(`/api/sku-mappings/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
+      });
+      if (res.ok) {
+        showToast('SKU Mapping deleted.', 'success');
+        fetchSkuMappings();
+      }
+    } catch (err) {
+      console.error('Error deleting SKU mapping:', err);
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!editingTemplate?.name || !editingTemplate?.productType) {
+      showToast('Name and Product Type are required.', 'warning');
+      return;
+    }
+    try {
+      const isNew = !editingTemplate.id;
+      const url = isNew ? '/api/templates' : `/api/templates/${editingTemplate.id}`;
+      const method = isNew ? 'POST' : 'PUT';
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+        },
+        body: JSON.stringify(editingTemplate)
+      });
+      if (res.ok) {
+        showToast(`Template ${isNew ? 'created' : 'updated'} successfully!`, 'success');
+        setShowTemplateModal(false);
+        fetchDbTemplates();
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to save template.', 'error');
+      }
+    } catch (err) {
+      console.error('Error saving template:', err);
+    }
+  };
+
+  const deleteTemplate = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this template?')) return;
+    try {
+      const res = await fetch(`/api/templates/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('admin_token')}` }
+      });
+      if (res.ok) {
+        showToast('Template deleted.', 'success');
+        fetchDbTemplates();
+      }
+    } catch (err) {
+      console.error('Error deleting template:', err);
+    }
+  };
+
+  const duplicateTemplate = async (template: TemplateItem) => {
+    try {
+      const duplicated: Partial<TemplateItem> = {
+        name: `${template.name} (Copy)`,
+        productType: template.productType,
+        category: template.category || 'mug',
+        thumbnail: template.thumbnail,
+        tags: [...(template.tags || []), 'duplicated'],
+        elements: template.elements || []
+      };
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+        },
+        body: JSON.stringify(duplicated)
+      });
+      if (res.ok) {
+        showToast('Template duplicated successfully!', 'success');
+        fetchDbTemplates();
+      } else {
+        showToast('Failed to duplicate template.', 'error');
+      }
+    } catch (err) {
+      console.error('Error duplicating template:', err);
+    }
+  };
+
+
+  const handleReviewDecision = async (approved: boolean) => {
+    if (!reviewingOrder) return;
+    try {
+      const res = await fetch(`/api/orders/${reviewingOrder.id}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
+        },
+        body: JSON.stringify({ approved, comments: reviewComments })
+      });
+      if (res.ok) {
+        showToast(approved ? 'Design approved successfully!' : 'Design rejected, comment sent to customer.', approved ? 'success' : 'warning');
+        setReviewingOrder(null);
+        setReviewComments('');
+        fetchOrders();
+      } else {
+        const data = await res.json();
+        showToast(data.error || 'Failed to submit review decision.', 'error');
+      }
+    } catch (err) {
+      console.error('Error submitting review decision:', err);
+    }
+  };
+
   useEffect(() => {
     if (screen === 'dashboard') {
       fetchOrders();
       fetchQueue();
+      fetchSettings();
+      fetchSkuMappings();
+      fetchDbTemplates();
     }
   }, [screen]);
 
@@ -620,11 +878,19 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
 
   // ── DASHBOARD ─────────────────────────────────────────────────────────────────
   return (
-    <div className="portal-layout">
+    <div className="portal-layout" style={{ position: 'relative' }}>
+      {/* ── Sidebar Backdrop (Mobile Only) ── */}
+      {sidebarOpen && (
+        <div className="sidebar-backdrop show-mobile" onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* ── Sidebar ── */}
-      <aside className={`portal-sidebar admin-sidebar${sidebarOpen ? '' : ' collapsed'}`}>
+      <aside className={`portal-sidebar admin-sidebar collapsible-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="sidebar-logo-area" style={{ display: 'flex', alignItems: 'center', padding: '12px 16px' }}>
           <img src={whiteLogo} alt="the Prink Admin" style={{ height: '32px', width: 'auto', display: 'block' }} />
+          <button className="btn btn-outline btn-sm show-mobile" style={{ marginLeft: 'auto', padding: '4px 8px', color: '#fff', borderColor: 'rgba(255,255,255,0.2)' }} onClick={() => setSidebarOpen(false)}>
+            <i className="bi bi-x-lg" />
+          </button>
         </div>
 
         <span className="sidebar-section-label">Main Menu</span>
@@ -634,7 +900,12 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
               key={s.id}
               id={`nav-${s.id}`}
               className={`sidebar-item${section === s.id ? ' active' : ''}`}
-              onClick={() => setSection(s.id)}
+              onClick={() => {
+                setSection(s.id);
+                if (window.innerWidth <= 768) {
+                  setSidebarOpen(false);
+                }
+              }}
             >
               <i className={`bi ${s.icon}`} />
               <span>{s.label}</span>
@@ -657,6 +928,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                 setScreen('login');
                 setEmail('');
                 setPassword('');
+                if (window.innerWidth <= 768) {
+                  setSidebarOpen(false);
+                }
               }}
             >
               <i className="bi bi-box-arrow-right" />
@@ -665,8 +939,21 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
         </div>
       </aside>
 
-      {/* ── Main Content ── */}
-      <section className="portal-content">
+      {/* ── Main Content Area ── */}
+      <div className="flex flex-col w-full h-full" style={{ overflow: 'hidden' }}>
+        {/* Mobile Toggle Bar */}
+        <div className="admin-mobile-toggle-bar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <img src={whiteLogo} alt="the Prink Logo" style={{ height: '20px', width: 'auto' }} />
+            <span style={{ fontWeight: 'bold', fontSize: '13px' }}>Admin Dashboard</span>
+          </div>
+          <button className="admin-mobile-toggle-btn" onClick={() => setSidebarOpen(true)}>
+            <i className="bi bi-list" style={{ marginRight: '4px' }} />
+            Menu
+          </button>
+        </div>
+
+        <section className="portal-content" style={{ flex: 1, overflowY: 'auto' }}>
         {/* ── OVERVIEW ── */}
         {section === 'overview' && (
           <div>
@@ -704,39 +991,27 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
             <div className="kpi-grid mb-6">
               <div className="kpi-card">
                 <div className="kpi-card-icon"><i className="bi bi-cart-check" /></div>
-                <div className="kpi-card-label">Total Orders</div>
-                <div className="kpi-card-value">1,482</div>
-                <div className="kpi-card-sub">↑ 12% from last month</div>
+                <div className="kpi-card-label">Total Purchases</div>
+                <div className="kpi-card-value">{orders.length}</div>
+                <div className="kpi-card-sub">Active Shopify Sync</div>
               </div>
               <div className="kpi-card accent">
-                <div className="kpi-card-icon"><i className="bi bi-hourglass-split" /></div>
-                <div className="kpi-card-label">Pending Uploads</div>
-                <div className="kpi-card-value">4</div>
-                <div className="kpi-card-sub">2 reminders sent</div>
+                <div className="kpi-card-icon"><i className="bi bi-palette" /></div>
+                <div className="kpi-card-label">Pending Customization</div>
+                <div className="kpi-card-value">{orders.filter(o => o.customizationStatus !== 'completed').length}</div>
+                <div className="kpi-card-sub">Customer editing drafts</div>
               </div>
               <div className="kpi-card success">
                 <div className="kpi-card-icon"><i className="bi bi-check-circle" /></div>
-                <div className="kpi-card-label">Print Ready</div>
-                <div className="kpi-card-value">8</div>
-                <div className="kpi-card-sub">↑ 3 since yesterday</div>
+                <div className="kpi-card-label">Print Ready (Approved)</div>
+                <div className="kpi-card-value">{orders.filter(o => o.uploadStatus === 'ready').length}</div>
+                <div className="kpi-card-sub">Verified high-DPI graphics</div>
               </div>
-              <div className="kpi-card">
-                <div className="kpi-card-icon"><i className="bi bi-printer" /></div>
-                <div className="kpi-card-label">Active Queue</div>
-                <div className="kpi-card-value">3</div>
-                <div className="kpi-card-sub">In production now</div>
-              </div>
-              <div className="kpi-card">
-                <div className="kpi-card-icon"><i className="bi bi-currency-rupee" /></div>
-                <div className="kpi-card-label">Revenue</div>
-                <div className="kpi-card-value">₹42,890</div>
-                <div className="kpi-card-sub">This month</div>
-              </div>
-              <div className="kpi-card success">
-                <div className="kpi-card-icon"><i className="bi bi-graph-up" /></div>
-                <div className="kpi-card-label">Completion Rate</div>
-                <div className="kpi-card-value">98.5%</div>
-                <div className="kpi-card-sub">↑ 0.3% from last month</div>
+              <div className="kpi-card" style={{ borderLeft: '4px solid var(--error)' }}>
+                <div className="kpi-card-icon"><i className="bi bi-exclamation-triangle" style={{ color: 'var(--error)' }} /></div>
+                <div className="kpi-card-label">Revision Requested</div>
+                <div className="kpi-card-value">{orders.filter(o => o.adminComments).length}</div>
+                <div className="kpi-card-sub">Requires client revision</div>
               </div>
             </div>
 
@@ -881,6 +1156,15 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                       <td className="text-sm text-muted">{o.date}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          {o.customizationStatus === 'completed' && o.uploadStatus !== 'ready' && (
+                            <button
+                              className="btn btn-primary btn-sm"
+                              style={{ background: 'var(--accent)', borderColor: 'var(--accent)' }}
+                              onClick={() => setReviewingOrder(o)}
+                            >
+                              <i className="bi bi-shield-check" /> Review Design
+                            </button>
+                          )}
                           {o.uploadStatus === 'ready' ? (
                             <button
                               id={`route-${o.id}`}
@@ -1012,7 +1296,16 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                 <h1 className="page-heading">Templates</h1>
                 <p className="text-sm text-muted">Manage print-ready design templates</p>
               </div>
-              <button id="add-template-btn" className="btn btn-primary" onClick={() => showToast('Template editor coming soon!', 'info')}>
+              <button id="add-template-btn" className="btn btn-primary" onClick={() => {
+                setEditingTemplate({
+                  name: '',
+                  productType: 'mug',
+                  category: 'Mugs',
+                  thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200',
+                  tags: ['new']
+                });
+                setShowTemplateModal(true);
+              }}>
                 <i className="bi bi-plus-lg" /> Add New Template
               </button>
             </div>
@@ -1034,7 +1327,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
             </div>
 
             <div className="template-grid">
-              {filteredTemplates.map(t => (
+              {(dbTemplates.length > 0 ? dbTemplates : TEMPLATES).filter(t => t.name.toLowerCase().includes(templateSearch.toLowerCase())).map(t => (
                 <div
                   key={t.id}
                   className="template-card"
@@ -1049,25 +1342,35 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
                         borderRadius: '12px 12px 0 0', transition: 'all 0.2s'
                       }}>
-                        <button
+                            <button
                           id={`edit-tmpl-${t.id}`}
                           className="btn btn-sm"
-                          style={{ background: '#fff', color: 'var(--primary)' }}
-                          onClick={() => showToast(`Editing "${t.name}"…`, 'info')}
+                          style={{ background: '#fff', color: 'var(--primary)', padding: '0.25rem 0.5rem', fontSize: '11px' }}
+                          onClick={() => {
+                            setEditingTemplate(t);
+                            setShowTemplateModal(true);
+                          }}
                         >
                           <i className="bi bi-pencil" /> Edit
                         </button>
                         <button
-                          id={`prev-tmpl-${t.id}`}
                           className="btn btn-sm"
-                          style={{ background: 'var(--accent)', color: '#fff', border: 'none' }}
-                          onClick={() => showToast(`Previewing "${t.name}"`, 'info')}
+                          style={{ background: '#fff', color: 'var(--accent)', border: 'none', padding: '0.25rem 0.5rem', fontSize: '11px' }}
+                          onClick={() => duplicateTemplate(t)}
                         >
-                          <i className="bi bi-eye" /> Preview
+                          <i className="bi bi-files" /> Duplicate
                         </button>
+                        <button
+                          className="btn btn-sm"
+                          style={{ background: 'var(--error)', color: '#fff', border: 'none', padding: '0.25rem 0.5rem', fontSize: '11px' }}
+                          onClick={() => deleteTemplate(t.id)}
+                        >
+                          <i className="bi bi-trash" /> Delete
+                        </button>
+
                       </div>
                     )}
-                    {t.tags.length > 0 && (
+                    {t.tags && t.tags.length > 0 && (
                       <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', display: 'flex', gap: '0.3rem' }}>
                         {t.tags.map(tag => (
                           <span key={tag} style={{
@@ -1083,9 +1386,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                     <div className="template-card-name">{t.name}</div>
                     <div className="template-card-meta">
                       <span className="template-card-tag">{t.productType}</span>
-                      <span className="text-xs text-muted">{t.usageCount} uses</span>
+                      <span className="text-xs text-muted">{t.usageCount || 0} uses</span>
                     </div>
-                    <div className="text-xs text-muted" style={{ marginTop: '0.25rem' }}>Modified {t.lastModified}</div>
+                    <div className="text-xs text-muted" style={{ marginTop: '0.25rem' }}>Modified {t.lastModified || 'Just now'}</div>
                   </div>
                 </div>
               ))}
@@ -1094,10 +1397,85 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
               <div
                 id="add-new-template-card"
                 className="add-new-card"
-                onClick={() => showToast('Template editor coming soon!', 'info')}
+                onClick={() => {
+                  setEditingTemplate({
+                    name: '',
+                    productType: 'mug',
+                    category: 'Mugs',
+                    thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200',
+                    tags: ['new']
+                  });
+                  setShowTemplateModal(true);
+                }}
               >
                 <i className="bi bi-plus-circle" style={{ fontSize: '2rem', marginBottom: '0.5rem' }} />
                 <span>Add New Template</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── SKU MAPPINGS ── */}
+        {section === 'sku-mappings' && (
+          <div>
+            <div className="section-header">
+              <div>
+                <h1 className="page-heading">SKU Mapping Rules</h1>
+                <p className="text-sm text-muted">Map purchased Shopify product SKU codes to templates</p>
+              </div>
+              <button className="btn btn-primary" onClick={() => {
+                setEditingMapping({
+                  sku: '',
+                  productType: 'mug',
+                  templateId: 't1'
+                });
+                setShowSkuModal(true);
+              }}>
+                <i className="bi bi-plus-lg" /> Add SKU Rule
+              </button>
+            </div>
+
+            <div className="card p-6 mb-6">
+              <h3 style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '1rem', marginBottom: '1rem' }}>Active Mapping Matrix</h3>
+              <div className="clean-table-wrapper">
+                <table className="clean-table">
+                  <thead>
+                    <tr>
+                      <th>SKU Code Prefix</th>
+                      <th>Mapped Product Type</th>
+                      <th>Template Association</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {skuMappings.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>
+                          No SKU mapping rules defined. Adding standard presets.
+                        </td>
+                      </tr>
+                    ) : skuMappings.map(m => (
+                      <tr key={m.id}>
+                        <td><span style={{ fontWeight: 700, color: 'var(--accent)' }}>{m.sku}</span></td>
+                        <td style={{ textTransform: 'capitalize' }}>{m.productType}</td>
+                        <td>{m.templateId || 'None'}</td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <button className="btn btn-outline btn-sm" onClick={() => {
+                              setEditingMapping(m);
+                              setShowSkuModal(true);
+                            }}>
+                              <i className="bi bi-pencil" /> Edit
+                            </button>
+                            <button className="btn btn-outline btn-sm" style={{ color: 'var(--error)', borderColor: 'var(--error)' }} onClick={() => deleteSkuMapping(m.id || '')}>
+                              <i className="bi bi-trash" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -1833,6 +2211,991 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
           </div>
         )}
       </section>
+
+      {/* =======================================================================
+          DESIGN REVIEW MODAL
+          ======================================================================= */}
+            {/* =======================================================================
+          DESIGN REVIEW MODAL (OVERHAULED FULLSCREEN CANVA-STYLE EDITOR)
+          ======================================================================= */}
+      {reviewingOrder && (
+        <AdminDesignEditor
+          order={reviewingOrder}
+          onClose={() => setReviewingOrder(null)}
+          onApprove={() => handleReviewDecision(true)}
+          onReject={() => handleReviewDecision(false)}
+          onCommentsChange={(txt) => setReviewComments(txt)}
+          commentsValue={reviewComments}
+          onSaveProgress={async (elements) => {
+            try {
+              const token = localStorage.getItem('admin_token');
+              const res = await fetch(`/api/orders/${encodeURIComponent(reviewingOrder.id)}/design`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  designData: JSON.stringify(elements),
+                  customizationStatus: reviewingOrder.customizationStatus
+                })
+              });
+              if (res.ok) {
+                showToast('Progress saved successfully!', 'success');
+                fetchOrders();
+              } else {
+                showToast('Failed to save progress.', 'error');
+              }
+            } catch (err) {
+              showToast('Network error while saving.', 'error');
+            }
+          }}
+        />
+      )}
+      {/* =======================================================================
+          SKU RULES CONFIGURATION MODAL
+          ======================================================================= */}
+      {showSkuModal && editingMapping && (
+        <div className="modal-overlay" onClick={() => setShowSkuModal(false)}>
+          <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: 440 }}>
+            <div className="flex align-center justify-between" style={{ marginBottom: '1.25rem' }}>
+              <h2 className="font-bold" style={{ color: 'var(--primary)', margin: 0, fontSize: '1.1rem' }}>
+                {editingMapping.id ? 'Edit SKU Rule Mapping' : 'Define New SKU Mapping'}
+              </h2>
+              <button className="btn btn-outline btn-sm" onClick={() => setShowSkuModal(false)}>
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="mapping-sku" style={{ marginBottom: '0.2rem' }}>
+                  Shopify SKU Prefix / Match Code:
+                </label>
+                <input
+                  id="mapping-sku"
+                  className="input text-xs"
+                  type="text"
+                  placeholder="E.g. PRK-MUG-CLASSIC"
+                  value={editingMapping.sku || ''}
+                  onChange={e => setEditingMapping({ ...editingMapping, sku: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="mapping-product" style={{ marginBottom: '0.2rem' }}>
+                  Mapped Product Canvas Type:
+                </label>
+                <select
+                  id="mapping-product"
+                  className="input text-xs"
+                  value={editingMapping.productType || 'mug'}
+                  onChange={e => setEditingMapping({ ...editingMapping, productType: e.target.value as any })}
+                >
+                  <option value="mug">Coffee Mug Wrap</option>
+                  <option value="canvas">Stretch Canvas</option>
+                  <option value="frame">Photo Frame</option>
+                  <option value="calendar">Wall Calendar</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="mapping-template" style={{ marginBottom: '0.2rem' }}>
+                  Associated Canva Design Template:
+                </label>
+                <select
+                  id="mapping-template"
+                  className="input text-xs"
+                  value={editingMapping.templateId || ''}
+                  onChange={e => setEditingMapping({ ...editingMapping, templateId: e.target.value })}
+                >
+                  <option value="">None (Generic Blank Layout)</option>
+                  {(dbTemplates.length > 0 ? dbTemplates : TEMPLATES).map(t => (
+                    <option key={t.id} value={t.id}>{t.name} ({t.productType})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-2 justify-end" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                <button className="btn btn-secondary" onClick={() => setShowSkuModal(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={saveSkuMapping}>
+                  Save Mapping Rule
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =======================================================================
+          TEMPLATES BUILDER CONFIGURATION MODAL
+          ======================================================================= */}
+      {showTemplateModal && editingTemplate && (
+        <div className="modal-overlay" onClick={() => setShowTemplateModal(false)}>
+          <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
+            <div className="flex align-center justify-between" style={{ marginBottom: '1.25rem' }}>
+              <h2 className="font-bold" style={{ color: 'var(--primary)', margin: 0, fontSize: '1.1rem' }}>
+                {editingTemplate.id ? 'Edit Template Builder' : 'Create Canva Print Template'}
+              </h2>
+              <button className="btn btn-outline btn-sm" onClick={() => setShowTemplateModal(false)}>
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="tmpl-name" style={{ marginBottom: '0.2rem' }}>
+                  Template Display Name:
+                </label>
+                <input
+                  id="tmpl-name"
+                  className="input text-xs"
+                  type="text"
+                  placeholder="E.g. Father's Day Mug Wrap"
+                  value={editingTemplate.name || ''}
+                  onChange={e => setEditingTemplate({ ...editingTemplate, name: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="tmpl-product" style={{ marginBottom: '0.2rem' }}>
+                  Target Product Canvas Type:
+                </label>
+                <select
+                  id="tmpl-product"
+                  className="input text-xs"
+                  value={editingTemplate.productType || 'mug'}
+                  onChange={e => setEditingTemplate({ ...editingTemplate, productType: e.target.value as any })}
+                >
+                  <option value="mug">Coffee Mug Wrap</option>
+                  <option value="canvas">Stretch Canvas</option>
+                  <option value="frame">Photo Frame</option>
+                  <option value="calendar">Wall Calendar</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="tmpl-category" style={{ marginBottom: '0.2rem' }}>
+                  Template Category:
+                </label>
+                <select
+                  id="tmpl-category"
+                  className="input text-xs"
+                  value={editingTemplate.category || 'mug'}
+                  onChange={e => setEditingTemplate({ ...editingTemplate, category: e.target.value })}
+                >
+                  <option value="mug">Mug</option>
+                  <option value="frame">Frame</option>
+                  <option value="tshirt">T-shirt</option>
+                  <option value="album">Album</option>
+                  <option value="case">Mobile case</option>
+                  <option value="poster">Poster</option>
+                  <option value="gift">Gift products</option>
+                </select>
+              </div>
+
+              <div style={{ margin: '0.5rem 0' }}>
+                <label className="text-xs flex align-center gap-1 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!editingTemplate.isDefault}
+                    onChange={e => setEditingTemplate({ ...editingTemplate, isDefault: e.target.checked })}
+                  />
+                  <span>Set as default layout for this product canvas type</span>
+                </label>
+              </div>
+
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="tmpl-thumb" style={{ marginBottom: '0.2rem' }}>
+                  Thumbnail Image URL:
+                </label>
+                <input
+                  id="tmpl-thumb"
+                  className="input text-xs"
+                  type="text"
+                  placeholder="https://images.unsplash.com/..."
+                  value={editingTemplate.thumbnail || ''}
+                  onChange={e => setEditingTemplate({ ...editingTemplate, thumbnail: e.target.value })}
+                />
+              </div>
+
+
+              <div className="flex gap-2 justify-end" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+                <button className="btn btn-secondary" onClick={() => setShowTemplateModal(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={saveTemplate}>
+                  Save Template
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
+    </div>
+  );
+};
+
+// ─── ADMIN DESIGN EDITOR WORKSPACE (CANVA-STYLE) ────────────────────────────
+
+interface AdminDesignEditorProps {
+  order: Order;
+  onClose: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+  onCommentsChange: (txt: string) => void;
+  commentsValue: string;
+  onSaveProgress: (elements: CanvasElement[]) => void;
+}
+
+const AdminDesignEditor: React.FC<AdminDesignEditorProps> = ({
+  order,
+  onClose,
+  onApprove,
+  onReject,
+  onCommentsChange,
+  commentsValue,
+  onSaveProgress
+}) => {
+  const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([]);
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+  const [undoStack, setUndoStack] = useState<CanvasElement[][]>([]);
+  const [redoStack, setRedoStack] = useState<CanvasElement[][]>([]);
+  const [canvasScale, setCanvasScale] = useState(1);
+  const [activeTab, setActiveTab] = useState<'layers' | 'text' | 'image' | 'stickers' | 'shapes' | 'overlays'>('layers');
+  const [snapAlign, setSnapAlign] = useState(true);
+  const [removeBgLoading, setRemoveBgLoading] = useState(false);
+  const [showSafe, setShowSafe] = useState(true);
+  const [showBleed, setShowBleed] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
+
+  // Load layout on mount
+  useEffect(() => {
+    if (order.designData) {
+      try {
+        const parsed = JSON.parse(order.designData);
+        const list = Array.isArray(parsed) ? parsed : (parsed.elements || []);
+        setCanvasElements(list);
+      } catch (e) {
+        console.error('Failed to parse designData', e);
+      }
+    } else {
+      // Default elements
+      setCanvasElements([
+        {
+          id: 'admin-text-1',
+          type: 'text',
+          x: 100,
+          y: 60,
+          width: 250,
+          height: 50,
+          rotation: 0,
+          opacity: 1,
+          zIndex: 1,
+          text: order.product || 'Custom Layout Design',
+          fontFamily: 'Outfit',
+          fontSize: 24,
+          color: '#171C62',
+          textAlign: 'center'
+        }
+      ]);
+    }
+  }, [order]);
+
+  const saveState = (newElements: CanvasElement[]) => {
+    setUndoStack(prev => [...prev, canvasElements]);
+    setRedoStack([]);
+    setCanvasElements(newElements);
+  };
+
+  const handleUndo = () => {
+    if (undoStack.length === 0) return;
+    const prev = undoStack[undoStack.length - 1];
+    setRedoStack(r => [...r, canvasElements]);
+    setUndoStack(u => u.slice(0, -1));
+    setCanvasElements(prev);
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const next = redoStack[redoStack.length - 1];
+    setUndoStack(u => [...u, canvasElements]);
+    setRedoStack(r => r.slice(0, -1));
+    setCanvasElements(next);
+  };
+
+  const updateElementProps = (id: string, props: Partial<CanvasElement>) => {
+    saveState(canvasElements.map(el => el.id === id ? { ...el, ...props } : el));
+  };
+
+  const deleteElement = (id: string) => {
+    saveState(canvasElements.filter(el => el.id !== id));
+    if (selectedElementId === id) setSelectedElementId(null);
+  };
+
+  const addText = () => {
+    const newEl: CanvasElement = {
+      id: `admin-txt-${Date.now()}`,
+      type: 'text',
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 44,
+      rotation: 0,
+      opacity: 1,
+      zIndex: canvasElements.length + 1,
+      text: 'Admin Custom Text',
+      fontFamily: 'Outfit',
+      fontSize: 20,
+      color: '#171C62',
+      textAlign: 'center',
+      isCurved: false,
+      letterSpacing: 0
+    };
+    saveState([...canvasElements, newEl]);
+    setSelectedElementId(newEl.id);
+  };
+
+  const addShape = (shapeType: 'rect' | 'circle' | 'triangle' | 'star') => {
+    const newEl: CanvasElement = {
+      id: `admin-shape-${Date.now()}`,
+      type: 'shape',
+      shapeType,
+      x: 150,
+      y: 150,
+      width: 80,
+      height: 80,
+      rotation: 0,
+      opacity: 1,
+      zIndex: canvasElements.length + 1,
+      fillColor: '#FF304C',
+      strokeColor: '#171C62',
+      strokeWidth: 2
+    };
+    saveState([...canvasElements, newEl]);
+    setSelectedElementId(newEl.id);
+  };
+
+  const addSticker = (emoji: string) => {
+    const newEl: CanvasElement = {
+      id: `admin-sticker-${Date.now()}`,
+      type: 'sticker',
+      src: emoji,
+      x: 140,
+      y: 140,
+      width: 80,
+      height: 80,
+      rotation: 0,
+      opacity: 1,
+      zIndex: canvasElements.length + 1
+    };
+    saveState([...canvasElements, newEl]);
+    setSelectedElementId(newEl.id);
+  };
+
+  const addAdminImageLayer = (src: string) => {
+    const newEl: CanvasElement = {
+      id: `admin-img-${Date.now()}`,
+      type: 'image',
+      src: src,
+      x: 80,
+      y: 80,
+      width: 150,
+      height: 150,
+      rotation: 0,
+      opacity: 1,
+      zIndex: canvasElements.length + 1,
+      brightness: 100,
+      contrast: 100,
+      saturation: 100,
+      blur: 0,
+      sepia: 0,
+      grayscale: false,
+      flipX: false,
+      flipY: false
+    };
+    saveState([...canvasElements, newEl]);
+    setSelectedElementId(newEl.id);
+  };
+
+  const runRemoveBg = () => {
+    if (!selectedElementId) return;
+    setRemoveBgLoading(true);
+    setTimeout(() => {
+      setRemoveBgLoading(false);
+      updateElementProps(selectedElementId, { sepia: 10 }); // vintage tint indicator
+    }, 1500);
+  };
+
+  const activeEl = canvasElements.find(el => el.id === selectedElementId);
+
+  const getCanvasDimensions = () => {
+    switch (order.productType) {
+      case 'mug': return { w: 450, h: 300 };
+      case 'canvas': return { w: 400, h: 400 };
+      case 'frame': return { w: 340, h: 440 };
+      default: return { w: 400, h: 320 };
+    }
+  };
+  const dims = getCanvasDimensions();
+
+  const [activeOverlay, setActiveOverlay] = useState<string | null>(null);
+
+  const OVERLAYS = [
+    { id: 'confetti', name: 'Confetti Overlay', color: 'rgba(255, 48, 76, 0.08)' },
+    { id: 'grunge', name: 'Vintage Border', color: 'rgba(23, 28, 98, 0.05)' },
+    { id: 'vignette', name: 'Soft Vignette', color: 'rgba(0, 0, 0, 0.06)' },
+  ];
+
+  const renderCanvasElement = (el: CanvasElement) => {
+    const isSelected = el.id === selectedElementId;
+    const style: React.CSSProperties = {
+      position: 'absolute',
+      left: `${el.x}px`,
+      top: `${el.y}px`,
+      width: `${el.width}px`,
+      height: `${el.height}px`,
+      transform: `rotate(${el.rotation || 0}deg)`,
+      opacity: el.opacity ?? 1,
+      zIndex: el.zIndex,
+      cursor: 'move',
+      userSelect: 'none',
+      border: isSelected ? '2px dashed var(--accent)' : 'none',
+      padding: '4px'
+    };
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setSelectedElementId(el.id);
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const initialX = el.x;
+      const initialY = el.y;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const dx = moveEvent.clientX - startX;
+        const dy = moveEvent.clientY - startY;
+        let newX = initialX + dx;
+        let newY = initialY + dy;
+
+        // Snap alignment simulation
+        if (snapAlign) {
+          if (Math.abs(newX) < 10) newX = 0;
+          if (Math.abs(newY) < 10) newY = 0;
+          if (Math.abs(newX - (dims.w - el.width) / 2) < 10) newX = (dims.w - el.width) / 2;
+          if (Math.abs(newY - (dims.h - el.height) / 2) < 10) newY = (dims.h - el.height) / 2;
+        }
+
+        // update position directly
+        setCanvasElements(prev => prev.map(item => item.id === el.id ? { ...item, x: newX, y: newY } : item));
+      };
+
+      const handleMouseUp = () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        // save to undo stack
+        saveState(canvasElements);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    };
+
+    return (
+      <div key={el.id} style={style} onMouseDown={handleMouseDown}>
+        {isSelected && (
+          <button style={{
+            position: 'absolute', top: -10, right: -10,
+            background: 'var(--error)', color: '#fff', border: 'none',
+            borderRadius: '50%', width: '18px', height: '18px',
+            fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', zIndex: 1000
+          }} onClick={(ev) => { ev.stopPropagation(); deleteElement(el.id); }}>
+            ✕
+          </button>
+        )}
+
+        {el.type === 'text' && (
+          el.isCurved ? (
+            <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+              <path id={`path-${el.id}`} d={`M 10,${el.height * 0.8} Q ${el.width / 2},${el.height * 0.1} ${el.width - 10},${el.height * 0.8}`} fill="transparent" />
+              <text fill={el.gradientColor ? 'url(#textGrad)' : el.color} fontSize={el.fontSize} fontFamily={el.fontFamily} textAnchor="middle" letterSpacing={el.letterSpacing}>
+                {el.gradientColor && (
+                  <defs>
+                    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={el.color} />
+                      <stop offset="100%" stopColor={el.gradientColor} />
+                    </linearGradient>
+                  </defs>
+                )}
+                <textPath href={`#path-${el.id}`} startOffset="50%">
+                  {el.text}
+                </textPath>
+              </text>
+            </svg>
+          ) : (
+            <div style={{
+              fontFamily: el.fontFamily,
+              fontSize: `${el.fontSize}px`,
+              color: el.gradientColor ? 'transparent' : el.color,
+              backgroundImage: el.gradientColor ? `linear-gradient(135deg, ${el.color}, ${el.gradientColor})` : 'none',
+              WebkitBackgroundClip: el.gradientColor ? 'text' : 'unset',
+              textAlign: el.textAlign || 'center',
+              textShadow: el.textShadow || 'none',
+              letterSpacing: el.letterSpacing ? `${el.letterSpacing}px` : 'normal',
+              width: '100%', height: '100%', wordBreak: 'break-all'
+            }}>
+              {el.text}
+            </div>
+          )
+        )}
+
+        {el.type === 'image' && (
+          <img src={el.src} alt="img" style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            filter: `brightness(${(el.brightness ?? 100)}%) contrast(${(el.contrast ?? 100)}%) saturate(${(el.saturation ?? 100)}%) blur(${(el.blur ?? 0)}px) grayscale(${el.grayscale ? 1 : 0}) sepia(${(el.sepia ?? 0) / 10})`,
+            transform: `scaleX(${el.flipX ? -1 : 1}) scaleY(${el.flipY ? -1 : 1})`
+          }} />
+        )}
+
+        {el.type === 'shape' && (
+          el.shapeType === 'circle' ? (
+            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: el.fillColor, border: `${el.strokeWidth ?? 1}px solid ${el.strokeColor || '#000'}` }} />
+          ) : el.shapeType === 'rect' ? (
+            <div style={{ width: '100%', height: '100%', background: el.fillColor, border: `${el.strokeWidth ?? 1}px solid ${el.strokeColor || '#000'}` }} />
+          ) : (
+            <div style={{ width: '100%', height: '100%', background: el.fillColor, clipPath: el.shapeType === 'triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />
+          )
+        )}
+
+        {el.type === 'sticker' && (
+          <span style={{ fontSize: `${Math.min(el.width, el.height) * 0.8}px`, display: 'block', textAlign: 'center', lineHeight: `${el.height}px` }}>
+            {el.src}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column'
+    }}>
+      {/* Top operational bar */}
+      <div className="flex align-center justify-between p-4" style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)' }}>
+        <div className="flex align-center gap-3">
+          <button className="btn btn-outline btn-sm" onClick={onClose}>
+            <i className="bi bi-arrow-left" /> Back to Dashboard
+          </button>
+          <div>
+            <h2 className="font-bold text-sm" style={{ color: 'var(--primary)', margin: 0 }}>
+              Review &amp; Edit Order: {order.id}
+            </h2>
+            <div className="text-xxs text-muted">Customer: {order.customer} | Product: {order.product} ({order.productType})</div>
+          </div>
+        </div>
+
+        {/* Undo/Redo */}
+        <div className="flex align-center gap-2">
+          <button className="btn btn-outline btn-sm" title="Undo" onClick={handleUndo} disabled={undoStack.length === 0}>
+            <i className="bi bi-arrow-counterclockwise" />
+          </button>
+          <button className="btn btn-outline btn-sm" title="Redo" onClick={handleRedo} disabled={redoStack.length === 0}>
+            <i className="bi bi-arrow-clockwise" />
+          </button>
+          <div style={{ width: '1px', height: '20px', background: 'var(--border-color)', margin: '0 8px' }} />
+          <button className="btn btn-outline btn-sm" style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }} onClick={() => onSaveProgress(canvasElements)}>
+            <i className="bi bi-save" /> Save Progress
+          </button>
+        </div>
+      </div>
+
+      {/* Main editor split area */}
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr 300px', flex: 1, overflow: 'hidden' }}>
+        {/* Left Side Panel */}
+        <div style={{ background: 'var(--bg-secondary)', borderRight: '1px solid var(--border-color)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
+          <h3 className="font-bold text-xs" style={{ color: 'var(--primary)', textTransform: 'uppercase', margin: 0 }}>Editor Tools</h3>
+          
+          <div className="flex gap-1" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+            {['layers', 'text', 'image', 'stickers', 'shapes', 'overlays'].map(tab => (
+              <button
+                key={tab}
+                className={`btn btn-sm ${activeTab === tab ? 'btn-primary' : 'btn-outline'}`}
+                style={{ flex: 1, padding: '4px 6px', fontSize: '10px', textTransform: 'capitalize' }}
+                onClick={() => setActiveTab(tab as any)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* TAB: LAYERS */}
+          {activeTab === 'layers' && (
+            <div className="flex flex-col gap-2">
+              <div className="text-xxs text-muted font-bold">Layers ordering</div>
+              <div className="flex flex-col gap-1">
+                {canvasElements.length === 0 ? (
+                  <div className="text-xxs text-muted style-italic">No layers in workspace</div>
+                ) : canvasElements.sort((a,b) => b.zIndex - a.zIndex).map(el => (
+                  <div key={el.id} className="flex align-center justify-between p-2" style={{
+                    background: selectedElementId === el.id ? 'var(--bg-tertiary)' : 'rgba(0,0,0,0.02)',
+                    borderRadius: '4px', cursor: 'pointer'
+                  }} onClick={() => setSelectedElementId(el.id)}>
+                    <span className="text-xxs capitalize" style={{ fontWeight: selectedElementId === el.id ? 700 : 400 }}>
+                      {el.type}: {el.text ? el.text.slice(0, 10) + '...' : el.shapeType || 'media'}
+                    </span>
+                    <div className="flex gap-1">
+                      <button style={{ background: 'none', border: 'none', padding: 0 }} onClick={(e) => { e.stopPropagation(); updateElementProps(el.id, { zIndex: el.zIndex + 1 }); }}>
+                        <i className="bi bi-chevron-up text-xxs" />
+                      </button>
+                      <button style={{ background: 'none', border: 'none', padding: 0 }} onClick={(e) => { e.stopPropagation(); updateElementProps(el.id, { zIndex: Math.max(1, el.zIndex - 1) }); }}>
+                        <i className="bi bi-chevron-down text-xxs" />
+                      </button>
+                      <button style={{ background: 'none', border: 'none', padding: 0, color: 'var(--error)' }} onClick={(e) => { e.stopPropagation(); deleteElement(el.id); }}>
+                        <i className="bi bi-trash text-xxs" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: TEXT */}
+          {activeTab === 'text' && (
+            <div className="flex flex-col gap-3">
+              <button className="btn btn-outline btn-sm w-full" onClick={addText}>
+                <i className="bi bi-plus-lg" /> Add Text Layer
+              </button>
+            </div>
+          )}
+
+          {/* TAB: IMAGE */}
+          {activeTab === 'image' && (
+            <div className="flex flex-col gap-3">
+              <div className="text-xxs text-muted font-bold">Client Photo Uploads</div>
+              <div className="grid grid-2 gap-2">
+                {order.images && order.images.length > 0 ? order.images.map(img => (
+                  <div key={img.id} className="card p-1" style={{ cursor: 'pointer', overflow: 'hidden' }} onClick={() => addAdminImageLayer(img.src)}>
+                    <img src={img.src} alt="uploaded" style={{ width: '100%', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                    <div className="text-xxs text-truncate mt-1" style={{ fontSize: '8px' }}>{img.name}</div>
+                  </div>
+                )) : (
+                  <div className="text-xxs text-muted" style={{ gridColumn: 'span 2' }}>No client uploads found.</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: STICKERS */}
+          {activeTab === 'stickers' && (
+            <div>
+              <div className="text-xxs text-muted font-bold mb-2">Popular Stickers</div>
+              <div className="grid grid-4 gap-2">
+                {['💖', '⭐', '🎁', '🎈', '🌹', '🎂', '👑', '🎗️'].map(s => (
+                  <button key={s} className="btn btn-outline" style={{ fontSize: '20px', padding: '8px 0' }} onClick={() => addSticker(s)}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: SHAPES */}
+          {activeTab === 'shapes' && (
+            <div>
+              <div className="text-xxs text-muted font-bold mb-2">Vector Shapes</div>
+              <div className="grid grid-2 gap-2">
+                <button className="btn btn-outline btn-sm" onClick={() => addShape('rect')}>Rectangle</button>
+                <button className="btn btn-outline btn-sm" onClick={() => addShape('circle')}>Circle</button>
+                <button className="btn btn-outline btn-sm" onClick={() => addShape('triangle')}>Triangle</button>
+                <button className="btn btn-outline btn-sm" onClick={() => addShape('star')}>Star</button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: OVERLAYS */}
+          {activeTab === 'overlays' && (
+            <div className="flex flex-col gap-2">
+              <div className="text-xxs text-muted font-bold">Confetti &amp; Borders</div>
+              {OVERLAYS.map(ov => (
+                <label key={ov.id} className="text-xs flex align-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={activeOverlay === ov.id} onChange={e => setActiveOverlay(e.target.checked ? ov.id : null)} />
+                  <span>{ov.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Center Canvas Area */}
+        <div style={{ background: 'var(--bg-tertiary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', overflow: 'hidden', position: 'relative' }}>
+          {/* Zoom controls */}
+          <div className="flex align-center gap-3 p-2 card" style={{ position: 'absolute', top: 16, right: 16, flexDirection: 'row', zIndex: 100 }}>
+            <label className="text-xxs text-muted">Canvas Zoom:</label>
+            <input type="range" min="0.6" max="1.5" step="0.1" value={canvasScale} onChange={e => setCanvasScale(parseFloat(e.target.value))} style={{ width: '80px' }} />
+            <span className="text-xxs">{Math.round(canvasScale * 100)}%</span>
+            <div style={{ width: 1, height: 16, background: 'var(--border-color)' }} />
+            <label className="text-xxs flex align-center gap-1 cursor-pointer">
+              <input type="checkbox" checked={snapAlign} onChange={e => setSnapAlign(e.target.checked)} />
+              <span>Snap guides</span>
+            </label>
+            <div style={{ width: 1, height: 16, background: 'var(--border-color)' }} />
+            <button className="btn btn-sm p-1 btn-outline" style={{ fontSize: '10px' }} onClick={() => setPreviewMode(!previewMode)}>
+              <i className="bi bi-eye" style={{ marginRight: '4px' }} /> {previewMode ? 'Edit Flat Wrap' : '3D Cylindrical Preview'}
+            </button>
+          </div>
+
+          {previewMode ? (
+            /* Cylinder Mug cylindrical 3D feel mock */
+            <div className="flex flex-col align-center gap-4">
+              <div className="mug-mockup-container" style={{
+                position: 'relative',
+                width: '240px',
+                height: '270px',
+                background: '#fff',
+                borderRadius: '16px 16px 28px 28px',
+                boxShadow: 'inset -24px 0 24px rgba(0,0,0,0.1), inset 12px 0 12px rgba(255,255,255,0.85), 0 15px 35px rgba(0,0,0,0.15)',
+                overflow: 'hidden',
+                border: '1px solid rgba(0,0,0,0.04)'
+              }}>
+                {/* Handle */}
+                <div style={{
+                  position: 'absolute',
+                  right: '-20px',
+                  top: '50px',
+                  width: '44px',
+                  height: '140px',
+                  border: '18px solid #fff',
+                  borderRadius: '0 50px 50px 0',
+                  boxShadow: '6px 8px 16px rgba(0,0,0,0.08)'
+                }} />
+                {/* Design Wrapper */}
+                <div style={{
+                  position: 'absolute',
+                  inset: '12px 24px',
+                  borderRadius: '6px',
+                  overflow: 'hidden',
+                  background: '#f8fafc',
+                  border: '1px solid rgba(0,0,0,0.06)'
+                }}>
+                  {/* Scaled Flat Preview inside cylindrical wrap */}
+                  <div style={{
+                    width: `${dims.w}px`,
+                    height: `${dims.h}px`,
+                    position: 'relative',
+                    transform: `scale(${200 / dims.w})`,
+                    transformOrigin: 'top left'
+                  }}>
+                    {canvasElements.map(el => (
+                      <div key={el.id} style={{
+                        position: 'absolute',
+                        left: `${el.x}px`,
+                        top: `${el.y}px`,
+                        width: `${el.width}px`,
+                        height: `${el.height}px`,
+                        transform: `rotate(${el.rotation || 0}deg)`,
+                        opacity: el.opacity ?? 1,
+                        zIndex: el.zIndex
+                      }}>
+                        {el.type === 'text' && (
+                          <div style={{ fontFamily: el.fontFamily, fontSize: `${el.fontSize}px`, color: el.color, textAlign: el.textAlign }}>{el.text}</div>
+                        )}
+                        {el.type === 'image' && <img src={el.src} alt="mug-media" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                        {el.type === 'shape' && <div style={{ width: '100%', height: '100%', borderRadius: el.shapeType === 'circle' ? '50%' : 0, background: el.fillColor }} />}
+                        {el.type === 'sticker' && <span style={{ fontSize: '40px' }}>{el.src}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Cylinder shine light overlay */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(90deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 25%, rgba(0,0,0,0.06) 50%, rgba(255,255,255,0.3) 80%, rgba(255,255,255,0.75) 100%)',
+                  pointerEvents: 'none'
+                }} />
+              </div>
+              <div className="text-xs font-bold text-muted">Cylindrical Mockup (Auto-calculated wrap)</div>
+            </div>
+          ) : (
+            <div style={{
+              width: `${dims.w}px`,
+              height: `${dims.h}px`,
+              background: '#ffffff',
+              position: 'relative',
+              boxShadow: '0 15px 35px rgba(0,0,0,0.12)',
+              transform: `scale(${canvasScale})`,
+              transition: 'transform 0.15s ease-out',
+              overflow: 'hidden',
+              border: '1px solid rgba(0,0,0,0.08)'
+            }}>
+              {/* Confetti / Vignette overlay block */}
+              {activeOverlay && (
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: OVERLAYS.find(ov => ov.id === activeOverlay)?.color || 'transparent',
+                  zIndex: 999, pointerEvents: 'none'
+                }} />
+              )}
+
+              {/* Guidelines overlays */}
+              {showSafe && (
+                <div style={{ position: 'absolute', inset: '16px', border: '1px dashed rgba(23,28,98,0.25)', pointerEvents: 'none', zIndex: 1000 }} />
+              )}
+
+              {canvasElements.map(el => renderCanvasElement(el))}
+            </div>
+          )}
+        </div>
+
+        {/* Right Side Settings Inspector */}
+        <div style={{ background: 'var(--bg-secondary)', borderLeft: '1px solid var(--border-color)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', overflowY: 'auto' }}>
+          <h3 className="font-bold text-xs" style={{ color: 'var(--primary)', textTransform: 'uppercase', margin: 0 }}>Properties Inspector</h3>
+
+          {activeEl ? (
+            <div className="flex flex-col gap-4">
+              <div className="p-3" style={{ background: 'var(--bg-tertiary)', borderRadius: '6px' }}>
+                <div className="text-xxs text-muted">Selected layer:</div>
+                <div className="text-xs font-bold capitalize">{activeEl.type} Element</div>
+              </div>
+
+              {/* OPACITY SLIDER */}
+              <div>
+                <label className="label text-xxs font-bold">Layer Opacity:</label>
+                <input type="range" min="0" max="1" step="0.1" value={activeEl.opacity ?? 1} onChange={e => updateElementProps(activeEl.id, { opacity: parseFloat(e.target.value) })} />
+              </div>
+
+              {/* ROTATION SLIDER */}
+              <div>
+                <label className="label text-xxs font-bold">Rotate Degrees ({activeEl.rotation ?? 0}°):</label>
+                <input type="range" min="0" max="360" value={activeEl.rotation ?? 0} onChange={e => updateElementProps(activeEl.id, { rotation: parseInt(e.target.value) })} />
+              </div>
+
+              {/* TEXT OPTIONS */}
+              {activeEl.type === 'text' && (
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="label text-xxs font-bold">Text Content:</label>
+                    <input type="text" className="input text-xs" value={activeEl.text || ''} onChange={e => updateElementProps(activeEl.id, { text: e.target.value })} />
+                  </div>
+
+                  <div>
+                    <label className="label text-xxs font-bold">Font Family:</label>
+                    <select className="input text-xs" value={activeEl.fontFamily || 'Outfit'} onChange={e => updateElementProps(activeEl.id, { fontFamily: e.target.value })}>
+                      {['Outfit', 'Inter', 'Roboto', 'Playfair Display', 'Great Vibes', 'Lobster'].map(f => (
+                        <option key={f} value={f}>{f}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="label text-xxs font-bold">Font Size ({activeEl.fontSize}px):</label>
+                    <input type="range" min="12" max="64" value={activeEl.fontSize || 20} onChange={e => updateElementProps(activeEl.id, { fontSize: parseInt(e.target.value) })} />
+                  </div>
+
+                  <div className="grid grid-2 gap-2">
+                    <div>
+                      <label className="label text-xxs font-bold">Text Color:</label>
+                      <input type="color" className="input" style={{ height: '36px', padding: '2px' }} value={activeEl.color || '#171C62'} onChange={e => updateElementProps(activeEl.id, { color: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="label text-xxs font-bold">Gradient Color:</label>
+                      <input type="color" className="input" style={{ height: '36px', padding: '2px' }} value={activeEl.gradientColor || '#FF304C'} onChange={e => updateElementProps(activeEl.id, { gradientColor: e.target.value })} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xxs flex align-center gap-1 cursor-pointer">
+                      <input type="checkbox" checked={!!activeEl.isCurved} onChange={e => updateElementProps(activeEl.id, { isCurved: e.target.checked })} />
+                      <span>Apply curved arc text</span>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="label text-xxs font-bold">Character Spacing ({activeEl.letterSpacing ?? 0}px):</label>
+                    <input type="range" min="0" max="15" value={activeEl.letterSpacing ?? 0} onChange={e => updateElementProps(activeEl.id, { letterSpacing: parseInt(e.target.value) })} />
+                  </div>
+                </div>
+              )}
+
+              {/* IMAGE FILTERS */}
+              {activeEl.type === 'image' && (
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="label text-xxs font-bold">Crop Zoom (Scale):</label>
+                    <input type="range" min="1" max="2.5" step="0.1" value={activeEl.width / 150} onChange={e => updateElementProps(activeEl.id, { width: 150 * parseFloat(e.target.value), height: 150 * parseFloat(e.target.value) })} />
+                  </div>
+
+                  <div>
+                    <label className="label text-xxs font-bold">Brightness ({activeEl.brightness ?? 100}%):</label>
+                    <input type="range" min="50" max="150" value={activeEl.brightness ?? 100} onChange={e => updateElementProps(activeEl.id, { brightness: parseInt(e.target.value) })} />
+                  </div>
+
+                  <div>
+                    <label className="label text-xxs font-bold">Contrast ({activeEl.contrast ?? 100}%):</label>
+                    <input type="range" min="50" max="150" value={activeEl.contrast ?? 100} onChange={e => updateElementProps(activeEl.id, { contrast: parseInt(e.target.value) })} />
+                  </div>
+
+                  <div>
+                    <label className="label text-xxs font-bold">Blur ({activeEl.blur ?? 0}px):</label>
+                    <input type="range" min="0" max="10" value={activeEl.blur ?? 0} onChange={e => updateElementProps(activeEl.id, { blur: parseInt(e.target.value) })} />
+                  </div>
+
+                  <div className="flex gap-4">
+                    <label className="text-xxs flex align-center gap-1 cursor-pointer">
+                      <input type="checkbox" checked={!!activeEl.flipX} onChange={e => updateElementProps(activeEl.id, { flipX: e.target.checked })} />
+                      <span>Flip Horizontal</span>
+                    </label>
+                    <label className="text-xxs flex align-center gap-1 cursor-pointer">
+                      <input type="checkbox" checked={!!activeEl.flipY} onChange={e => updateElementProps(activeEl.id, { flipY: e.target.checked })} />
+                      <span>Flip Vertical</span>
+                    </label>
+                  </div>
+
+                  <button className="btn btn-outline btn-sm w-full" onClick={runRemoveBg} disabled={removeBgLoading}>
+                    {removeBgLoading ? (
+                      <span>
+                        <span className="spinner-border spinner-border-sm" style={{ marginRight: '6px' }} /> Removing background...
+                      </span>
+                    ) : (
+                      <span>
+                        <i className="bi bi-magic" /> Remove Image Background
+                      </span>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-xxs text-muted style-italic">Select an element on canvas to edit properties.</div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom decision bar */}
+      <div className="flex align-center justify-between p-4" style={{ borderTop: '1px solid var(--border-color)', background: 'var(--bg-secondary)' }}>
+        <div style={{ flex: 1, maxWidth: '460px' }}>
+          <label className="label text-xxs font-bold" htmlFor="editor-comments">Review Feedback Comments:</label>
+          <textarea
+            id="editor-comments"
+            className="textarea text-xs"
+            rows={2}
+            placeholder="Add correction instructions if requesting design revision..."
+            value={commentsValue}
+            onChange={e => onCommentsChange(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-2">
+          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="btn btn-sm" style={{ background: 'var(--error)', color: '#fff', border: 'none', padding: '0 1rem' }} onClick={onReject}>
+            <i className="bi bi-x-circle" style={{ marginRight: '6px' }} /> Reject &amp; Request Revision
+          </button>
+          <button className="btn btn-primary" onClick={onApprove}>
+            <i className="bi bi-check-circle" style={{ marginRight: '6px' }} /> Approve &amp; Move to Printing
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

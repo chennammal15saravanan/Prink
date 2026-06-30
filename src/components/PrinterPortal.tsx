@@ -298,7 +298,7 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: '36px 28px' }}>
 
       {/* ── Page Header ── */}
-      <div className="flex justify-between align-center mb-6">
+      <div className="flex justify-between align-center section-header mb-6">
         <div>
           <h2 className="page-heading" style={{ fontSize: 20, fontWeight: 700, color: 'var(--primary)', paddingLeft: 14 }}>
             Printer Operator Terminal
@@ -307,7 +307,7 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             Manage and download compiled print-ready vector layouts.
           </p>
         </div>
-        <div className="flex gap-2 align-center">
+        <div className="flex gap-2 align-center flex-wrap">
           <button className="btn btn-outline btn-sm" onClick={fetchQueue}>
             <i className="bi bi-arrow-repeat" /> Refresh
           </button>

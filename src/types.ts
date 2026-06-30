@@ -3,8 +3,8 @@
 // =========================================================================
 
 export type PortalType = 'customer' | 'admin' | 'printer';
-export type CustomerSubView = 'upload' | 'preview' | 'tracking' | 'drafts';
-export type AdminSection = 'overview' | 'orders' | 'monitor' | 'templates' | 'queue' | 'reports' | 'settings' | 'workflow';
+export type CustomerSubView = 'dashboard' | 'editor' | 'tracking' | 'drafts' | 'upload' | 'preview' | 'profile' | 'support' | 'templates';
+export type AdminSection = 'overview' | 'orders' | 'monitor' | 'templates' | 'queue' | 'reports' | 'settings' | 'workflow' | 'sku-mappings';
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 export type CropMaskType = 'circle' | 'square' | 'rect';
 export type ProductType = 'mug' | 'canvas' | 'frame' | 'calendar' | 'photobook';
@@ -24,6 +24,7 @@ export interface UploadedImage {
   id: string;
   src: string;
   name: string;
+  serverFilename?: string;
 }
 
 export interface PrintTheme {
@@ -34,16 +35,78 @@ export interface PrintTheme {
   preview: string[];
 }
 
+export type CustomizationStatus = 'pending' | 'in-progress' | 'completed';
+export type DeliveryStatus = 'pending' | 'shipped' | 'delivered';
+
+export interface CanvasElement {
+  id: string;
+  type: 'text' | 'image' | 'shape' | 'sticker';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  opacity: number;
+  zIndex: number;
+  
+  // Text specific
+  text?: string;
+  fontFamily?: string;
+  fontSize?: number;
+  color?: string;
+  gradientColor?: string;
+  textShadow?: string;
+  isCurved?: boolean;
+  letterSpacing?: number;
+  textAlign?: 'left' | 'center' | 'right';
+  
+  // Image specific
+  src?: string;
+  cropX?: number;
+  cropY?: number;
+  cropWidth?: number;
+  cropHeight?: number;
+  flipX?: boolean;
+  flipY?: boolean;
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+  blur?: number;
+  sepia?: number;
+  grayscale?: boolean;
+  
+  // Shape specific
+  shapeType?: 'rect' | 'circle' | 'triangle' | 'star';
+  fillColor?: string;
+  strokeColor?: string;
+  strokeWidth?: number;
+}
+
+export interface SkuMapping {
+  id?: string;
+  sku: string;
+  templateId: string;
+  productType: ProductType;
+  customizationRules?: Record<string, any>;
+}
+
 export interface Order {
   id: string;
   customer: string;
   product: string;
   productType: ProductType;
+  sku?: string;
+  quantity?: number;
   dpi: string;
   dpiStatus: DpiStatus;
   uploadStatus: UploadStatus;
+  customizationStatus?: CustomizationStatus;
+  deliveryStatus?: DeliveryStatus;
+  designData?: string;
+  adminComments?: string;
   date: string;
   phone?: string;
+  images?: UploadedImage[];
 }
 
 export interface PrinterQueueItem {
@@ -63,6 +126,12 @@ export interface TemplateItem {
   thumbnail: string;
   usageCount: number;
   lastModified: string;
+  elements?: CanvasElement[];
+  skuMapping?: string[];
+  isDefault?: boolean;
+  category?: string;
+  seasonal?: string;
+  isPremium?: boolean;
   tags: string[];
 }
 

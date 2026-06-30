@@ -1,0 +1,11 @@
+{
+  "shopifyStore": "prink-in.myshopify.com",
+  "shopifyAccessToken": "",
+  "whatsappEnabled": true,
+  "emailEnabled": true,
+  "lowDpiAlertsEnabled": true,
+  "dailySummaryEnabled": false,
+  "autoUpscaleEnabled": true,
+  "dpiThreshold": 300,
+  "maxFileMB": 20
+}

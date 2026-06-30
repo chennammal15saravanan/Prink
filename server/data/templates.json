@@ -1,0 +1,88 @@
+[
+  {
+    "id": "t1",
+    "name": "Classic Mug Wrap",
+    "productType": "mug",
+    "thumbnail": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200",
+    "usageCount": 142,
+    "lastModified": "Jun 15, 2026",
+    "elements": [],
+    "skuMapping": [
+      "MUG-CLASSIC",
+      "MUG-11OZ"
+    ],
+    "isDefault": true,
+    "category": "mug",
+    "tags": [
+      "popular"
+    ]
+  },
+  {
+    "id": "t2",
+    "name": "Ocean Canvas",
+    "productType": "canvas",
+    "thumbnail": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200",
+    "usageCount": 98,
+    "lastModified": "Jun 12, 2026",
+    "elements": [],
+    "skuMapping": [
+      "CANVAS-12X16",
+      "CANVAS-16X20"
+    ],
+    "isDefault": true,
+    "category": "canvas",
+    "tags": [
+      "new"
+    ]
+  },
+  {
+    "id": "t3",
+    "name": "Portrait Frame",
+    "productType": "frame",
+    "thumbnail": "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200",
+    "usageCount": 67,
+    "lastModified": "Jun 10, 2026",
+    "elements": [],
+    "skuMapping": [
+      "FRAME-8X10",
+      "FRAME-11X14"
+    ],
+    "isDefault": true,
+    "category": "frame",
+    "tags": []
+  },
+  {
+    "id": "t4",
+    "name": "2027 Family Calendar",
+    "productType": "calendar",
+    "thumbnail": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=200",
+    "usageCount": 34,
+    "lastModified": "Jun 8, 2026",
+    "elements": [],
+    "skuMapping": [
+      "CAL-2027",
+      "CAL-WALL"
+    ],
+    "isDefault": true,
+    "category": "calendar",
+    "tags": [
+      "seasonal"
+    ]
+  },
+  {
+    "id": "t5",
+    "name": "Rose Photo Book",
+    "productType": "photobook",
+    "thumbnail": "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200",
+    "usageCount": 23,
+    "lastModified": "Jun 5, 2026",
+    "elements": [],
+    "skuMapping": [
+      "BOOK-ROSE",
+      "BOOK-ALBUM"
+    ],
+    "isDefault": true,
+    "category": "photobook",
+    "tags": []
+  }
+]
