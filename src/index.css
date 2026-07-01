@@ -2294,3 +2294,435 @@ select.input { cursor: pointer; }
   .mobile-menu-btn { display: none !important; }
 }
 
+/* ============================================================================
+   PREMIUM 5-STEP WIZARD — Animations & Component Styles
+   ============================================================================ */
+
+/* ── Step Transition Keyframes ─────────────────────────────────────────────── */
+@keyframes wizardSlideInRight {
+  from { opacity: 0; transform: translateX(60px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+@keyframes wizardSlideInLeft {
+  from { opacity: 0; transform: translateX(-60px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0)     scale(1); }
+}
+@keyframes wizardFadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes wizardCardPop {
+  0%   { opacity: 0; transform: scale(0.88) translateY(20px); }
+  70%  { transform: scale(1.03) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,48,76,0); }
+  50%      { box-shadow: 0 0 0 12px rgba(255,48,76,0.12), 0 8px 40px rgba(23,28,98,0.18); }
+}
+@keyframes uploadBounce {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes successPop {
+  0%  { opacity: 0; transform: scale(0.4) rotate(-10deg); }
+  60% { transform: scale(1.15) rotate(3deg); }
+  100%{ opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes confettiFall {
+  0%   { opacity: 1; transform: translateY(0) rotate(0); }
+  100% { opacity: 0; transform: translateY(80px) rotate(360deg); }
+}
+@keyframes progressFill {
+  from { width: 0; }
+  to   { width: var(--target-width, 100%); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes floatCard {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ── Wizard Layout ─────────────────────────────────────────────────────────── */
+.wizard-shell {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #f0f2fa 0%, #fafbff 60%, #fff0f2 100%);
+  display: flex;
+  flex-direction: column;
+}
+.wizard-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 20px rgba(23,28,98,0.06);
+}
+.wizard-body {
+  flex: 1;
+  padding: 40px 24px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Step Progress Bar ─────────────────────────────────────────────────────── */
+.wizard-steps-bar {
+  display: flex; align-items: center;
+  gap: 0;
+  margin-bottom: 48px;
+  position: relative;
+}
+.wizard-step-node {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; flex: 1; position: relative; cursor: default;
+  transition: all 0.3s ease;
+}
+.wizard-step-circle {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  position: relative; z-index: 2;
+}
+.wizard-step-circle.done {
+  background: linear-gradient(135deg, #0fbe88 0%, #00a572 100%);
+  color: #fff; box-shadow: 0 4px 16px rgba(15,190,136,0.35);
+}
+.wizard-step-circle.active {
+  background: linear-gradient(135deg, var(--primary) 0%, #252f9a 100%);
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(23,28,98,0.12), 0 6px 24px rgba(23,28,98,0.35);
+  animation: glowPulse 2.5s infinite;
+}
+.wizard-step-circle.pending {
+  background: #fff; color: var(--text-tertiary);
+  border: 2px solid var(--border-color);
+}
+.wizard-step-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  transition: color 0.3s;
+  text-align: center;
+}
+.wizard-step-node.active .wizard-step-label {
+  color: var(--primary);
+}
+.wizard-step-connector {
+  flex: 1; height: 2px; margin: 0 -2px;
+  background: var(--border-color);
+  position: relative; top: -22px; z-index: 1;
+  transition: background 0.5s ease;
+  overflow: hidden;
+}
+.wizard-step-connector.done {
+  background: linear-gradient(90deg, #0fbe88, #00d4a4);
+}
+.wizard-step-connector.active {
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+/* ── Step Panels ───────────────────────────────────────────────────────────── */
+.wizard-panel {
+  animation: wizardSlideInRight 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.wizard-panel.reverse {
+  animation: wizardSlideInLeft 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* ── Step 1: Product Cards ─────────────────────────────────────────────────── */
+.wiz-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+.wiz-product-card {
+  background: #fff;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-color);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 4px 20px rgba(23,28,98,0.06);
+  animation: wizardCardPop 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  position: relative;
+}
+.wiz-product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(23,28,98,0.16), 0 0 0 2px var(--primary);
+  border-color: var(--primary);
+}
+.wiz-product-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255,48,76,0.18), 0 20px 60px rgba(255,48,76,0.14);
+  animation: glowPulse 2s infinite;
+}
+.wiz-product-card-img {
+  width: 100%; height: 180px;
+  background: linear-gradient(145deg, #eef0f9 0%, #f7f8fc 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.wiz-product-card-img i {
+  font-size: 60px;
+  color: var(--accent);
+  animation: floatCard 3s ease-in-out infinite;
+}
+.wiz-product-card-body {
+  padding: 18px 20px;
+}
+.wiz-product-card-name {
+  font-size: 14px; font-weight: 800; color: var(--primary); margin-bottom: 4px; line-height: 1.3;
+}
+.wiz-product-card-sku {
+  font-size: 10px; color: var(--text-tertiary); margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.wiz-product-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border-color); padding-top: 14px;
+}
+.wiz-personalize-btn {
+  background: linear-gradient(135deg, var(--accent) 0%, #e0193b 100%);
+  color: #fff; border: none; border-radius: 99px;
+  padding: 9px 20px; font-size: 12px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 7px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(255,48,76,0.30);
+}
+.wiz-personalize-btn:hover {
+  transform: scale(1.06); box-shadow: 0 8px 24px rgba(255,48,76,0.45);
+}
+
+/* ── Step 2: Upload Zone ───────────────────────────────────────────────────── */
+.wiz-upload-zone {
+  border: 2.5px dashed var(--border-color);
+  border-radius: 24px;
+  padding: 60px 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  background: linear-gradient(145deg, #fafbff 0%, #fff 100%);
+  position: relative; overflow: hidden;
+}
+.wiz-upload-zone::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(23,28,98,0.02) 0%, rgba(255,48,76,0.02) 100%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.wiz-upload-zone:hover, .wiz-upload-zone.dragover {
+  border-color: var(--primary);
+  background: linear-gradient(145deg, #f0f2ff 0%, #fff5f6 100%);
+  box-shadow: 0 0 0 6px rgba(23,28,98,0.06), 0 20px 60px rgba(23,28,98,0.10);
+  transform: scale(1.01);
+}
+.wiz-upload-zone:hover::before, .wiz-upload-zone.dragover::before { opacity: 1; }
+.wiz-upload-icon {
+  font-size: 56px; color: var(--primary);
+  display: block; margin-bottom: 16px;
+  animation: uploadBounce 2.5s ease-in-out infinite;
+}
+.wiz-upload-zone.dragover .wiz-upload-icon {
+  color: var(--accent);
+  animation: uploadBounce 1s ease-in-out infinite;
+}
+
+/* ── Step 3: Editor Workspace ─────────────────────────────────────────────── */
+.wiz-editor-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+}
+.wiz-mockup-stage {
+  background: linear-gradient(145deg, #eef0f9 0%, #f7f8fc 100%);
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  min-height: 420px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  box-shadow: inset 0 2px 12px rgba(23,28,98,0.06);
+}
+.wiz-editor-panel {
+  background: #fff;
+  border-radius: 20px; border: 1px solid var(--border-color);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 20px;
+  box-shadow: 0 4px 24px rgba(23,28,98,0.07);
+  position: sticky; top: 80px;
+}
+.wiz-slider-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-weight: 700; color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.wiz-slider {
+  width: 100%; height: 6px; border-radius: 99px;
+  -webkit-appearance: none; appearance: none;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary) var(--val, 50%), var(--border-color) var(--val, 50%));
+  cursor: pointer; outline: none;
+}
+.wiz-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(23,28,98,0.25);
+  cursor: grab; transition: transform 0.2s;
+}
+.wiz-slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.2); }
+.wiz-tool-btn {
+  background: var(--bg-tertiary); border: 1px solid var(--border-color);
+  border-radius: 10px; padding: 8px 12px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  color: var(--text-secondary); transition: all 0.2s;
+}
+.wiz-tool-btn:hover {
+  background: var(--primary); color: #fff;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+/* ── Step 4: Review ────────────────────────────────────────────────────────── */
+.wiz-review-card {
+  background: linear-gradient(135deg, #fff 0%, #fafbff 100%);
+  border-radius: 24px; border: 1.5px solid var(--border-color);
+  padding: 32px; box-shadow: 0 8px 40px rgba(23,28,98,0.10);
+  animation: wizardFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.wiz-spec-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+}
+.wiz-spec-row:last-child { border-bottom: none; }
+
+/* ── Step 5: Success ───────────────────────────────────────────────────────── */
+.wiz-success-shell {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; padding: 60px 24px;
+  animation: wizardFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+}
+.wiz-success-ring {
+  width: 120px; height: 120px; border-radius: 50%;
+  background: linear-gradient(135deg, #0fbe88 0%, #00d4a4 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px; color: #fff;
+  box-shadow: 0 0 0 20px rgba(15,190,136,0.10), 0 20px 60px rgba(15,190,136,0.35);
+  animation: successPop 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  margin-bottom: 28px;
+}
+.wiz-confetti-dot {
+  position: absolute; border-radius: 50%;
+  animation: confettiFall 1.2s ease-in forwards;
+}
+
+/* ── Image thumbnail strip ─────────────────────────────────────────────────── */
+.wiz-thumb-strip {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.wiz-thumb {
+  width: 72px; height: 72px; border-radius: 12px;
+  overflow: hidden; border: 2px solid var(--border-color);
+  position: relative; cursor: pointer; transition: all 0.25s;
+  animation: wizardCardPop 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
+.wiz-thumb:hover { border-color: var(--primary); transform: scale(1.08); }
+.wiz-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.wiz-thumb-remove {
+  position: absolute; top: 3px; right: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 10px; cursor: pointer; display: none;
+  align-items: center; justify-content: center;
+}
+.wiz-thumb:hover .wiz-thumb-remove { display: flex; }
+
+/* ── Selected product banner ───────────────────────────────────────────────── */
+.wiz-selected-banner {
+  background: linear-gradient(135deg, rgba(23,28,98,0.05) 0%, rgba(255,48,76,0.04) 100%);
+  border: 1.5px solid rgba(23,28,98,0.12);
+  border-radius: 16px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  animation: wizardFadeUp 0.4s ease both;
+}
+
+/* ── Navigation buttons ────────────────────────────────────────────────────── */
+.wiz-nav-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 36px; gap: 12px;
+}
+.wiz-btn-back {
+  background: var(--bg-tertiary); border: 1.5px solid var(--border-color);
+  color: var(--text-secondary); border-radius: 99px;
+  padding: 12px 28px; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: all 0.25s;
+}
+.wiz-btn-back:hover { background: var(--bg-secondary); border-color: var(--primary); color: var(--primary); transform: translateX(-3px); }
+.wiz-btn-next {
+  background: linear-gradient(135deg, var(--primary) 0%, #252f9a 100%);
+  color: #fff; border: none; border-radius: 99px;
+  padding: 13px 32px; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 6px 24px rgba(23,28,98,0.30);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.wiz-btn-next:hover { transform: translateX(4px) scale(1.04); box-shadow: 0 10px 36px rgba(23,28,98,0.40); }
+.wiz-btn-submit {
+  background: linear-gradient(135deg, var(--accent) 0%, #e0193b 100%);
+  color: #fff; border: none; border-radius: 99px;
+  padding: 14px 36px; font-size: 14px; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 8px 28px rgba(255,48,76,0.35);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  letter-spacing: 0.02em;
+}
+.wiz-btn-submit:hover { transform: scale(1.06) translateY(-2px); box-shadow: 0 16px 48px rgba(255,48,76,0.50); }
+.wiz-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* ── Section headings ──────────────────────────────────────────────────────── */
+.wiz-section-title {
+  font-size: 28px; font-weight: 900; color: var(--primary);
+  margin: 0 0 6px; line-height: 1.2;
+  background: linear-gradient(135deg, var(--primary) 0%, #3547c0 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.wiz-section-sub {
+  font-size: 14px; color: var(--text-secondary); margin: 0 0 36px;
+}
+
+/* ── Upload progress bar ───────────────────────────────────────────────────── */
+.wiz-upload-progress {
+  height: 4px; border-radius: 99px;
+  background: var(--border-color); overflow: hidden; margin-top: 6px;
+}
+.wiz-upload-progress-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width 0.15s ease;
+}
+
+/* ── Responsive wizard ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .wizard-body { padding: 24px 16px 48px; }
+  .wizard-steps-bar { gap: 0; }
+  .wizard-step-label { font-size: 8px; }
+  .wizard-step-circle { width: 36px; height: 36px; font-size: 13px; }
+  .wiz-editor-layout { grid-template-columns: 1fr; }
+  .wiz-editor-panel { position: static; }
+  .wiz-product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+  .wiz-product-card-img { height: 130px; }
+  .wiz-section-title { font-size: 22px; }
+  .wizard-header { padding: 12px 16px; }
+  .wiz-upload-zone { padding: 40px 20px; }
+}
+
+

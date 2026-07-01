@@ -340,22 +340,237 @@ app.post('/api/auth/admin-login', async (req, res) => {
   });
 });
 
+// Product configuration dictionary
+const PRODUCT_CONFIGS = {
+  tshirt: {
+    productType: 'tshirt',
+    width: '12.0"',
+    height: '16.0"',
+    pixelWidth: 2400,
+    pixelHeight: 3200,
+    cropRatio: 0.75,
+    supportedFormats: ['PNG', 'JPG', 'WEBP'],
+    qualityRecommendation: '300 DPI high-resolution PNG with transparency',
+    safePrintArea: { x: 10, y: 10, width: 80, height: 80 },
+    imagePlacementArea: { x: 25, y: 20, width: 50, height: 60 }
+  },
+  mug: {
+    productType: 'mug',
+    width: '8.5"',
+    height: '3.0"',
+    pixelWidth: 2550,
+    pixelHeight: 900,
+    cropRatio: 2.83,
+    supportedFormats: ['JPG', 'PNG', 'WEBP'],
+    qualityRecommendation: '300 DPI panoramic wrap image with vibrant details',
+    safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+    imagePlacementArea: { x: 5, y: 5, width: 90, height: 90 }
+  },
+  mobilecase: {
+    productType: 'mobilecase',
+    width: '4.0"',
+    height: '8.0"',
+    pixelWidth: 1200,
+    pixelHeight: 2400,
+    cropRatio: 0.5,
+    supportedFormats: ['JPG', 'PNG'],
+    qualityRecommendation: 'Keep main subjects centered; avoid camera cutouts at the top',
+    safePrintArea: { x: 8, y: 15, width: 84, height: 75 },
+    imagePlacementArea: { x: 0, y: 0, width: 100, height: 100 }
+  },
+  frame: {
+    productType: 'frame',
+    width: '8.0"',
+    height: '10.0"',
+    pixelWidth: 2400,
+    pixelHeight: 3000,
+    cropRatio: 0.8,
+    supportedFormats: ['JPG', 'PNG', 'HEIC'],
+    qualityRecommendation: 'High-contrast portrait or landscape photo, min 300 DPI',
+    safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+    imagePlacementArea: { x: 5, y: 5, width: 90, height: 90 }
+  },
+  pillow: {
+    productType: 'pillow',
+    width: '12.0"',
+    height: '12.0"',
+    pixelWidth: 3600,
+    pixelHeight: 3600,
+    cropRatio: 1.0,
+    supportedFormats: ['JPG', 'PNG', 'WEBP'],
+    qualityRecommendation: 'Square crop, centered design with high-contrast text',
+    safePrintArea: { x: 10, y: 10, width: 80, height: 80 },
+    imagePlacementArea: { x: 10, y: 10, width: 80, height: 80 }
+  },
+  photobook: {
+    productType: 'photobook',
+    width: '6.0"',
+    height: '6.0"',
+    pixelWidth: 1800,
+    pixelHeight: 1800,
+    cropRatio: 1.0,
+    supportedFormats: ['JPG', 'PNG', 'HEIC'],
+    qualityRecommendation: 'Story layout with clean margins, min 300 DPI per photo',
+    safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+    imagePlacementArea: { x: 5, y: 5, width: 90, height: 90 }
+  },
+  keychain: {
+    productType: 'keychain',
+    width: '2.0"',
+    height: '2.0"',
+    pixelWidth: 600,
+    pixelHeight: 600,
+    cropRatio: 1.0,
+    supportedFormats: ['PNG', 'JPG'],
+    qualityRecommendation: 'Close-up portrait or custom logo cropped cleanly',
+    safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+    imagePlacementArea: { x: 10, y: 10, width: 80, height: 80 }
+  }
+};
+
+// Helper: Seed mock orders for newly registered or logged in user
+// Helper: Seed mock orders for newly registered or logged in user
+async function seedUserOrders(phone, name) {
+  const existing = await db.getOrders();
+  const phoneClean = phone.replace(/\D/g, '');
+  if (!phoneClean) return;
+  const userOrders = existing.filter(o => o.phone && o.phone.replace(/\D/g, '').endsWith(phoneClean));
+  if (userOrders.length < 10) {
+    console.log(`[DB] Seeding 10 personalized orders for customer: ${name} (${phone})`);
+    
+    // Clear old records for this phone number to reset cleanly
+    await db.deleteOrdersByPhone(phone);
+
+    const mockOrders = [
+      { id: `SP-2001`, customer: name, product: 'Premium Ceramic Coffee Mug Wrap', productType: 'mug', sku: 'PRK-MUG-CLASSIC', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2002`, customer: name, product: 'Magic Color Changing Mug (15oz)', productType: 'mug', sku: 'PRK-MUG-MAGIC', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2003`, customer: name, product: 'Custom Classic Cotton T-Shirt (White)', productType: 'tshirt', sku: 'PRK-TSHIRT-WHITE', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2004`, customer: name, product: 'Custom Classic Cotton T-Shirt (Black)', productType: 'tshirt', sku: 'PRK-TSHIRT-BLACK', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2005`, customer: name, product: 'Stretch Canvas Wall Art 12×16', productType: 'canvas', sku: 'PRK-CANVAS-1216', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2006`, customer: name, product: 'Premium Oak Wood Photo Frame 8×10', productType: 'frame', sku: 'PRK-FRM-810', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2007`, customer: name, product: 'Custom Desk Calendar 2026', productType: 'calendar', sku: 'PRK-CAL-2026', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2008`, customer: name, product: 'Hardcover Memories Photo Book', productType: 'photobook', sku: 'PRK-BOOK-20P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2009`, customer: name, product: 'Ultra Slim Personalized Phone Case', productType: 'mobilecase', sku: 'PRK-CASE-IP15P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' },
+      { id: `SP-2010`, customer: name, product: 'Soft Comfort Personalised Pillow', productType: 'pillow', sku: 'PRK-PIL-SOFT', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), phone: phone, images: [], designData: '' }
+    ];
+    for (const order of mockOrders) {
+      await db.createOrder(order);
+    }
+  }
+}
+
+// Product Config Endpoints
+app.get('/api/product-configs', (_req, res) => {
+  res.json(PRODUCT_CONFIGS);
+});
+
+app.get('/api/product-configs/:type', (req, res) => {
+  const cfg = PRODUCT_CONFIGS[req.params.type];
+  if (!cfg) return res.status(404).json({ error: 'Product type configuration not found.' });
+  res.json(cfg);
+});
+
+// Customer Registration
+app.post('/api/auth/register', async (req, res) => {
+  const { name, email, phone, password } = req.body;
+  if (!name || !email || !phone || !password) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+  try {
+    const existingEmail = await db.getUserByEmail(email);
+    if (existingEmail) return res.status(400).json({ error: 'Email already registered.' });
+
+    const existingPhone = await db.getUserByPhone(phone);
+    if (existingPhone) return res.status(400).json({ error: 'Phone number already registered.' });
+
+    const salt = bcrypt.genSaltSync(10);
+    const passwordHash = bcrypt.hashSync(password, salt);
+
+    const user = await db.createUser({
+      name,
+      email,
+      phone,
+      passwordHash,
+      role: 'customer'
+    });
+
+    // Seed mock orders for this customer so they have data immediately
+    await seedUserOrders(phone, name);
+
+    const token = jwt.sign(
+      { phone, role: 'customer', name, id: user.id },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      user: { name, phone, email, role: 'customer' },
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Unified Login Endpoint (handles email/phone + password)
+app.post('/api/auth/login', async (req, res) => {
+  const { identifier, password } = req.body;
+  if (!identifier || !password) {
+    return res.status(400).json({ error: 'Identifier and password required.' });
+  }
+  try {
+    let user = await db.getUserByEmail(identifier);
+    if (!user) {
+      user = await db.getUserByPhone(identifier);
+    }
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials. User not found.' });
+    }
+
+    const matches = bcrypt.compareSync(password, user.passwordHash);
+    if (!matches) {
+      return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+
+    // Seed mock orders just in case they don't have them
+    await seedUserOrders(user.phone || '', user.name);
+
+    const token = jwt.sign(
+      { phone: user.phone, role: user.role, name: user.name, id: user.id },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      user: { name: user.name, phone: user.phone, email: user.email, role: user.role },
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Demo Login (bypasses OTP — issues a real JWT for demo/testing)
-app.post('/api/auth/demo-login', (req, res) => {
+app.post('/api/auth/demo-login', async (req, res) => {
   const { name, phone, role } = req.body;
   const customerName = name || 'Sarah Connor';
   const customerPhone = phone || '+91 98765 43210';
   const userRole = role || 'customer';
 
+  // Seed demo customer orders
+  await seedUserOrders(customerPhone, customerName);
+
   const token = jwt.sign(
-    { phone: customerPhone, role: userRole, name: customerName, orderId: '#SP-1042' },
+    { phone: customerPhone, role: userRole, name: customerName, orderId: 'SP-2002' },
     JWT_SECRET,
     { expiresIn: '7d' }
   );
 
   res.json({
     success: true,
-    user: { name: customerName, phone: customerPhone, role: userRole, orderId: '#SP-1042' },
+    user: { name: customerName, phone: customerPhone, role: userRole, orderId: 'SP-2002' },
     token,
   });
 });
@@ -414,6 +629,32 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 });
 
 // ── Orders ─────────────────────────────────────────────────────────────────
+app.get('/api/public/orders', async (req, res) => {
+  try {
+    const allOrders = await db.getOrders();
+    const demoPhoneClean = '919876543210';
+    let matched = allOrders.filter(o => {
+      if (!o.phone) return false;
+      const cleanDbPhone = o.phone.replace(/\D/g, '');
+      return cleanDbPhone.endsWith(demoPhoneClean) || demoPhoneClean.endsWith(cleanDbPhone);
+    });
+
+    if (matched.length < 10) {
+      await seedUserOrders('+91 98765 43210', 'Sarah Connor');
+      const recheck = await db.getOrders();
+      matched = recheck.filter(o => {
+        if (!o.phone) return false;
+        const cleanDbPhone = o.phone.replace(/\D/g, '');
+        return cleanDbPhone.endsWith(demoPhoneClean);
+      });
+    }
+
+    res.json(matched);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/orders', authenticateToken(['admin']), async (_req, res) => {
   res.json(await db.getOrders());
 });
@@ -431,52 +672,29 @@ app.get('/api/customer/orders', authenticateToken(['customer']), async (req, res
       matched = allOrders.filter(o => o.id === orderId || o.id.startsWith(orderId + '-'));
     }
     
-    if (matched.length === 0 && phone) {
+    if (matched.length < 10 && phone) {
+      await seedUserOrders(phone, req.user.name || 'Sarah Connor');
+      const allOrdersRecheck = await db.getOrders();
       const cleanUserPhone = phone.replace(/\D/g, '');
-      matched = allOrders.filter(o => {
+      matched = allOrdersRecheck.filter(o => {
         if (!o.phone) return false;
         const cleanDbPhone = o.phone.replace(/\D/g, '');
         return cleanDbPhone.endsWith(cleanUserPhone) || cleanUserPhone.endsWith(cleanDbPhone);
       });
     }
 
-    if (matched.length === 0) {
-      // Seed default responsive fallback orders if none found
+    if (matched.length < 10) {
       matched = [
-        {
-          id: '#1042-1',
-          customer: req.user.name || 'John Smith',
-          product: 'Coffee Mug Wrap (11oz)',
-          productType: 'mug',
-          sku: 'MUG-11OZ',
-          quantity: 1,
-          dpi: 'No Image',
-          dpiStatus: 'none',
-          uploadStatus: 'pending',
-          customizationStatus: 'pending',
-          deliveryStatus: 'pending',
-          date: 'Jun 14, 2026',
-          phone: phone,
-          images: [],
-          designData: ''
-        },
-        {
-          id: '#1042-2',
-          customer: req.user.name || 'John Smith',
-          product: 'Stretch Canvas 12x16',
-          productType: 'canvas',
-          sku: 'CANVAS-12X16',
-          quantity: 2,
-          dpi: 'No Image',
-          dpiStatus: 'none',
-          uploadStatus: 'pending',
-          customizationStatus: 'pending',
-          deliveryStatus: 'pending',
-          date: 'Jun 14, 2026',
-          phone: phone,
-          images: [],
-          designData: ''
-        }
+        { id: 'SP-2001', customer: req.user.name || 'Sarah Connor', product: 'Premium Ceramic Coffee Mug Wrap', productType: 'mug', sku: 'PRK-MUG-CLASSIC', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 28, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2002', customer: req.user.name || 'Sarah Connor', product: 'Magic Color Changing Mug (15oz)', productType: 'mug', sku: 'PRK-MUG-MAGIC', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2003', customer: req.user.name || 'Sarah Connor', product: 'Custom Classic Cotton T-Shirt (White)', productType: 'tshirt', sku: 'PRK-TSHIRT-WHITE', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2004', customer: req.user.name || 'Sarah Connor', product: 'Custom Classic Cotton T-Shirt (Black)', productType: 'tshirt', sku: 'PRK-TSHIRT-BLACK', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2005', customer: req.user.name || 'Sarah Connor', product: 'Stretch Canvas Wall Art 12×16', productType: 'canvas', sku: 'PRK-CANVAS-1216', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2006', customer: req.user.name || 'Sarah Connor', product: 'Premium Oak Wood Photo Frame 8×10', productType: 'frame', sku: 'PRK-FRM-810', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2007', customer: req.user.name || 'Sarah Connor', product: 'Custom Desk Calendar 2026', productType: 'calendar', sku: 'PRK-CAL-2026', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2008', customer: req.user.name || 'Sarah Connor', product: 'Hardcover Memories Photo Book', productType: 'photobook', sku: 'PRK-BOOK-20P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2009', customer: req.user.name || 'Sarah Connor', product: 'Ultra Slim Personalized Phone Case', productType: 'mobilecase', sku: 'PRK-CASE-IP15P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: phone, images: [], designData: '' },
+        { id: 'SP-2010', customer: req.user.name || 'Sarah Connor', product: 'Soft Comfort Personalised Pillow', productType: 'pillow', sku: 'PRK-PIL-SOFT', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: phone, images: [], designData: '' }
       ];
     }
     res.json(matched);
@@ -526,11 +744,16 @@ app.get('/api/customer/order', authenticateToken(['customer']), async (req, res)
   res.json(order);
 });
 
-// Save customer customization design draft
-app.post('/api/orders/:id/design', authenticateToken(['customer', 'admin']), async (req, res) => {
+// Save customer customization design draft (JWT optional to support guest demo customization)
+app.post('/api/orders/:id/design', async (req, res, next) => {
+  if (req.headers.authorization) {
+    return authenticateToken(['customer', 'admin'])(req, res, next);
+  }
+  next();
+}, async (req, res) => {
   try {
     const id = decodeURIComponent(req.params.id);
-    const { designData, customizationStatus } = req.body;
+    const { designData, customizationStatus, images } = req.body;
     
     const order = await db.getOrderById(id);
     if (!order) return res.status(404).json({ error: 'Order not found.' });
@@ -538,6 +761,14 @@ app.post('/api/orders/:id/design', authenticateToken(['customer', 'admin']), asy
     const updates = {};
     if (designData !== undefined) updates.designData = typeof designData === 'string' ? designData : JSON.stringify(designData);
     if (customizationStatus) updates.customizationStatus = customizationStatus;
+    if (images !== undefined) updates.images = images;
+    
+    // When customer submits their customization design
+    if (customizationStatus === 'completed') {
+      updates.adminApprovalStatus = 'pending';
+      updates.uploadStatus = 'ready';
+      updates.submissionTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
     
     const updated = await db.updateOrder(id, updates);
     res.json({ success: true, order: updated });
@@ -546,11 +777,17 @@ app.post('/api/orders/:id/design', authenticateToken(['customer', 'admin']), asy
   }
 });
 
-// Post admin review for design approval/rejection
+// Post admin review for design approval/rejection/reupload
 app.post('/api/orders/:id/review', authenticateToken(['admin']), async (req, res) => {
   try {
     const id = decodeURIComponent(req.params.id);
-    const { action, comments } = req.body; // action: 'approve' | 'reject'
+    const { action, approved, comments } = req.body;
+    
+    // Support both 'action' parameter and 'approved' boolean formats
+    let finalAction = action;
+    if (!finalAction) {
+      finalAction = approved ? 'approve' : 'reject';
+    }
     
     const order = await db.getOrderById(id);
     if (!order) return res.status(404).json({ error: 'Order not found.' });
@@ -559,25 +796,31 @@ app.post('/api/orders/:id/review', authenticateToken(['admin']), async (req, res
       adminComments: comments || ''
     };
     
-    if (action === 'approve') {
+    if (finalAction === 'approve') {
+      updates.adminApprovalStatus = 'approved';
       updates.customizationStatus = 'completed';
       updates.uploadStatus = 'ready';
       
       // Auto enqueue into printer queue
       const isMug = order.product.toLowerCase().includes('mug');
       const trimSize = isMug ? '8.5"×3.0"' : '12.25"×16.25"';
-      await db.enqueuePrint({
+      await db.addToQueue({
         id: order.id,
         customer: order.customer,
         product: order.product,
         trimSize: trimSize,
         status: 'print-ready',
-        priority: 'normal'
+        priority: 'normal',
+        assignedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
-    } else {
-      // Re-edit requested
+    } else if (finalAction === 'request_reupload') {
+      updates.adminApprovalStatus = 'reupload';
       updates.customizationStatus = 'pending';
       updates.uploadStatus = 'awaiting';
+    } else {
+      // Reject / revision requested
+      updates.adminApprovalStatus = 'rejected';
+      updates.customizationStatus = 'in-progress';
     }
     
     const updated = await db.updateOrder(id, updates);

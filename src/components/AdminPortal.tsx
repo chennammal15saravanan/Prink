@@ -567,7 +567,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
   };
 
 
-  const handleReviewDecision = async (approved: boolean) => {
+  const handleReviewDecision = async (action: 'approve' | 'reject' | 'request_reupload') => {
     if (!reviewingOrder) return;
     try {
       const res = await fetch(`/api/orders/${reviewingOrder.id}/review`, {
@@ -576,10 +576,14 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
         },
-        body: JSON.stringify({ approved, comments: reviewComments })
+        body: JSON.stringify({ action, comments: reviewComments })
       });
       if (res.ok) {
-        showToast(approved ? 'Design approved successfully!' : 'Design rejected, comment sent to customer.', approved ? 'success' : 'warning');
+        let msg = 'Design approved and enqueued into Printer Queue!';
+        if (action === 'request_reupload') msg = 'Re-upload request sent to customer.';
+        else if (action === 'reject') msg = 'Design rejected. Customer asked to make corrections.';
+        
+        showToast(msg, action === 'approve' ? 'success' : 'warning');
         setReviewingOrder(null);
         setReviewComments('');
         fetchOrders();
@@ -2222,8 +2226,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
         <AdminDesignEditor
           order={reviewingOrder}
           onClose={() => setReviewingOrder(null)}
-          onApprove={() => handleReviewDecision(true)}
-          onReject={() => handleReviewDecision(false)}
+          onApprove={() => handleReviewDecision('approve')}
+          onReject={() => handleReviewDecision('reject')}
+          onRequestReupload={() => handleReviewDecision('request_reupload')}
           onCommentsChange={(txt) => setReviewComments(txt)}
           commentsValue={reviewComments}
           onSaveProgress={async (elements) => {
@@ -2442,6 +2447,7 @@ interface AdminDesignEditorProps {
   onClose: () => void;
   onApprove: () => void;
   onReject: () => void;
+  onRequestReupload: () => void;
   onCommentsChange: (txt: string) => void;
   commentsValue: string;
   onSaveProgress: (elements: CanvasElement[]) => void;
@@ -2452,6 +2458,7 @@ const AdminDesignEditor: React.FC<AdminDesignEditorProps> = ({
   onClose,
   onApprove,
   onReject,
+  onRequestReupload,
   onCommentsChange,
   commentsValue,
   onSaveProgress
@@ -3186,13 +3193,22 @@ const AdminDesignEditor: React.FC<AdminDesignEditorProps> = ({
             onChange={e => onCommentsChange(e.target.value)}
           />
         </div>
-        <div className="flex gap-2">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-sm" style={{ background: 'var(--error)', color: '#fff', border: 'none', padding: '0 1rem' }} onClick={onReject}>
-            <i className="bi bi-x-circle" style={{ marginRight: '6px' }} /> Reject &amp; Request Revision
+        <div className="flex gap-2 flex-wrap">
+          <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancel</button>
+          <button className="btn btn-outline btn-sm" onClick={() => onSaveProgress(canvasElements)}>
+            <i className="bi bi-save" style={{ marginRight: '6px' }} /> Save Draft
           </button>
-          <button className="btn btn-primary" onClick={onApprove}>
-            <i className="bi bi-check-circle" style={{ marginRight: '6px' }} /> Approve &amp; Move to Printing
+          <button className="btn btn-sm" style={{ background: 'var(--warning)', color: '#fff', border: 'none', padding: '0 1rem' }} onClick={onRequestReupload}>
+            <i className="bi bi-cloud-upload" style={{ marginRight: '6px' }} /> Request Re-upload
+          </button>
+          <button className="btn btn-sm" style={{ background: 'var(--error)', color: '#fff', border: 'none', padding: '0 1rem' }} onClick={onReject}>
+            <i className="bi bi-x-circle" style={{ marginRight: '6px' }} /> Reject (Correction Needed)
+          </button>
+          <button className="btn btn-sm" style={{ background: 'var(--primary-soft)', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '0 1rem' }} onClick={onApprove}>
+            <i className="bi bi-check-circle" style={{ marginRight: '6px' }} /> Approve Design
+          </button>
+          <button className="btn btn-primary btn-sm" onClick={onApprove}>
+            <i className="bi bi-printer" style={{ marginRight: '6px' }} /> Send to Printer
           </button>
         </div>
       </div>

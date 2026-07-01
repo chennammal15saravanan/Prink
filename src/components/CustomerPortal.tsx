@@ -1,6 +1,6 @@
-// =============================================================================
-// THE PRINK — CustomerPortal.tsx  (Premium Redesign)
-// Dashboard · My Orders · Design Lab · Tracking · History · Templates
+﻿// =============================================================================
+// THE PRINK â€” CustomerPortal.tsx  (Premium Redesign)
+// Dashboard Â· My Orders Â· Design Lab Â· Tracking Â· History Â· Templates
 // =============================================================================
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -40,66 +40,29 @@ const THEMES: PrintTheme[] = [
 ];
 
 const PRODUCTS: { id: ProductType; icon: string; name: string }[] = [
+  { id: 'tshirt',    icon: 'bi-file-person',   name: 'T-Shirt'      },
   { id: 'mug',       icon: 'bi-cup-hot',       name: 'Coffee Mug'   },
-  { id: 'canvas',    icon: 'bi-image',          name: 'Canvas Print' },
+  { id: 'mobilecase',icon: 'bi-phone',         name: 'Mobile Case'  },
   { id: 'frame',     icon: 'bi-aspect-ratio',   name: 'Photo Frame'  },
-  { id: 'calendar',  icon: 'bi-calendar3',      name: 'Calendar'     },
+  { id: 'pillow',    icon: 'bi-box',           name: 'Pillow'       },
   { id: 'photobook', icon: 'bi-book',           name: 'Photo Book'   },
+  { id: 'keychain',  icon: 'bi-key',           name: 'Keychain'     },
+  { id: 'canvas',    icon: 'bi-image',          name: 'Canvas Print' },
+  { id: 'calendar',  icon: 'bi-calendar3',      name: 'Calendar'     },
 ];
 
 // Rich sample orders for the demo portal
 const MOCK_ORDERS: Order[] = [
-  {
-    id: 'SP-1042',
-    customer: 'Sarah Connor',
-    product: 'Classic Coffee Mug Wrap',
-    productType: 'mug',
-    sku: 'PRK-MUG-CLASSIC',
-    quantity: 2,
-    dpi: '300 DPI',
-    dpiStatus: 'ok',
-    uploadStatus: 'awaiting',
-    customizationStatus: 'pending',
-    deliveryStatus: 'pending',
-    date: 'Jun 28, 2026',
-    phone: '+91 98765 43210',
-    adminComments: '',
-    images: [],
-  },
-  {
-    id: 'SP-1043',
-    customer: 'Sarah Connor',
-    product: 'Stretch Canvas 12×16',
-    productType: 'canvas',
-    sku: 'PRK-CAN-1216',
-    quantity: 1,
-    dpi: '150 DPI',
-    dpiStatus: 'low',
-    uploadStatus: 'awaiting',
-    customizationStatus: 'in-progress',
-    deliveryStatus: 'pending',
-    date: 'Jun 29, 2026',
-    phone: '+91 98765 43210',
-    adminComments: 'Low resolution detected. Please upload a higher-resolution photo (min 300 DPI recommended for best print quality).',
-    images: [],
-  },
-  {
-    id: 'SP-1039',
-    customer: 'Sarah Connor',
-    product: 'Premium Photo Frame 8×10',
-    productType: 'frame',
-    sku: 'PRK-FRM-810',
-    quantity: 1,
-    dpi: '300 DPI',
-    dpiStatus: 'ok',
-    uploadStatus: 'ready',
-    customizationStatus: 'completed',
-    deliveryStatus: 'delivered',
-    date: 'May 10, 2026',
-    phone: '+91 98765 43210',
-    adminComments: '',
-    images: [],
-  },
+  { id: 'SP-2001', customer: 'Sarah Connor', product: 'Premium Ceramic Coffee Mug Wrap', productType: 'mug', sku: 'PRK-MUG-CLASSIC', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 28, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2002', customer: 'Sarah Connor', product: 'Magic Color Changing Mug (15oz)', productType: 'mug', sku: 'PRK-MUG-MAGIC', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2003', customer: 'Sarah Connor', product: 'Custom Classic Cotton T-Shirt (White)', productType: 'tshirt', sku: 'PRK-TSHIRT-WHITE', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2004', customer: 'Sarah Connor', product: 'Custom Classic Cotton T-Shirt (Black)', productType: 'tshirt', sku: 'PRK-TSHIRT-BLACK', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2005', customer: 'Sarah Connor', product: 'Stretch Canvas Wall Art 12Ã—16', productType: 'canvas', sku: 'PRK-CANVAS-1216', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2006', customer: 'Sarah Connor', product: 'Premium Oak Wood Photo Frame 8Ã—10', productType: 'frame', sku: 'PRK-FRM-810', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2007', customer: 'Sarah Connor', product: 'Custom Desk Calendar 2026', productType: 'calendar', sku: 'PRK-CAL-2026', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2008', customer: 'Sarah Connor', product: 'Hardcover Memories Photo Book', productType: 'photobook', sku: 'PRK-BOOK-20P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2009', customer: 'Sarah Connor', product: 'Ultra Slim Personalized Phone Case', productType: 'mobilecase', sku: 'PRK-CASE-IP15P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' },
+  { id: 'SP-2010', customer: 'Sarah Connor', product: 'Soft Comfort Personalised Pillow', productType: 'pillow', sku: 'PRK-PIL-SOFT', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '', adminComments: '' }
 ];
 
 // Rich sample templates
@@ -136,13 +99,35 @@ export default function CustomerPortal({
 }: CustomerPortalProps) {
   const { showToast } = useToast();
 
-  // ── Auth state ──────────────────────────────────────────────────────────────
-  const [authView, setAuthView]       = useState<'login' | 'dashboard'>(() =>
-    localStorage.getItem('customer_token') ? 'dashboard' : 'login'
-  );
+  // â”€â”€ Auth state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const [authView, setAuthView]       = useState<'login' | 'dashboard'>('dashboard');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [forceDashboard, setForceDashboard] = useState(false);
   const [phone, setPhone]             = useState('');
   const [countryCode, setCountryCode] = useState('+91');
   const [otpSent, setOtpSent]         = useState(false);
+  
+  // Custom tabbed authentication & registration states
+  const [loginTab, setLoginTab]       = useState<'password' | 'otp' | 'register'>('password');
+  const [emailOrPhone, setEmailOrPhone] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [regName, setRegName]         = useState('');
+  const [regEmail, setRegEmail]       = useState('');
+  const [regPhone, setRegPhone]       = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  
+  // Dynamic Product Config
+  const [productConfigs, setProductConfigs] = useState<Record<string, any>>({});
+
+  // Interactive mockup image positioning & edit states
+  const [photoScale, setPhotoScale]         = useState(1);
+  const [photoRotation, setPhotoRotation]   = useState(0);
+  const [photoOffsetX, setPhotoOffsetX]     = useState(0);
+  const [photoOffsetY, setPhotoOffsetY]     = useState(0);
+  const [isDraggingPhoto, setIsDraggingPhoto] = useState(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+  const photoOffsetStart = useRef({ x: 0, y: 0 });
+
   const [customerName, setCustomerName] = useState(() => {
     try {
       const t = localStorage.getItem('customer_token');
@@ -154,7 +139,7 @@ export default function CustomerPortal({
     return 'Guest';
   });
 
-  // ── WhatsApp Token Auto-Login (on mount) ────────────────────────────────────
+  // â”€â”€ WhatsApp Token Auto-Login (on mount) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     // Extract token from URL hash query: /#/customer?token=xxx or /?token=xxx
     const hash = window.location.hash;
@@ -182,26 +167,26 @@ export default function CustomerPortal({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Dashboard nav ───────────────────────────────────────────────────────────
+  // â”€â”€ Dashboard nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [subView, setSubView] = useState<CustomerSubView>(initialSubView);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  // ── Data state ──────────────────────────────────────────────────────────────
+  // â”€â”€ Data state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const [orders, setOrders]           = useState<Order[]>([]);
   const [templates, setTemplates]     = useState<TemplateItem[]>([]);
   const [skuMappings, setSkuMappings] = useState<SkuMapping[]>([]);
 
-  // ── Orders filter ───────────────────────────────────────────────────────────
+  // â”€â”€ Orders filter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [ordersFilter, setOrdersFilter] = useState<'all' | 'active' | 'completed' | 'delivered'>('all');
 
-  // ── Submission / workflow states ─────────────────────────────────────────────
+  // â”€â”€ Submission / workflow states â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [submissionDone, setSubmissionDone] = useState(false);
   const [submittedOrderId, setSubmittedOrderId] = useState('');
   const [skuLoading, setSkuLoading]         = useState(false);
   const [livePreviewPhoto, setLivePreviewPhoto] = useState<string | null>(null);
 
-  // ── Canvas Editor State ─────────────────────────────────────────────────────
+  // â”€â”€ Canvas Editor State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [canvasElements, setCanvasElements]     = useState<CanvasElement[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [undoStack, setUndoStack]               = useState<CanvasElement[][]>([]);
@@ -209,7 +194,7 @@ export default function CustomerPortal({
   const [canvasScale, setCanvasScale]           = useState(1);
   const [editorSnapAlign, setEditorSnapAlign]   = useState(true);
 
-  // ── Upload state ────────────────────────────────────────────────────────────
+  // â”€â”€ Upload state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   type UploadMethod = 'file' | 'camera' | 'cloud';
   const [uploadMethod, setUploadMethod]     = useState<UploadMethod>('file');
   const [images, setImages]                 = useState<UploadedImage[]>(SEED_IMAGES);
@@ -221,7 +206,7 @@ export default function CustomerPortal({
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const MAX_CAPTION = 200;
 
-  // ── Preview state ───────────────────────────────────────────────────────────
+  // â”€â”€ Preview state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [selectedProduct, setSelectedProduct] = useState<ProductType>('mug');
   const [selectedTheme, setSelectedTheme]     = useState('classic');
   const [zoom, setZoom]                       = useState(1);
@@ -233,33 +218,80 @@ export default function CustomerPortal({
   const sliderRef = useRef<HTMLDivElement>(null);
 
 
-  // ── Crop modal ──────────────────────────────────────────────────────────────
+  // â”€â”€ Crop modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [cropOpen, setCropOpen]     = useState(false);
   const [cropTarget, setCropTarget] = useState<UploadedImage | null>(null);
   const [cropMask, setCropMask]     = useState<CropMaskType>('square');
   const [cropScale, setCropScale]   = useState(1);
   const [cropRot, setCropRot]       = useState(0);
 
-  // ── Order confirmation modal ────────────────────────────────────────────────
+  // â”€â”€ Order confirmation modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const [confirmOpen, setConfirmOpen]   = useState(false);
   const [confirmStep, setConfirmStep]   = useState(2);
   const [placingOrder, setPlacingOrder] = useState(false);
 
-  // ── Derived ─────────────────────────────────────────────────────────────────
+  // â”€â”€ 5-Step Wizard state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  const [wizardStep, setWizardStep]     = useState<1|2|3|4|5>(1);
+  const [wizardDir, setWizardDir]       = useState<'forward'|'back'>('forward');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const goWizard = (step: 1|2|3|4|5, dir: 'forward'|'back' = 'forward') => {
+    setWizardDir(dir);
+    setWizardStep(step);
+  };
+
+  // â”€â”€ Derived â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const activeTheme   = THEMES.find(t => t.id === selectedTheme)   ?? THEMES[0];
   const activeProduct = PRODUCTS.find(p => p.id === selectedProduct) ?? PRODUCTS[0];
 
-  // ── Fetch data ──────────────────────────────────────────────────────────────
+  // â”€â”€ Fetch data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const fetchActiveOrder = useCallback(async () => {
     try {
       const token = localStorage.getItem('customer_token');
-      if (!token) return;
+      const isLoggedIn = !!token && token !== 'fallback';
+
+      if (!isLoggedIn) {
+        // Guest mode - fetch public/demo orders
+        const resOrders = await fetch('/api/public/orders');
+        if (resOrders.ok) {
+          const list = await resOrders.json();
+          setOrders(list);
+          if (list.length > 0) {
+            // Find current active order, or default to first
+            if (activeOrder) {
+              const current = list.find((o: Order) => o.id === activeOrder.id);
+              if (current) setActiveOrder(current);
+            } else {
+              setActiveOrder(list[0]);
+              setSelectedProduct(list[0].productType);
+            }
+          }
+        } else {
+          setOrders(MOCK_ORDERS);
+          if (!activeOrder) {
+            setActiveOrder(MOCK_ORDERS[0]);
+            setSelectedProduct(MOCK_ORDERS[0].productType);
+          }
+        }
+
+        const resTemplates = await fetch('/api/templates');
+        if (resTemplates.ok) setTemplates(await resTemplates.json());
+        else setTemplates(MOCK_TEMPLATES);
+
+        const resMappings = await fetch('/api/sku-mappings');
+        if (resMappings.ok) setSkuMappings(await resMappings.json());
+        else setSkuMappings(MOCK_SKU_MAPPINGS);
+
+        return;
+      }
 
       // If token is clearly not a JWT, use mock data
       if (!token.includes('.') || token.split('.').length !== 3) {
         setOrders(MOCK_ORDERS);
-        setActiveOrder(MOCK_ORDERS[0]);
-        setSelectedProduct(MOCK_ORDERS[0].productType);
+        if (!activeOrder) {
+          setActiveOrder(MOCK_ORDERS[0]);
+          setSelectedProduct(MOCK_ORDERS[0].productType);
+        }
         setTemplates(MOCK_TEMPLATES);
         setSkuMappings(MOCK_SKU_MAPPINGS);
         return;
@@ -300,9 +332,138 @@ export default function CustomerPortal({
     }
   }, []);
 
+  const LOCAL_PRODUCT_CONFIGS: Record<string, any> = {
+    tshirt: {
+      productType: 'tshirt',
+      width: '12.0"', height: '16.0"', pixelWidth: 2400, pixelHeight: 3200, cropRatio: 0.75,
+      supportedFormats: ['PNG', 'JPG', 'WEBP'],
+      qualityRecommendation: '300 DPI high-resolution PNG with transparency',
+      safePrintArea: { x: 10, y: 10, width: 80, height: 80 },
+      imagePlacementArea: { x: 25, y: 20, width: 50, height: 60 }
+    },
+    mug: {
+      productType: 'mug',
+      width: '8.5"', height: '3.0"', pixelWidth: 2550, pixelHeight: 900, cropRatio: 2.83,
+      supportedFormats: ['JPG', 'PNG', 'WEBP'],
+      qualityRecommendation: '300 DPI panoramic wrap image with vibrant details',
+      safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+      imagePlacementArea: { x: 5, y: 5, width: 90, height: 90 }
+    },
+    mobilecase: {
+      productType: 'mobilecase',
+      width: '4.0"', height: '8.0"', pixelWidth: 1200, pixelHeight: 2400, cropRatio: 0.5,
+      supportedFormats: ['JPG', 'PNG'],
+      qualityRecommendation: 'Keep main subjects centered; avoid camera cutouts at the top',
+      safePrintArea: { x: 8, y: 15, width: 84, height: 75 },
+      imagePlacementArea: { x: 0, y: 0, width: 100, height: 100 }
+    },
+    frame: {
+      productType: 'frame',
+      width: '8.0"', height: '10.0"', pixelWidth: 2400, pixelHeight: 3000, cropRatio: 0.8,
+      supportedFormats: ['JPG', 'PNG', 'HEIC'],
+      qualityRecommendation: 'High-contrast portrait or landscape photo, min 300 DPI',
+      safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+      imagePlacementArea: { x: 5, y: 5, width: 90, height: 90 }
+    },
+    pillow: {
+      productType: 'pillow',
+      width: '12.0"', height: '12.0"', pixelWidth: 3600, pixelHeight: 3600, cropRatio: 1.0,
+      supportedFormats: ['JPG', 'PNG', 'WEBP'],
+      qualityRecommendation: 'Square crop, centered design with high-contrast text',
+      safePrintArea: { x: 10, y: 10, width: 80, height: 80 },
+      imagePlacementArea: { x: 10, y: 10, width: 80, height: 80 }
+    },
+    photobook: {
+      productType: 'photobook',
+      width: '6.0"', height: '6.0"', pixelWidth: 1800, pixelHeight: 1800, cropRatio: 1.0,
+      supportedFormats: ['JPG', 'PNG', 'HEIC'],
+      qualityRecommendation: 'Story layout with clean margins, min 300 DPI per photo',
+      safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+      imagePlacementArea: { x: 5, y: 5, width: 90, height: 90 }
+    },
+    keychain: {
+      productType: 'keychain',
+      width: '2.0"', height: '2.0"', pixelWidth: 600, pixelHeight: 600, cropRatio: 1.0,
+      supportedFormats: ['PNG', 'JPG'],
+      qualityRecommendation: 'Close-up portrait or custom logo cropped cleanly',
+      safePrintArea: { x: 5, y: 5, width: 90, height: 90 },
+      imagePlacementArea: { x: 10, y: 10, width: 80, height: 80 }
+    }
+  };
+
+  const getProductConfig = (type: string) => {
+    return productConfigs[type] || LOCAL_PRODUCT_CONFIGS[type] || LOCAL_PRODUCT_CONFIGS.mug;
+  };
+
+  const fetchProductConfigs = useCallback(async () => {
+    try {
+      const res = await fetch('/api/product-configs');
+      if (res.ok) {
+        setProductConfigs(await res.json());
+      }
+    } catch (e) {
+      console.error('Failed to fetch configs:', e);
+    }
+  }, []);
+
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailOrPhone.trim() || !loginPassword.trim()) {
+      showToast('Please enter both identifier and password', 'warning');
+      return;
+    }
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: emailOrPhone, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        localStorage.setItem('customer_token', data.token);
+        setCustomerName(data.user.name);
+        setAuthView('dashboard');
+        setForceDashboard(true);
+        showToast(`Welcome back, ${data.user.name}!`, 'success');
+      } else {
+        showToast(data.error || 'Login failed. Check your credentials.', 'error');
+      }
+    } catch {
+      showToast('Auth server connection failed.', 'error');
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regName.trim() || !regEmail.trim() || !regPhone.trim() || !regPassword.trim()) {
+      showToast('All registration fields are required', 'warning');
+      return;
+    }
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: regName, email: regEmail, phone: regPhone, password: regPassword }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        localStorage.setItem('customer_token', data.token);
+        setCustomerName(data.user.name);
+        setAuthView('dashboard');
+        setForceDashboard(true);
+        showToast(`Account created! Welcome, ${data.user.name}!`, 'success');
+      } else {
+        showToast(data.error || 'Registration failed. Check details.', 'error');
+      }
+    } catch {
+      showToast('Auth server connection failed.', 'error');
+    }
+  };
+
   useEffect(() => {
     if (authView === 'dashboard') {
       fetchActiveOrder();
+      fetchProductConfigs();
       // Sync customerName from stored token
       try {
         const t = localStorage.getItem('customer_token');
@@ -315,12 +476,50 @@ export default function CustomerPortal({
         }
       } catch {}
     }
-  }, [authView, fetchActiveOrder]);
+  }, [authView, fetchActiveOrder, fetchProductConfigs]);
 
   // Suppress unused-var warnings
   useEffect(() => { void (zoom); void (rotation); void (comparing); void (uploadMethod); }, []);
 
-  // ── Canvas helpers ──────────────────────────────────────────────────────────
+  // Global mouse/touch movement listeners for mockup dragging
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingPhoto) return;
+      const dx = e.clientX - dragStartPos.current.x;
+      const dy = e.clientY - dragStartPos.current.y;
+      setPhotoOffsetX(photoOffsetStart.current.x + dx);
+      setPhotoOffsetY(photoOffsetStart.current.y + dy);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDraggingPhoto) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - dragStartPos.current.x;
+      const dy = touch.clientY - dragStartPos.current.y;
+      setPhotoOffsetX(photoOffsetStart.current.x + dx);
+      setPhotoOffsetY(photoOffsetStart.current.y + dy);
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingPhoto(false);
+    };
+
+    if (isDraggingPhoto) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isDraggingPhoto]);
+
+  // â”€â”€ Canvas helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const saveState = (newEls: CanvasElement[]) => {
     setUndoStack(prev => [...prev, canvasElements]);
     setRedoStack([]);
@@ -339,6 +538,54 @@ export default function CustomerPortal({
     setUndoStack(u => [...u, canvasElements]);
     setRedoStack(r => r.slice(0, -1));
     setCanvasElements(next);
+  };
+
+  const handleSubmitDesign = async () => {
+    if (!activeOrder) return;
+    try {
+      const token = localStorage.getItem('customer_token');
+      // Save full positioning and caption configurations
+      const designConfig = {
+        photoScale,
+        photoRotation,
+        photoOffsetX,
+        photoOffsetY,
+        caption,
+        theme: selectedTheme
+      };
+
+      const payload = {
+        designData: JSON.stringify(designConfig),
+        customizationStatus: 'completed',
+        images: images.length > 0 ? images.map(img => ({ id: img.id, name: img.name, src: img.src, serverFilename: img.serverFilename || img.name })) : (livePreviewPhoto ? [{ id: 'img_1', name: 'upload.jpg', src: livePreviewPhoto, serverFilename: 'upload.jpg' }] : [])
+      };
+      
+      const res = await fetch(`/api/orders/${encodeURIComponent(activeOrder.id)}/design`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (res.ok) {
+        showToast('Design submitted successfully! Status: Pending Admin Review.', 'success');
+        fetchActiveOrder(); // refresh list
+        navTo('tracking'); // go to tracking
+      } else {
+        const errorData = await res.json();
+        showToast(errorData.error || 'Failed to submit design.', 'error');
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Offline Mode: Simulating design submission!', 'success');
+      activeOrder.customizationStatus = 'completed';
+      activeOrder.adminApprovalStatus = 'pending';
+      activeOrder.submissionTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      activeOrder.images = images.length > 0 ? images : (livePreviewPhoto ? [{ id: 'img_1', name: 'upload.jpg', src: livePreviewPhoto, serverFilename: 'upload.jpg' }] : []);
+      navTo('tracking');
+    }
   };
 
   const loadSkuTemplate = (order: Order) => {
@@ -372,7 +619,7 @@ export default function CustomerPortal({
         : allTemplates.find(t => t.productType === order.productType && t.isDefault);
 
       if (tmpl) {
-        showToast(`✓ SKU ${sku} detected → Loading ${tmpl.name} editor`, 'success');
+        showToast(`âœ“ SKU ${sku} detected â†’ Loading ${tmpl.name} editor`, 'success');
         if (tmpl.elements && tmpl.elements.length > 0) {
           setCanvasElements(tmpl.elements);
         } else {
@@ -482,7 +729,7 @@ export default function CustomerPortal({
       setSubmittedOrderId(activeOrder.id);
       setSubmissionDone(true);
       setSubView('tracking');
-      showToast('🎉 Design submitted! Admin will review shortly.', 'success');
+      showToast('ðŸŽ‰ Design submitted! Admin will review shortly.', 'success');
     } catch {
       // Still show confirmation screen in demo mode
       setSubmittedOrderId(activeOrder?.id || '');
@@ -492,7 +739,7 @@ export default function CustomerPortal({
     }
   };
 
-  // ── Upload helpers ──────────────────────────────────────────────────────────
+  // â”€â”€ Upload helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const simulateProgress = (id: string) => {
     let v = 0;
     const iv = setInterval(() => {
@@ -535,7 +782,7 @@ export default function CustomerPortal({
     if (method === 'cloud')  showToast('Cloud integrations coming soon!', 'info');
   };
 
-  // ── Compare slider ──────────────────────────────────────────────────────────
+  // â”€â”€ Compare slider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handleSliderMouseDown = (_e: React.MouseEvent) => {
     const rect = sliderRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -545,7 +792,7 @@ export default function CustomerPortal({
     window.addEventListener('mouseup', up);
   };
 
-  // ── Order placement ─────────────────────────────────────────────────────────
+  // â”€â”€ Order placement â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const handlePlaceOrder = async () => {
     setPlacingOrder(true);
     try {
@@ -555,7 +802,7 @@ export default function CustomerPortal({
         body: JSON.stringify({ product: selectedProduct, theme: selectedTheme, imageCount: images.length, caption }),
       });
       setConfirmStep(3);
-      showToast('Order placed successfully! 🎉', 'success');
+      showToast('Order placed successfully! ðŸŽ‰', 'success');
       setTimeout(() => { setConfirmOpen(false); setConfirmStep(2); setSubView('tracking'); }, 2200);
     } catch {
       showToast('Failed to place order. Retry.', 'error');
@@ -565,7 +812,7 @@ export default function CustomerPortal({
   };
 
   // ===========================================================================
-  // ── COMPUTED DATA ─────────────────────────────────────────────────────────
+  // â”€â”€ COMPUTED DATA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // ===========================================================================
 
   const allOrders   = orders.length > 0 ? orders : MOCK_ORDERS;
@@ -579,11 +826,8 @@ export default function CustomerPortal({
     : deliveredOrders;
 
   const initials = (customerName || 'GU').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
-
-
-  // ===========================================================================
-  // ── LOGIN VIEW ──────────────────────────────────────────────────────────────
-  // ===========================================================================
+  const isLoggedIn = !!localStorage.getItem('customer_token') && localStorage.getItem('customer_token') !== 'fallback';
+  const activeSubView = forceDashboard ? subView : 'preview';
 
   const handleOtpRequest = useCallback(async () => {
     if (!phone.trim()) { showToast('Please enter your phone number', 'warning'); return; }
@@ -607,6 +851,7 @@ export default function CustomerPortal({
             const vd = await vr.json();
             if (vr.ok && vd.success) {
               localStorage.setItem('customer_token', vd.token);
+              setCustomerName(vd.user.name);
               showToast('Logged in!', 'success');
               setAuthView('dashboard');
             } else {
@@ -631,18 +876,23 @@ export default function CustomerPortal({
       const data = await res.json();
       if (res.ok && data.success) {
         localStorage.setItem('customer_token', data.token);
-        showToast('WhatsApp login sent!', 'success');
-        setTimeout(() => setAuthView('dashboard'), 1200);
+        setCustomerName(data.user.name);
+        showToast('WhatsApp login successful!', 'success');
+        setAuthView('dashboard');
       } else {
         showToast('WhatsApp login failed.', 'error');
       }
     } catch { showToast('WhatsApp login failed.', 'error'); }
   }, [phone, countryCode, showToast]);
 
+  // ===========================================================================
+  // â”€â”€ LOGIN VIEW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ===========================================================================
+
   if (authView === 'login') {
     return (
       <div className="auth-wrapper">
-        <div className="auth-card">
+        <div className="auth-card" style={{ maxWidth: '440px', width: '100%' }}>
           <div className="auth-brand-display" style={{ marginBottom: 20 }}>
             <img src={logoBlack} alt="the Prink" style={{ height: 52, width: 'auto' }} />
           </div>
@@ -650,33 +900,147 @@ export default function CustomerPortal({
             Your premium personalized-print workspace
           </p>
 
-          <div className="flex flex-col gap-3">
-            <label className="label" htmlFor="cp-phone">Phone Number</label>
-            <div className="input-group" style={{ marginBottom: 0, display: 'flex' }}>
-              <select id="cp-country" className="input" value={countryCode}
-                onChange={e => setCountryCode(e.target.value)}
-                style={{ flex: '0 0 96px', borderRight: '1px solid var(--border-color)', borderRadius: 'var(--radius-md) 0 0 var(--radius-md)' }}>
-                <option value="+91">🇮🇳 +91</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-                <option value="+61">🇦🇺 +61</option>
-                <option value="+971">🇦🇪 +971</option>
-              </select>
-              <input id="cp-phone" type="tel" className="input" placeholder="Phone number"
-                value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
-                style={{ flex: 1, borderRadius: '0 var(--radius-md) var(--radius-md) 0' }} />
-            </div>
-
-            <button id="cp-otp-btn" className="btn btn-primary" style={{ width: '100%' }} onClick={handleOtpRequest}>
-              <i className="bi bi-phone" /> {otpSent ? 'Resend OTP' : 'Send OTP'}
-            </button>
-
-            <div className="auth-divider"><span>or continue with</span></div>
-
-            <button id="cp-wa-btn" className="btn btn-outline" style={{ width: '100%', borderColor: '#25D366', color: '#25D366' }} onClick={handleWhatsAppLogin}>
-              <i className="bi bi-whatsapp" style={{ fontSize: 18 }} /> Login via WhatsApp
-            </button>
+          {/* Auth Tab switcher */}
+          <div className="tab-bar" style={{ marginBottom: '1.5rem', display: 'flex', gap: 4, background: 'var(--bg-tertiary)', borderRadius: 10, padding: 2 }}>
+            {[
+              { id: 'password' as const, label: 'Password' },
+              { id: 'otp' as const, label: 'OTP Login' },
+              { id: 'register' as const, label: 'Register' }
+            ].map(t => (
+              <button
+                key={t.id}
+                type="button"
+                className={`tab-item ${loginTab === t.id ? 'active' : ''}`}
+                style={{ flex: 1, padding: '8px 12px', fontSize: 12, borderRadius: 8, background: loginTab === t.id ? 'var(--bg-primary)' : 'transparent', border: 'none', cursor: 'pointer', fontWeight: 600, color: loginTab === t.id ? 'var(--primary)' : 'var(--text-secondary)' }}
+                onClick={() => setLoginTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
+
+          {/* TAB: PASSWORD LOGIN */}
+          {loginTab === 'password' && (
+            <form onSubmit={handlePasswordLogin} className="flex flex-col gap-3">
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="login-ident">Email or Mobile Number</label>
+                <input
+                  id="login-ident"
+                  type="text"
+                  className="input"
+                  placeholder="Enter email or mobile number"
+                  value={emailOrPhone}
+                  onChange={e => setEmailOrPhone(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="login-pass">Password</label>
+                <input
+                  id="login-pass"
+                  type="password"
+                  className="input"
+                  placeholder="Enter password"
+                  value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '0.5rem', justifyContent: 'center' }}>
+                <i className="bi bi-box-arrow-in-right" /> Log In
+              </button>
+            </form>
+          )}
+
+          {/* TAB: OTP LOGIN */}
+          {loginTab === 'otp' && (
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="cp-phone">Mobile Number</label>
+                <div className="input-group" style={{ marginBottom: 0, display: 'flex' }}>
+                  <select id="cp-country" className="input" value={countryCode}
+                    onChange={e => setCountryCode(e.target.value)}
+                    style={{ flex: '0 0 96px', borderRight: '1px solid var(--border-color)', borderRadius: 'var(--radius-md) 0 0 var(--radius-md)' }}>
+                    <option value="+91">ðŸ‡®ðŸ‡³ +91</option>
+                    <option value="+1">ðŸ‡ºðŸ‡¸ +1</option>
+                    <option value="+44">ðŸ‡¬ðŸ‡§ +44</option>
+                    <option value="+61">ðŸ‡¦ðŸ‡º +61</option>
+                    <option value="+971">ðŸ‡¦ðŸ‡ª +971</option>
+                  </select>
+                  <input id="cp-phone" type="tel" className="input" placeholder="Phone number"
+                    value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                    style={{ flex: 1, borderRadius: '0 var(--radius-md) var(--radius-md) 0' }} />
+                </div>
+              </div>
+
+              <button id="cp-otp-btn" className="btn btn-primary w-full" style={{ justifyContent: 'center' }} onClick={handleOtpRequest}>
+                <i className="bi bi-phone" /> {otpSent ? 'Resend OTP' : 'Send OTP'}
+              </button>
+
+              <div className="auth-divider"><span>or continue with</span></div>
+
+              <button id="cp-wa-btn" className="btn btn-outline w-full" style={{ borderColor: '#25D366', color: '#25D366', justifyContent: 'center' }} onClick={handleWhatsAppLogin}>
+                <i className="bi bi-whatsapp" style={{ fontSize: 18 }} /> Login via WhatsApp
+              </button>
+            </div>
+          )}
+
+          {/* TAB: REGISTER */}
+          {loginTab === 'register' && (
+            <form onSubmit={handleRegister} className="flex flex-col gap-3">
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="reg-name">Full Name</label>
+                <input
+                  id="reg-name"
+                  type="text"
+                  className="input"
+                  placeholder="E.g. Sarah Connor"
+                  value={regName}
+                  onChange={e => setRegName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="reg-email">Email Address</label>
+                <input
+                  id="reg-email"
+                  type="email"
+                  className="input"
+                  placeholder="name@example.com"
+                  value={regEmail}
+                  onChange={e => setRegEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="reg-phone">Mobile Number</label>
+                <input
+                  id="reg-phone"
+                  type="tel"
+                  className="input"
+                  placeholder="E.g. +919876543210"
+                  value={regPhone}
+                  onChange={e => setRegPhone(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label text-xs font-semibold" htmlFor="reg-pass">Create Password</label>
+                <input
+                  id="reg-pass"
+                  type="password"
+                  className="input"
+                  placeholder="Create password"
+                  value={regPassword}
+                  onChange={e => setRegPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '0.5rem', justifyContent: 'center' }}>
+                <i className="bi bi-person-plus" /> Create Account &amp; Login
+              </button>
+            </form>
+          )}
 
           <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-tertiary)', marginTop: '1.5rem' }}>
             By continuing, you agree to our{' '}
@@ -685,7 +1049,7 @@ export default function CustomerPortal({
           </p>
 
           <button className="btn btn-secondary btn-sm"
-            style={{ width: '100%', marginTop: '0.75rem', opacity: 0.7 }}
+            style={{ width: '100%', marginTop: '0.75rem', opacity: 0.7, justifyContent: 'center' }}
             onClick={async () => {
               try {
                 const res = await fetch('/api/auth/demo-login', {
@@ -708,7 +1072,7 @@ export default function CustomerPortal({
                 setAuthView('dashboard');
               }
             }}>
-            <i className="bi bi-eye" /> Demo — Skip to Dashboard
+            <i className="bi bi-eye" /> Demo â€” Skip to Dashboard
           </button>
         </div>
 
@@ -720,7 +1084,7 @@ export default function CustomerPortal({
   }
 
   // ===========================================================================
-  // ── SIDEBAR NAV ITEMS ───────────────────────────────────────────────────────
+  // â”€â”€ SIDEBAR NAV ITEMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // ===========================================================================
 
   const NAV_ITEMS: { key: CustomerSubView; icon: string; label: string; badge?: string }[] = [
@@ -735,20 +1099,33 @@ export default function CustomerPortal({
     { key: 'support',   icon: 'bi-question-circle',    label: 'Support'     },
   ];
 
-  const navTo = (key: CustomerSubView) => { setSubView(key); setMobileNavOpen(false); };
+  const navTo = (key: CustomerSubView) => {
+    if (key === 'preview') {
+      setForceDashboard(false);
+      setActiveOrder(null);
+    } else {
+      setSubView(key);
+    }
+    setMobileNavOpen(false);
+  };
 
   // ===========================================================================
-  // ── HELPER: Product icon by type ────────────────────────────────────────────
+  // â”€â”€ HELPER: Product icon by type â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // ===========================================================================
   const productIcon = (type: ProductType) => {
     const map: Record<ProductType, string> = {
-      mug: 'bi-cup-hot', canvas: 'bi-image', frame: 'bi-aspect-ratio',
-      calendar: 'bi-calendar3', photobook: 'bi-book',
+      tshirt: 'bi-file-person', mug: 'bi-cup-hot', mobilecase: 'bi-phone',
+      frame: 'bi-aspect-ratio', pillow: 'bi-box', photobook: 'bi-book',
+      keychain: 'bi-key', canvas: 'bi-image', calendar: 'bi-calendar3',
     };
     return map[type] || 'bi-box';
   };
 
   const customizationBadge = (order: Order) => {
+    if (order.adminApprovalStatus === 'approved') return <span className="badge badge-success"><i className="bi bi-patch-check-fill" /> Design Approved</span>;
+    if (order.adminApprovalStatus === 'rejected') return <span className="badge badge-error"><i className="bi bi-exclamation-octagon-fill" /> Revision Needed</span>;
+    if (order.adminApprovalStatus === 'reupload') return <span className="badge badge-warning"><i className="bi bi-cloud-upload-fill" /> Re-upload Requested</span>;
+    if (order.customizationStatus === 'completed' && order.adminApprovalStatus === 'pending') return <span className="badge badge-info"><i className="bi bi-shield-fill-exclamation" /> Under Admin Review</span>;
     if (order.customizationStatus === 'completed')    return <span className="badge badge-success"><i className="bi bi-check-circle" /> Design Submitted</span>;
     if (order.customizationStatus === 'in-progress')  return <span className="badge badge-accent"><i className="bi bi-palette" /> Editing Draft</span>;
     return <span className="badge badge-warning"><i className="bi bi-hourglass-split" /> Awaiting Design</span>;
@@ -761,40 +1138,39 @@ export default function CustomerPortal({
   };
 
   const orderProgress = (order: Order) => {
-    let step = 0;
-    if (order.customizationStatus === 'in-progress') step = 1;
-    if (order.customizationStatus === 'completed')   step = 3;
-    if (order.uploadStatus === 'ready')              step = 4;
-    if (order.deliveryStatus === 'shipped')          step = 5;
-    if (order.deliveryStatus === 'delivered')        step = 7;
-    return Math.round((step / 7) * 100);
+    const steps = trackingSteps(order);
+    const completedCount = steps.filter(s => s.done).length;
+    return Math.round((completedCount / steps.length) * 100);
   };
 
   // ===========================================================================
-  // ── TRACKING STEPS ──────────────────────────────────────────────────────────
+  // â”€â”€ TRACKING STEPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // ===========================================================================
   const trackingSteps = (order: Order) => [
-    { label: 'Order Synced',    icon: 'bi-bag',             done: true },
-    { label: 'Design Started',  icon: 'bi-pencil',          done: order.customizationStatus !== 'pending' },
-    { label: 'Design Submitted',icon: 'bi-send',            done: order.customizationStatus === 'completed' },
-    { label: 'Admin Approved',  icon: 'bi-shield-check',    done: order.uploadStatus === 'ready' },
-    { label: 'In Print Queue',  icon: 'bi-printer',         done: order.uploadStatus === 'ready' },
-    { label: 'Packed',          icon: 'bi-box-seam',        done: order.deliveryStatus === 'shipped' || order.deliveryStatus === 'delivered' },
-    { label: 'Shipped',         icon: 'bi-truck',           done: order.deliveryStatus === 'shipped' || order.deliveryStatus === 'delivered' },
-    { label: 'Delivered',       icon: 'bi-house-check',     done: order.deliveryStatus === 'delivered' },
+    { label: 'Order Received',          icon: 'bi-bag-check',        done: true },
+    { label: 'Personalization Pending',  icon: 'bi-clock-history',   done: true },
+    { label: 'Photos Uploaded',         icon: 'bi-image',            done: !!(order.images && order.images.length > 0) },
+    { label: 'Submitted to Admin',      icon: 'bi-send',             done: order.customizationStatus === 'completed' },
+    { label: 'Under Review',            icon: 'bi-shield-check',     done: order.customizationStatus === 'completed' && order.adminApprovalStatus === 'pending' },
+    { label: 'Editing in Progress',     icon: 'bi-pencil-square',    done: order.customizationStatus === 'in-progress' || order.adminApprovalStatus === 'approved' },
+    { label: 'Approved',                icon: 'bi-check-circle',     done: order.adminApprovalStatus === 'approved' },
+    { label: 'Sent to Printer',         icon: 'bi-file-earmark-pdf', done: order.adminApprovalStatus === 'approved' },
+    { label: 'Printing',                icon: 'bi-printer',          done: order.adminApprovalStatus === 'approved' },
+    { label: 'Ready for Dispatch',      icon: 'bi-box-seam',         done: order.deliveryStatus === 'shipped' || order.deliveryStatus === 'delivered' },
+    { label: 'Delivered',               icon: 'bi-house-heart',      done: order.deliveryStatus === 'delivered' },
   ];
 
   // ===========================================================================
-  // ── PORTAL LAYOUT ───────────────────────────────────────────────────────────
+  // â”€â”€ PORTAL LAYOUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // ===========================================================================
 
   return (
-    <div className="portal-layout" style={{ position: 'relative' }}>
+    <div className="portal-layout" style={{ position: 'relative', gridTemplateColumns: (isLoggedIn && forceDashboard) ? '230px 1fr' : '1fr' }}>
       {/* Hidden file inputs */}
       <input ref={fileInputRef}   type="file" accept="image/*" multiple hidden onChange={handleFileChange} />
       <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" hidden onChange={handleFileChange} />
 
-      {/* ── Mobile overlay ─────────────────────────────────────────────────── */}
+      {/* â”€â”€ Mobile overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {mobileNavOpen && (
         <div
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200, backdropFilter: 'blur(2px)' }}
@@ -802,7 +1178,7 @@ export default function CustomerPortal({
         />
       )}
 
-      {/* ── SKU Loading Overlay ─────────────────────────────────────────────── */}
+      {/* â”€â”€ SKU Loading Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {skuLoading && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 500,
@@ -844,101 +1220,141 @@ export default function CustomerPortal({
       {/* ====================================================================
           SIDEBAR
           ==================================================================== */}
-      <aside className={`portal-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
-        {/* Logo */}
-        <div className="sidebar-logo-area">
-          <img src={mainLogo} alt="the Prink" style={{ height: 38, width: 'auto' }} />
-        </div>
+      {isLoggedIn && forceDashboard && (
+        <aside className={`portal-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
+          {/* Logo */}
+          <div className="sidebar-logo-area">
+            <img src={mainLogo} alt="the Prink" style={{ height: 38, width: 'auto' }} />
+          </div>
 
-        {/* User card */}
-        <div style={{ margin: '12px 12px 4px', padding: '14px', background: 'linear-gradient(135deg, rgba(23,28,98,0.06) 0%, rgba(255,48,76,0.04) 100%)', borderRadius: 16, border: '1px solid var(--border-color)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div className="avatar" style={{ width: 40, height: 40, fontSize: 14 }}>{initials}</div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--primary)', lineHeight: 1.2 }}>{customerName}</div>
-              <div style={{ fontSize: 10, color: 'var(--text-tertiary)', marginTop: 2 }}>VIP Premium Member</div>
+          {/* User card */}
+          <div style={{ margin: '12px 12px 4px', padding: '14px', background: 'linear-gradient(135deg, rgba(23,28,98,0.06) 0%, rgba(255,48,76,0.04) 100%)', borderRadius: 16, border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="avatar" style={{ width: 40, height: 40, fontSize: 14 }}>{initials}</div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--primary)', lineHeight: 1.2 }}>{customerName}</div>
+                <div style={{ fontSize: 10, color: 'var(--text-tertiary)', marginTop: 2 }}>VIP Premium Member</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+              <span className="badge badge-success" style={{ fontSize: 9 }}>Active</span>
+              <span className="badge badge-primary" style={{ fontSize: 9 }}>{activeOnly.length} Active Orders</span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
-            <span className="badge badge-success" style={{ fontSize: 9 }}>Active</span>
-            <span className="badge badge-primary" style={{ fontSize: 9 }}>{activeOnly.length} Active Orders</span>
+
+          {/* Nav */}
+          <div style={{ padding: '0 8px', flex: 1, overflowY: 'auto' }}>
+            <div className="sidebar-section-label">Navigation</div>
+            {NAV_ITEMS.map(item => (
+              <button
+                key={item.key}
+                id={`nav-${item.key}`}
+                className={`sidebar-item${activeSubView === item.key ? ' active' : ''}`}
+                onClick={() => navTo(item.key)}
+              >
+                <i className={`bi ${item.icon}`} />
+                <span>{item.label}</span>
+                {item.badge && item.badge !== '0' && (
+                  <span style={{ marginLeft: 'auto', background: activeSubView === item.key ? 'rgba(255,255,255,0.25)' : 'var(--accent)', color: '#fff', borderRadius: 99, fontSize: 9, fontWeight: 700, padding: '2px 6px', minWidth: 18, textAlign: 'center' }}>
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
-        </div>
 
-        {/* Nav */}
-        <div style={{ padding: '0 8px', flex: 1, overflowY: 'auto' }}>
-          <div className="sidebar-section-label">Navigation</div>
-          {NAV_ITEMS.map(item => (
-            <button
-              key={item.key}
-              id={`nav-${item.key}`}
-              className={`sidebar-item${subView === item.key ? ' active' : ''}`}
-              onClick={() => navTo(item.key)}
-            >
-              <i className={`bi ${item.icon}`} />
-              <span>{item.label}</span>
-              {item.badge && item.badge !== '0' && (
-                <span style={{ marginLeft: 'auto', background: subView === item.key ? 'rgba(255,255,255,0.25)' : 'var(--accent)', color: '#fff', borderRadius: 99, fontSize: 9, fontWeight: 700, padding: '2px 6px', minWidth: 18, textAlign: 'center' }}>
-                  {item.badge}
-                </span>
-              )}
+          {/* Logout */}
+          <div style={{ padding: '12px 8px 16px' }}>
+            <button className="sidebar-item" style={{ color: 'var(--error)', width: '100%' }}
+              onClick={() => { localStorage.removeItem('customer_token'); setAuthView('login'); setOtpSent(false); }}>
+              <i className="bi bi-box-arrow-left" />
+              <span>Logout</span>
             </button>
-          ))}
-        </div>
-
-        {/* Logout */}
-        <div style={{ padding: '12px 8px 16px' }}>
-          <button className="sidebar-item" style={{ color: 'var(--error)', width: '100%' }}
-            onClick={() => { localStorage.removeItem('customer_token'); setAuthView('login'); setOtpSent(false); }}>
-            <i className="bi bi-box-arrow-left" />
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
+          </div>
+        </aside>
+      )}
 
       {/* ====================================================================
           MAIN CONTENT
           ==================================================================== */}
       <main className="portal-content">
+        {/* Minimal Flow Top Header */}
+        {!forceDashboard && (
+          <header style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '16px 24px', borderBottom: '1px solid var(--border-color)',
+            background: 'var(--bg-secondary)', position: 'sticky', top: 0, zIndex: 100,
+            marginBottom: '20px', borderRadius: '12px', boxShadow: 'var(--shadow-sm)',
+            flexWrap: 'wrap', gap: 12
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <img src={mainLogo} alt="the Prink" style={{ height: 32, width: 'auto' }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', paddingLeft: 12, borderLeft: '1px solid var(--border-color)' }}>
+                Product Personalization Studio
+              </span>
+            </div>
+            
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-outline btn-sm" onClick={() => {
+                setForceDashboard(true);
+                if (!isLoggedIn) {
+                  setShowLoginModal(true);
+                }
+              }}>
+                <i className="bi bi-grid-1x2" style={{ marginRight: 6 }} /> Return to Dashboard
+              </button>
+              {!isLoggedIn && (
+                <button className="btn btn-primary btn-sm" onClick={() => setShowLoginModal(true)}>
+                  <i className="bi bi-box-arrow-in-right" style={{ marginRight: 6 }} /> Customer Login / Register
+                </button>
+              )}
+            </div>
+          </header>
+        )}
+
         {/* Mobile top bar */}
         <div style={{ display: 'none' }} className="show-mobile-flex" id="mobile-topbar">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <button
-                id="mobile-menu-btn"
-                onClick={() => setMobileNavOpen(!mobileNavOpen)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--primary)', padding: 4 }}>
-                <i className={`bi ${mobileNavOpen ? 'bi-x-lg' : 'bi-list'}`} />
-              </button>
+              {isLoggedIn && (
+                <button
+                  id="mobile-menu-btn"
+                  onClick={() => setMobileNavOpen(!mobileNavOpen)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--primary)', padding: 4 }}>
+                  <i className={`bi ${mobileNavOpen ? 'bi-x-lg' : 'bi-list'}`} />
+                </button>
+              )}
               <img src={mainLogo} alt="Prink" style={{ height: 28, width: 'auto' }} />
             </div>
-            <div className="avatar" style={{ width: 32, height: 32, fontSize: 11 }}>{initials}</div>
+            {isLoggedIn && <div className="avatar" style={{ width: 32, height: 32, fontSize: 11 }}>{initials}</div>}
           </div>
         </div>
 
-        {/* Mobile hamburger (always visible) */}
-        <button
-          className="mobile-menu-btn"
-          style={{ position: 'fixed', top: 10, left: 10, zIndex: 300, background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 8, width: 40, height: 40, display: 'none', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--primary)', fontSize: 20, boxShadow: 'var(--shadow-sm)' }}
-          onClick={() => setMobileNavOpen(!mobileNavOpen)}
-          id="hamburger-btn">
-          <i className={`bi ${mobileNavOpen ? 'bi-x-lg' : 'bi-list'}`} />
-        </button>
+        {/* Mobile hamburger (only visible when logged in & dashboard active) */}
+        {isLoggedIn && forceDashboard && (
+          <button
+            className="mobile-menu-btn"
+            style={{ position: 'fixed', top: 10, left: 10, zIndex: 300, background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 8, width: 40, height: 40, display: 'none', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--primary)', fontSize: 20, boxShadow: 'var(--shadow-sm)' }}
+            onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            id="hamburger-btn">
+            <i className={`bi ${mobileNavOpen ? 'bi-x-lg' : 'bi-list'}`} />
+          </button>
+        )}
 
         {/* ==================================================================
             SUBVIEW: DASHBOARD
             ================================================================== */}
-        {subView === 'dashboard' && (
+        {activeSubView === 'dashboard' && (
           <div className="flex flex-col gap-6">
             {/* Hero Banner */}
             <div className="portal-hero-banner">
               <div style={{ position: 'relative', zIndex: 2 }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', borderRadius: 20, padding: '4px 12px', fontSize: 11, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0fbe88', display: 'inline-block', animation: 'pulse-ring 2s infinite' }} />
-                  Shopify Sync — Live
+                  Shopify Sync â€” Live
                 </span>
                 <h1 style={{ fontSize: 'clamp(1.4rem, 4vw, 2.2rem)', fontWeight: 800, margin: '0 0 8px', color: '#fff', lineHeight: 1.2 }}>
-                  Welcome back, {customerName.split(' ')[0]}! 👋
+                  Welcome back, {customerName.split(' ')[0]}! ðŸ‘‹
                 </h1>
                 <p style={{ opacity: 0.9, fontSize: 14, margin: '0 0 20px', lineHeight: 1.6, maxWidth: 500 }}>
                   You have <strong>{activeOnly.length} active order{activeOnly.length !== 1 ? 's' : ''}</strong> in production. Open the Customization Studio to personalize your prints.
@@ -1015,7 +1431,7 @@ export default function CustomerPortal({
                           <div>
                             <div style={{ fontWeight: 700, color: 'var(--primary)', fontSize: 15, lineHeight: 1.3 }}>{order.product}</div>
                             <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 3 }}>
-                              SKU: <strong style={{ color: 'var(--text-secondary)' }}>{order.sku || 'N/A'}</strong>  ·  Qty: {order.quantity || 1}  ·  {order.date}
+                              SKU: <strong style={{ color: 'var(--text-secondary)' }}>{order.sku || 'N/A'}</strong>  Â·  Qty: {order.quantity || 1}  Â·  {order.date}
                             </div>
                             <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Ref: Shopify-{order.id}</div>
                           </div>
@@ -1117,7 +1533,7 @@ export default function CustomerPortal({
                         <img src={t.thumbnail} alt={t.name} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</div>
-                          <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{t.usageCount} uses · {t.productType}</div>
+                          <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{t.usageCount} uses Â· {t.productType}</div>
                         </div>
                         {t.isPremium && <span className="badge badge-accent" style={{ fontSize: 9 }}>PRO</span>}
                       </div>
@@ -1135,7 +1551,7 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: MY ORDERS (upload key)
             ================================================================== */}
-        {subView === 'upload' && (
+        {activeSubView === 'upload' && (
           <div className="flex flex-col gap-6">
             <div className="flex align-center justify-between flex-wrap gap-3">
               <div>
@@ -1186,7 +1602,7 @@ export default function CustomerPortal({
                           <div>
                             <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--primary)' }}>{order.product}</div>
                             <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 3 }}>
-                              SKU: <strong style={{ color: 'var(--primary-light)' }}>{order.sku || '—'}</strong>  ·  Qty: {order.quantity || 1}  ·  Ordered: {order.date}
+                              SKU: <strong style={{ color: 'var(--primary-light)' }}>{order.sku || 'â€”'}</strong>  Â·  Qty: {order.quantity || 1}  Â·  Ordered: {order.date}
                             </div>
                           </div>
                           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -1199,7 +1615,7 @@ export default function CustomerPortal({
                         <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
                           <span className={`badge ${order.dpiStatus === 'ok' ? 'badge-success' : order.dpiStatus === 'low' ? 'badge-warning' : 'badge-error'}`}>
                             <i className={`bi ${order.dpiStatus === 'ok' ? 'bi-check-circle' : 'bi-exclamation-triangle'}`} />
-                            {order.dpi} {order.dpiStatus === 'ok' ? '✓' : '⚠'}
+                            {order.dpi} {order.dpiStatus === 'ok' ? 'âœ“' : 'âš '}
                           </span>
                           <span className="badge badge-primary"><i className="bi bi-wallet2" /> Paid</span>
                           <span className="badge badge-secondary">Ref: Shopify-{order.id}</span>
@@ -1258,210 +1674,555 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: UPLOAD PHOTOS (preview key used as upload center)
             ================================================================== */}
-        {subView === 'preview' && (
-          <div className="flex flex-col gap-6">
-            <div>
-              <button className="btn btn-outline btn-sm mb-2" onClick={() => navTo('dashboard')}>
-                <i className="bi bi-arrow-left" /> Dashboard
-              </button>
-              <h1 className="page-heading">Upload Photos</h1>
-              <p style={{ fontSize: 12, color: 'var(--text-tertiary)', margin: 0 }}>
-                Upload your photos — we'll use them to personalize your custom prints.
-              </p>
-            </div>
+        {activeSubView === 'preview' && (
+          <div className="wizard-shell" style={{ background: 'transparent', minHeight: 'unset' }}>
 
-            {/* Upload target indicator */}
-            {activeOrder && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--primary-soft)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(23,28,98,0.12)' }}>
-                <i className="bi bi-info-circle" style={{ color: 'var(--primary)', fontSize: 16, flexShrink: 0 }} />
-                <div style={{ fontSize: 12 }}>
-                  Uploading photos for: <strong style={{ color: 'var(--primary)' }}>{activeOrder.product}</strong> (SKU: {activeOrder.sku})
+            {/* â”€â”€ Wizard Steps Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+            {wizardStep < 5 && (
+              <div className="wizard-steps-bar" style={{ margin: '28px 0 44px', padding: '0 4px' }}>
+                {[
+                  { n: 1, label: 'Select' },
+                  { n: 2, label: 'Upload' },
+                  { n: 3, label: 'Preview' },
+                  { n: 4, label: 'Review' },
+                  { n: 5, label: 'Done' },
+                ].map((s, idx) => {
+                  const status = wizardStep > s.n ? 'done' : wizardStep === s.n ? 'active' : 'pending';
+                  return (
+                    <React.Fragment key={s.n}>
+                      {idx > 0 && <div className={`wizard-step-connector ${wizardStep > idx ? 'done' : wizardStep === idx + 1 ? 'active' : ''}`} />}
+                      <div className={`wizard-step-node ${status}`}>
+                        <div className={`wizard-step-circle ${status}`}>
+                          {status === 'done' ? <i className="bi bi-check-lg" /> : s.n}
+                        </div>
+                        <div className="wizard-step-label">{s.label}</div>
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ================================================================
+                WIZARD STEP 1 â€” Product Selection
+                ================================================================ */}
+            {wizardStep === 1 && (
+              <div className={`wizard-panel${wizardDir === 'back' ? ' reverse' : ''}`}>
+                <h2 className="wiz-section-title">Your Ordered Products</h2>
+                <p className="wiz-section-sub">Select a product below to begin your personalization journey.</p>
+
+                <div className="wiz-product-grid">
+                  {(orders.length > 0 ? orders : MOCK_ORDERS).map((order, idx) => {
+                    const isCompleted  = order.customizationStatus === 'completed';
+                    const isInProgress = order.customizationStatus === 'in-progress';
+                    const isSelected   = activeOrder?.id === order.id;
+                    return (
+                      <div
+                        key={order.id}
+                        className={`wiz-product-card${isSelected ? ' selected' : ''}`}
+                        style={{ animationDelay: `${idx * 0.07}s` }}
+                        onClick={() => {
+                          setActiveOrder(order);
+                          setSelectedProduct(order.productType);
+                          setPhotoScale(1); setPhotoRotation(0); setPhotoOffsetX(0); setPhotoOffsetY(0);
+                        }}
+                      >
+                        {/* QTY Badge */}
+                        <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 3 }}>
+                          <span className="badge badge-secondary" style={{ fontSize: 9, textTransform: 'uppercase', fontWeight: 800, boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}>QTY: {order.quantity || 1}</span>
+                        </div>
+                        {/* Image */}
+                        <div className="wiz-product-card-img">
+                          {order.images && order.images.length > 0 ? (
+                            <img src={order.images[0].src} alt={order.product} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <i className={`bi ${productIcon(order.productType)}`} />
+                          )}
+                        </div>
+                        {/* Body */}
+                        <div className="wiz-product-card-body">
+                          <div className="wiz-product-card-name">{order.product}</div>
+                          <div className="wiz-product-card-sku">SKU: {order.sku || 'PRK-GENERIC'} &nbsp;Â·&nbsp; {order.date}</div>
+                          <div className="wiz-product-card-footer">
+                            <div>
+                              <div style={{ fontSize: 9, color: 'var(--text-tertiary)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 3 }}>Status</div>
+                              {isCompleted ? (
+                                <span style={{ color: 'var(--success)', fontWeight: 700, fontSize: 11 }}><i className="bi bi-check-circle-fill" style={{ marginRight: 3 }} />Submitted</span>
+                              ) : isInProgress ? (
+                                <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 11 }}><i className="bi bi-pencil" style={{ marginRight: 3 }} />In Progress</span>
+                              ) : (
+                                <span style={{ color: 'var(--warning)', fontWeight: 700, fontSize: 11 }}><i className="bi bi-hourglass-split" style={{ marginRight: 3 }} />Awaiting Photos</span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              className="wiz-personalize-btn"
+                              onClick={e => {
+                                e.stopPropagation();
+                                setActiveOrder(order);
+                                setSelectedProduct(order.productType);
+                                setPhotoScale(1); setPhotoRotation(0); setPhotoOffsetX(0); setPhotoOffsetY(0);
+                                goWizard(2, 'forward');
+                              }}
+                            >
+                              <i className="bi bi-stars" /> Personalize
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Upload method selector */}
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Upload Method</div>
-              <div className="upload-method-pills">
-                {([
-                  { method: 'file'   as UploadMethod, icon: 'bi-folder2-open', label: 'From Device' },
-                  { method: 'camera' as UploadMethod, icon: 'bi-camera',       label: 'Camera' },
-                  { method: 'cloud'  as UploadMethod, icon: 'bi-cloud-arrow-up',label: 'Cloud Drive' },
-                ]).map(m => (
-                  <button key={m.method} className={`upload-method-pill${uploadMethod === m.method ? ' active' : ''}`}
-                    onClick={() => handleMethodClick(m.method)}>
-                    <i className={`bi ${m.icon}`} /> {m.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Drop Zone */}
-            <div
-              className={`upload-zone${dragOver ? ' drag-over' : ''}`}
-              style={{ cursor: 'pointer', padding: '40px 24px' }}
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}>
-              <i className="upload-icon bi bi-cloud-upload" />
-              <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--primary)', marginBottom: 6 }}>Drop photos here or click to browse</div>
-              <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Supports JPG, PNG, HEIC, WEBP · Max 20MB per file · Min 300 DPI recommended</div>
-            </div>
-
-            {/* Photo Gallery */}
-            {images.length > 0 && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>Your Photos ({images.length})</div>
-                  <button className="btn btn-outline btn-sm" onClick={() => showToast('All photos cleared.', 'info')}>
-                    <i className="bi bi-trash" /> Clear All
-                  </button>
+            {/* ================================================================
+                WIZARD STEP 2 â€” Photo Upload
+                ================================================================ */}
+            {wizardStep === 2 && activeOrder && (
+              <div className={`wizard-panel${wizardDir === 'back' ? ' reverse' : ''}`}>
+                {/* Selected product banner */}
+                <div className="wiz-selected-banner" style={{ marginBottom: 28 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg, var(--primary-soft) 0%, rgba(255,48,76,0.06) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, color: 'var(--accent)', flexShrink: 0 }}>
+                    <i className={`bi ${productIcon(activeOrder.productType)}`} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--primary)', lineHeight: 1.2, marginBottom: 2 }}>{activeOrder.product}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>SKU: <strong style={{ color: 'var(--text-secondary)' }}>{activeOrder.sku}</strong>&nbsp;Â·&nbsp;Qty: {activeOrder.quantity}&nbsp;Â·&nbsp;{getProductConfig(activeOrder.productType).pixelWidth}Ã—{getProductConfig(activeOrder.productType).pixelHeight}px required</div>
+                  </div>
                 </div>
-                <div className="preview-grid">
-                  {images.map((img, idx) => (
-                    <div
-                      key={img.id}
-                      className="preview-card"
-                      draggable
-                      onDragStart={e => handleDragStart(e, idx)}
-                      onDrop={e => handleDropCard(e, idx)}
-                      onDragOver={e => e.preventDefault()}>
-                      <img src={img.src} alt={img.name} />
-                      {/* Upload progress */}
-                      {uploadProgress[img.id] !== undefined && uploadProgress[img.id] < 100 && (
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3 }}>
-                          <div style={{ width: `${uploadProgress[img.id]}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.15s' }} />
-                        </div>
-                      )}
-                      <div className="preview-card-overlay">
-                        <button className="preview-card-btn" title="Crop" onClick={e => { e.stopPropagation(); openCrop(img); }}>
-                          <i className="bi bi-crop" />
-                        </button>
-                        <button className="preview-card-btn" title="Remove" onClick={e => { e.stopPropagation(); removeImage(img.id); }}>
-                          <i className="bi bi-trash" />
-                        </button>
-                      </div>
-                    </div>
+
+                <h2 className="wiz-section-title">Upload Your Photos</h2>
+                <p className="wiz-section-sub">Drop your photos here â€” we'll place them beautifully on your product.</p>
+
+                {/* Upload method pills */}
+                <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+                  {[
+                    { icon: 'bi-folder2-open', label: 'From Device', m: 'file' },
+                    { icon: 'bi-camera',        label: 'Camera',      m: 'camera' },
+                    { icon: 'bi-cloud-arrow-up',label: 'Cloud Drive', m: 'cloud' },
+                  ].map(pill => (
+                    <button key={pill.m}
+                      className={`upload-method-pill${uploadMethod === pill.m ? ' active' : ''}`}
+                      onClick={() => handleMethodClick(pill.m as any)}>
+                      <i className={`bi ${pill.icon}`} /> {pill.label}
+                    </button>
                   ))}
                 </div>
+
+                {/* Drop zone */}
+                <div
+                  className={`wiz-upload-zone${dragOver ? ' dragover' : ''}`}
+                  onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={e => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files) addImages(e.dataTransfer.files); }}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <i className="bi bi-cloud-upload wiz-upload-icon" />
+                  <div style={{ fontWeight: 800, fontSize: 18, color: 'var(--primary)', marginBottom: 8 }}>Drop photos here or click to browse</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
+                    Supports <strong>JPG, PNG, HEIC, WEBP</strong>&nbsp;Â·&nbsp;Max 20MB per photo<br />
+                    Minimum <strong>300 DPI</strong> recommended for best print quality
+                  </div>
+                </div>
+
+                {/* Thumbnail strip */}
+                {images.length > 0 && (
+                  <div style={{ marginTop: 24 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', marginBottom: 12 }}>Your Photos ({images.length})</div>
+                    <div className="wiz-thumb-strip">
+                      {images.map((img, idx) => (
+                        <div key={img.id} className="wiz-thumb" style={{ animationDelay: `${idx * 0.06}s` }}>
+                          <img src={img.src} alt={img.name} />
+                          {uploadProgress[img.id] !== undefined && uploadProgress[img.id] < 100 && (
+                            <div className="wiz-upload-progress" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, borderRadius: 0, margin: 0 }}>
+                              <div className="wiz-upload-progress-fill" style={{ width: `${uploadProgress[img.id]}%` }} />
+                            </div>
+                          )}
+                          <button className="wiz-thumb-remove" onClick={e => { e.stopPropagation(); removeImage(img.id); }}>
+                            <i className="bi bi-x" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Personalization caption */}
+                <div style={{ marginTop: 24 }}>
+                  <label className="label" style={{ fontWeight: 700, fontSize: 12, marginBottom: 8, display: 'block' }}>Personalization Message <span style={{ color: 'var(--text-tertiary)', fontWeight: 400 }}>(Optional)</span></label>
+                  <textarea
+                    className="textarea"
+                    rows={3}
+                    maxLength={MAX_CAPTION}
+                    placeholder="E.g. 'Happy Birthday Mom! With love, Sarah' â€” included on your print."
+                    value={caption}
+                    onChange={e => setCaption(e.target.value)}
+                    style={{ fontSize: 13 }}
+                  />
+                  <div style={{ fontSize: 10, color: 'var(--text-tertiary)', marginTop: 4, textAlign: 'right' }}>{caption.length}/{MAX_CAPTION}</div>
+                </div>
+
+                {/* Nav row */}
+                <div className="wiz-nav-row">
+                  <button className="wiz-btn-back" onClick={() => goWizard(1, 'back')}>
+                    <i className="bi bi-arrow-left" /> Back
+                  </button>
+                  <button
+                    className="wiz-btn-next"
+                    onClick={() => {
+                      if (images.length === 0) { showToast('Please upload at least one photo.', 'warning'); return; }
+                      setLivePreviewPhoto(images[0].src);
+                      goWizard(3, 'forward');
+                    }}
+                  >
+                    Preview & Edit <i className="bi bi-arrow-right" />
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Caption */}
-            <div>
-              <label className="label">Personalization Message (Optional)</label>
-              <textarea
-                className="textarea"
-                rows={3}
-                maxLength={MAX_CAPTION}
-                placeholder="E.g. 'Happy Birthday Mom! With love, Sarah' — this will be included on your product."
-                value={caption}
-                onChange={e => setCaption(e.target.value)}
-              />
-              <div style={{ fontSize: 10, color: 'var(--text-tertiary)', marginTop: 4, textAlign: 'right' }}>
-                {caption.length}/{MAX_CAPTION} characters
-              </div>
-            </div>
+            {/* ================================================================
+                WIZARD STEP 3 â€” Live Preview & Editing
+                ================================================================ */}
+            {wizardStep === 3 && activeOrder && (
+              <div className={`wizard-panel${wizardDir === 'back' ? ' reverse' : ''}`}>
+                <h2 className="wiz-section-title">Position Your Design</h2>
+                <p className="wiz-section-sub">Drag the image inside the mockup to perfectly position it on your product.</p>
 
-            {/* ── Live Product Preview ─────────────────────────────────────────── */}
-            {(livePreviewPhoto || images.length > 0) && (
-              <div className="card" style={{ padding: 20, borderRadius: 20 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0fbe88', display: 'inline-block', animation: 'pulse-ring 2s infinite' }} />
-                    Live Preview — {activeOrder?.product || 'Your Product'}
-                  </div>
-                  <span className="badge badge-success" style={{ fontSize: 10 }}>Auto-generated</span>
-                </div>
-                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
-                  {/* Product Mockup */}
-                  {activeOrder?.productType === 'mug' && (
-                    <div style={{ position: 'relative', width: 200, height: 180 }}>
-                      <div style={{
-                        width: '100%', height: '100%', borderRadius: '50% 50% 40% 40% / 20% 20% 40% 40%',
-                        background: 'linear-gradient(135deg, #f0f0f0 0%, #d8d8d8 100%)',
-                        boxShadow: '4px 4px 20px rgba(0,0,0,0.15), inset -3px 0 12px rgba(0,0,0,0.1)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-                        position: 'relative',
-                      }}>
-                        <img
-                          src={livePreviewPhoto || images[0]?.src}
-                          alt="preview"
-                          style={{ width: '75%', height: '70%', objectFit: 'cover', borderRadius: 8, boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                        />
-                        {/* Mug handle */}
-                        <div style={{ position: 'absolute', right: -14, top: '30%', width: 22, height: 50, border: '6px solid #ccc', borderLeft: 'none', borderRadius: '0 50% 50% 0' }} />
-                      </div>
-                      <div style={{ textAlign: 'center', fontSize: 10, color: 'var(--text-tertiary)', marginTop: 6 }}>Coffee Mug Wrap</div>
-                    </div>
-                  )}
-                  {(activeOrder?.productType === 'canvas' || activeOrder?.productType === 'frame') && (
-                    <div style={{ position: 'relative' }}>
-                      <div style={{
-                        width: 200, height: 160, borderRadius: 4,
-                        boxShadow: '0 8px 30px rgba(0,0,0,0.2), inset 0 0 0 8px #c8a96e, inset 0 0 0 12px #b8955a',
-                        overflow: 'hidden', position: 'relative',
-                      }}>
-                        <img src={livePreviewPhoto || images[0]?.src} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                      <div style={{ textAlign: 'center', fontSize: 10, color: 'var(--text-tertiary)', marginTop: 6 }}>
-                        {activeOrder?.productType === 'frame' ? 'Photo Frame' : 'Canvas Print'}
-                      </div>
-                    </div>
-                  )}
-                  {(!activeOrder?.productType || activeOrder.productType === 'calendar' || activeOrder.productType === 'photobook') && (
-                    <div style={{ position: 'relative' }}>
-                      <div style={{
-                        width: 160, height: 200, borderRadius: 8,
-                        background: '#fff', boxShadow: '0 8px 30px rgba(0,0,0,0.15)', overflow: 'hidden',
-                        border: '1px solid var(--border-color)',
-                      }}>
-                        <img src={livePreviewPhoto || images[0]?.src} alt="preview" style={{ width: '100%', height: '75%', objectFit: 'cover' }} />
-                        <div style={{ padding: 8, fontSize: 11, fontWeight: 700, color: 'var(--primary)', textAlign: 'center' }}>
-                          {caption || 'Your Text Here'}
+                <div className="wiz-editor-layout">
+                  {/* Left: Mockup Stage */}
+                  <div className="wiz-mockup-stage">
+                    {/* T-SHIRT */}
+                    {activeOrder.productType === 'tshirt' && (
+                      <div style={{ position: 'relative', width: '220px', height: '260px', display: 'flex', justifyContent: 'center' }}>
+                        <svg viewBox="0 0 100 100" style={{ position: 'absolute', width: '100%', height: '100%', fill: '#f5f5f5', stroke: '#ddd', strokeWidth: 1.5, filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.12))' }}>
+                          <path d="M 30,10 L 40,15 L 50,12 L 60,15 L 70,10 L 85,25 L 75,35 L 70,32 L 70,90 L 30,90 L 30,32 L 25,35 L 15,25 Z" />
+                          <path d="M 40,15 A 10,10 0 0,0 60,15 Z" fill="#e0e0e0" />
+                        </svg>
+                        <div style={{ position: 'absolute', top: '75px', width: '64px', height: '85px', border: '1px dashed rgba(23,28,98,0.2)', overflow: 'hidden', background: '#fff', borderRadius: 2 }}>
+                          <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                            style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                            onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                          />
                         </div>
                       </div>
-                      <div style={{ textAlign: 'center', fontSize: 10, color: 'var(--text-tertiary)', marginTop: 6 }}>
-                        {activeOrder?.productType === 'calendar' ? 'Wall Calendar' : 'Photo Book'}
-                      </div>
-                    </div>
-                  )}
-                  {/* Photo counter */}
-                  <div style={{ flex: 1, minWidth: 140, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <div style={{ background: 'var(--bg-tertiary)', borderRadius: 12, padding: 12 }}>
-                      <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>Photos Added</div>
-                      <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--primary)' }}>{images.length}</div>
-                    </div>
-                    {activeOrder && (
-                      <div style={{ background: 'rgba(23,28,98,0.04)', borderRadius: 12, padding: 12 }}>
-                        <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 4 }}>SKU Loaded</div>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>{activeOrder.sku || 'N/A'}</div>
+                    )}
+                    {/* MUG */}
+                    {activeOrder.productType === 'mug' && (
+                      <div style={{ position: 'relative', width: '220px', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '130px', height: '140px', background: '#ffffff', borderRadius: '8px 8px 16px 16px', boxShadow: 'inset -20px 0 20px rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #eee', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '100px', height: '110px', overflow: 'hidden', borderRadius: 4, position: 'relative', border: '1px dashed #ddd' }}>
+                            <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                              style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                              onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                              onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ position: 'absolute', right: '25px', top: '40px', width: '30px', height: '80px', border: '12px solid #ffffff', borderLeft: 'none', borderRadius: '0 40px 40px 0', boxShadow: '3px 6px 12px rgba(0,0,0,0.08)' }} />
                       </div>
                     )}
-                    <button className="btn btn-primary btn-sm" onClick={() => activeOrder && loadSkuTemplate(activeOrder)}>
-                      <i className="bi bi-palette" /> Open Design Lab
-                    </button>
+                    {/* MOBILE CASE */}
+                    {activeOrder.productType === 'mobilecase' && (
+                      <div style={{ position: 'relative', width: '130px', height: '250px', background: '#1c1c1e', borderRadius: '24px', padding: '6px', border: '3px solid #2c2c2e', boxShadow: '0 12px 36px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ position: 'absolute', top: '15px', left: '15px', width: '40px', height: '40px', background: '#0a0a0a', borderRadius: '10px', zIndex: 10, display: 'flex', flexWrap: 'wrap', padding: '4px', gap: '2px' }}>
+                          <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#2c2c2e' }} />
+                          <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: '#2c2c2e' }} />
+                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#2c2c2e' }} />
+                        </div>
+                        <div style={{ width: '100%', height: '100%', borderRadius: '18px', overflow: 'hidden', position: 'relative', background: '#fff' }}>
+                          <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                            style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                            onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {/* FRAME */}
+                    {activeOrder.productType === 'frame' && (
+                      <div style={{ position: 'relative', width: '220px', height: '180px', background: '#3e2723', padding: '16px', borderRadius: '4px', boxShadow: '0 10px 36px rgba(0,0,0,0.25)', border: '1px solid #271511', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: '100%', height: '100%', background: '#f5f5f5', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.1)' }}>
+                          <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', background: '#fff', boxShadow: 'inset 0 0 4px rgba(0,0,0,0.2)' }}>
+                            <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                              style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                              onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                              onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* PILLOW */}
+                    {activeOrder.productType === 'pillow' && (
+                      <div style={{ position: 'relative', width: '200px', height: '200px', background: '#fafafa', borderRadius: '36px', boxShadow: '0 10px 28px rgba(0,0,0,0.10), inset 0 0 20px rgba(0,0,0,0.06)', overflow: 'hidden', padding: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #f0f0f0' }}>
+                        <div style={{ width: '100%', height: '100%', borderRadius: '24px', overflow: 'hidden', position: 'relative', border: '1px dashed #eee' }}>
+                          <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                            style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                            onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {/* KEYCHAIN */}
+                    {activeOrder.productType === 'keychain' && (
+                      <div style={{ position: 'relative', width: '200px', height: '220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', border: '4px solid #b0bec5', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+                        <div style={{ width: '4px', height: '16px', background: '#b0bec5' }} />
+                        <div style={{ width: '120px', height: '120px', borderRadius: '50%', border: '6px solid rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(2px)', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                          <div style={{ width: '100px', height: '100px', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
+                            <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                              style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                              onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                              onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* PHOTO BOOK */}
+                    {activeOrder.productType === 'photobook' && (
+                      <div style={{ position: 'relative', width: '250px', height: '170px', background: '#fafafa', borderRadius: '4px', border: '1px solid #ddd', display: 'flex', boxShadow: '0 10px 25px rgba(0,0,0,0.12)' }}>
+                        <div style={{ flex: 1, borderRight: '1px solid #eee', background: '#fff', padding: '10px' }}>
+                          <div style={{ width: '100%', height: '100%', border: '1px solid #f0f0f0', borderRadius: 2 }} />
+                        </div>
+                        <div style={{ flex: 1, background: '#fff', padding: '10px' }}>
+                          <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', border: '1px dashed #ccc', borderRadius: 2 }}>
+                            <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                              style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                              onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                              onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: '4px', marginLeft: '-2px', background: 'linear-gradient(90deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.08) 100%)' }} />
+                      </div>
+                    )}
+                    {/* CANVAS / CALENDAR / GENERIC FALLBACK */}
+                    {activeOrder.productType !== 'tshirt' && activeOrder.productType !== 'mug' && activeOrder.productType !== 'mobilecase' && activeOrder.productType !== 'frame' && activeOrder.productType !== 'pillow' && activeOrder.productType !== 'keychain' && activeOrder.productType !== 'photobook' && (
+                      <div style={{ position: 'relative', width: '240px', height: '180px', borderRadius: 8, boxShadow: '0 8px 32px rgba(0,0,0,0.14), inset 0 0 0 4px #eee', overflow: 'hidden', background: '#fff' }}>
+                        <img src={livePreviewPhoto || images[0]?.src} alt="preview"
+                          style={{ transform: `translate(${photoOffsetX}px,${photoOffsetY}px) scale(${photoScale}) rotate(${photoRotation}deg)`, cursor: 'move', transition: isDraggingPhoto ? 'none' : 'transform 0.15s ease-out', width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', touchAction: 'none' }}
+                          onMouseDown={e => { e.preventDefault(); setIsDraggingPhoto(true); dragStartPos.current = { x: e.clientX, y: e.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                          onTouchStart={e => { setIsDraggingPhoto(true); const t = e.touches[0]; dragStartPos.current = { x: t.clientX, y: t.clientY }; photoOffsetStart.current = { x: photoOffsetX, y: photoOffsetY }; }}
+                        />
+                      </div>
+                    )}
+                    {/* Drag hint */}
+                    <div style={{ position: 'absolute', bottom: 16, left: '50%', transform: 'translateX(-50%)', background: 'rgba(23,28,98,0.75)', backdropFilter: 'blur(6px)', color: '#fff', fontSize: 10, fontWeight: 700, borderRadius: 99, padding: '5px 14px', whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>
+                      <i className="bi bi-arrows-move" style={{ marginRight: 5 }} />Drag to reposition
+                    </div>
                   </div>
+
+                  {/* Right: Editor Panel */}
+                  <div className="wiz-editor-panel">
+                    <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <i className="bi bi-sliders" style={{ color: 'var(--accent)' }} /> Edit Controls
+                    </div>
+
+                    {/* Zoom slider */}
+                    <div>
+                      <div className="wiz-slider-label">
+                        <span><i className="bi bi-zoom-in" style={{ marginRight: 4 }} />Zoom / Scale</span>
+                        <span style={{ color: 'var(--accent)', cursor: 'pointer', fontWeight: 800 }} onClick={() => setPhotoScale(1)}>{Math.round(photoScale * 100)}% Â· Reset</span>
+                      </div>
+                      <input type="range" className="wiz-slider" min="0.3" max="3.0" step="0.05" value={photoScale} onChange={e => setPhotoScale(parseFloat(e.target.value))} style={{ width: '100%' }} />
+                    </div>
+
+                    {/* Rotation slider */}
+                    <div>
+                      <div className="wiz-slider-label">
+                        <span><i className="bi bi-arrow-repeat" style={{ marginRight: 4 }} />Rotate</span>
+                        <span style={{ color: 'var(--accent)', cursor: 'pointer', fontWeight: 800 }} onClick={() => setPhotoRotation(0)}>{photoRotation}Â° Â· Reset</span>
+                      </div>
+                      <input type="range" className="wiz-slider" min="-180" max="180" step="1" value={photoRotation} onChange={e => setPhotoRotation(parseInt(e.target.value))} style={{ width: '100%' }} />
+                    </div>
+
+                    {/* Quick actions */}
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button className="wiz-tool-btn" onClick={() => { setPhotoScale(s => Math.min(3, s + 0.1)); }}><i className="bi bi-zoom-in" />Zoom In</button>
+                      <button className="wiz-tool-btn" onClick={() => { setPhotoScale(s => Math.max(0.3, s - 0.1)); }}><i className="bi bi-zoom-out" />Zoom Out</button>
+                      <button className="wiz-tool-btn" onClick={() => { setPhotoRotation(r => r - 90); }}><i className="bi bi-arrow-counterclockwise" />âˆ’90Â°</button>
+                      <button className="wiz-tool-btn" onClick={() => { setPhotoRotation(r => r + 90); }}><i className="bi bi-arrow-clockwise" />+90Â°</button>
+                      <button className="wiz-tool-btn" style={{ flex: 1, justifyContent: 'center', color: 'var(--error)', borderColor: 'rgba(255,48,76,0.2)' }} onClick={() => { setPhotoScale(1); setPhotoRotation(0); setPhotoOffsetX(0); setPhotoOffsetY(0); }}>
+                        <i className="bi bi-arrow-counterclockwise" />Reset All
+                      </button>
+                    </div>
+
+                    {/* Thumbnail selector */}
+                    {images.length > 1 && (
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 8 }}>Choose Preview Photo</div>
+                        <div className="wiz-thumb-strip">
+                          {images.map(img => (
+                            <div key={img.id} className="wiz-thumb"
+                              style={{ border: livePreviewPhoto === img.src ? '2.5px solid var(--accent)' : undefined }}
+                              onClick={() => setLivePreviewPhoto(img.src)}>
+                              <img src={img.src} alt={img.name} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Nav row */}
+                <div className="wiz-nav-row">
+                  <button className="wiz-btn-back" onClick={() => goWizard(2, 'back')}>
+                    <i className="bi bi-arrow-left" /> Back
+                  </button>
+                  <button className="wiz-btn-next" onClick={() => goWizard(4, 'forward')}>
+                    Review Design <i className="bi bi-arrow-right" />
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* Actions */}
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-              <button className="btn btn-outline" onClick={() => { setActiveOrder(null); setSubView('dashboard'); }}>Cancel</button>
-              <button className="btn btn-primary" onClick={() => { showToast(`${images.length} photos saved for your order!`, 'success'); navTo('upload'); }}>
-                <i className="bi bi-check-circle" /> Save Photos &amp; Continue
-              </button>
-            </div>
+            {/* ================================================================
+                WIZARD STEP 4 â€” Final Review
+                ================================================================ */}
+            {wizardStep === 4 && activeOrder && (
+              <div className={`wizard-panel${wizardDir === 'back' ? ' reverse' : ''}`}>
+                <h2 className="wiz-section-title">Review Your Design</h2>
+                <p className="wiz-section-sub">Look good? Submit it to our design team for review and printing.</p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: 24, alignItems: 'start' }} className="responsive-two-col">
+                  {/* Left: Preview */}
+                  <div className="wiz-review-card">
+                    <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--primary)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <i className="bi bi-eye-fill" style={{ color: 'var(--accent)' }} /> Final Preview
+                    </div>
+                    {/* Mockup preview (static render) */}
+                    <div style={{ width: '100%', minHeight: 240, background: 'linear-gradient(145deg, #eef0f9, #f7f8fc)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                      {(livePreviewPhoto || images[0]?.src) ? (
+                        <img src={livePreviewPhoto || images[0]?.src} alt="Final preview" style={{ maxWidth: '80%', maxHeight: '220px', objectFit: 'contain', borderRadius: 8, boxShadow: '0 8px 32px rgba(23,28,98,0.12)', transform: `scale(${Math.min(photoScale, 1.8)}) rotate(${photoRotation}deg)`, transition: 'transform 0.3s ease' }} />
+                      ) : (
+                        <i className={`bi ${productIcon(activeOrder.productType)}`} style={{ fontSize: 60, color: 'var(--accent)', opacity: 0.5 }} />
+                      )}
+                    </div>
+                    {/* Uploaded photos row */}
+                    {images.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 10 }}>Uploaded Photos ({images.length})</div>
+                        <div className="wiz-thumb-strip">
+                          {images.map(img => (
+                            <div key={img.id} className="wiz-thumb">
+                              <img src={img.src} alt={img.name} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right: Summary */}
+                  <div className="wiz-review-card" style={{ gap: 0 }}>
+                    <div style={{ fontWeight: 800, fontSize: 13, color: 'var(--primary)', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <i className="bi bi-card-checklist" style={{ color: 'var(--accent)' }} /> Order Summary
+                    </div>
+                    {[
+                      { label: 'Product', value: activeOrder.product },
+                      { label: 'SKU', value: activeOrder.sku || 'PRK-GENERIC' },
+                      { label: 'Quantity', value: String(activeOrder.quantity || 1) },
+                      { label: 'Photos', value: `${images.length} photo${images.length !== 1 ? 's' : ''} uploaded` },
+                      { label: 'Message', value: caption.trim() ? caption : '(none)' },
+                      { label: 'Scale', value: `${Math.round(photoScale * 100)}%` },
+                      { label: 'Rotation', value: `${photoRotation}Â°` },
+                    ].map(row => (
+                      <div key={row.label} className="wiz-spec-row">
+                        <span style={{ color: 'var(--text-tertiary)', fontWeight: 600 }}>{row.label}</span>
+                        <span style={{ fontWeight: 700, color: 'var(--primary)', textAlign: 'right', maxWidth: '55%', wordBreak: 'break-word' }}>{row.value}</span>
+                      </div>
+                    ))}
+
+                    {/* Confidence chip */}
+                    <div style={{ marginTop: 16, background: 'rgba(15,190,136,0.08)', border: '1px solid rgba(15,190,136,0.2)', borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8, fontSize: 11 }}>
+                      <i className="bi bi-shield-check" style={{ color: 'var(--success)', fontSize: 18 }} />
+                      <span style={{ color: '#0a8a62', fontWeight: 600 }}>Your design will be reviewed by our team within 24 hours before printing.</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Nav row */}
+                <div className="wiz-nav-row">
+                  <button className="wiz-btn-back" onClick={() => goWizard(3, 'back')}>
+                    <i className="bi bi-pencil" /> Continue Editing
+                  </button>
+                  <button
+                    className="wiz-btn-submit"
+                    disabled={isSubmitting}
+                    onClick={async () => {
+                      setIsSubmitting(true);
+                      await handleSubmitDesign();
+                      setIsSubmitting(false);
+                      goWizard(5, 'forward');
+                    }}
+                  >
+                    {isSubmitting ? (
+                      <><div style={{ width: 18, height: 18, border: '3px solid rgba(255,255,255,0.3)', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} /> Submitting...</>
+                    ) : (
+                      <><i className="bi bi-send-check-fill" /> Submit Design to Admin</>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ================================================================
+                WIZARD STEP 5 â€” Success
+                ================================================================ */}
+            {wizardStep === 5 && (
+              <div className="wiz-success-shell" style={{ position: 'relative', overflow: 'hidden' }}>
+                {/* Confetti dots */}
+                {Array.from({ length: 16 }).map((_, i) => (
+                  <div key={i} className="wiz-confetti-dot" style={{
+                    width: `${8 + Math.random() * 10}px`,
+                    height: `${8 + Math.random() * 10}px`,
+                    background: ['#FF304C','#171C62','#0fbe88','#f59e0b','#4cc9f0'][i % 5],
+                    top: `${Math.random() * 40}%`,
+                    left: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 0.6}s`,
+                    animationDuration: `${1 + Math.random() * 0.8}s`,
+                    opacity: 0,
+                  }} />
+                ))}
+                <div className="wiz-success-ring">
+                  <i className="bi bi-check-lg" />
+                </div>
+                <h2 style={{ fontSize: 32, fontWeight: 900, color: 'var(--primary)', margin: '0 0 10px' }}>Design Submitted! ðŸŽ‰</h2>
+                <p style={{ fontSize: 16, color: 'var(--text-secondary)', maxWidth: 480, lineHeight: 1.7, margin: '0 0 32px' }}>
+                  Your design has been sent to our creative team for review. We'll notify you once it's approved and sent to print.
+                </p>
+                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <button className="wiz-btn-next" onClick={() => { navTo('tracking'); }}>
+                    <i className="bi bi-geo-alt-fill" /> Track My Order
+                  </button>
+                  <button className="wiz-btn-back" onClick={() => {
+                    setWizardStep(1);
+                    setActiveOrder(null);
+                    setImages([]);
+                    setCaption('');
+                    setLivePreviewPhoto(null);
+                    setPhotoScale(1); setPhotoRotation(0); setPhotoOffsetX(0); setPhotoOffsetY(0);
+                  }}>
+                    <i className="bi bi-arrow-left" /> Personalize Another
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
         )}
+
 
         {/* ==================================================================
             SUBVIEW: DESIGN LAB (CANVAS EDITOR)
             ================================================================== */}
-        {subView === 'editor' && (
+        {activeSubView === 'editor' && (
           <div className="flex flex-col gap-4">
             {/* Editor top bar */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, paddingBottom: 16, borderBottom: '1px solid var(--border-color)' }}>
@@ -1475,7 +2236,7 @@ export default function CustomerPortal({
                     Design Lab
                   </h1>
                   <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
-                    {activeOrder ? `${activeOrder.product} · SKU: ${activeOrder.sku}` : 'Custom Product'}
+                    {activeOrder ? `${activeOrder.product} Â· SKU: ${activeOrder.sku}` : 'Custom Product'}
                   </div>
                 </div>
               </div>
@@ -1802,10 +2563,10 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: ORDER TRACKING
             ================================================================== */}
-        {subView === 'tracking' && (
+        {activeSubView === 'tracking' && (
           <div className="flex flex-col gap-6">
 
-            {/* ── PREMIUM SUBMISSION CONFIRMATION ─────────────────────────────── */}
+            {/* â”€â”€ PREMIUM SUBMISSION CONFIRMATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
             {submissionDone && (
               <div style={{
                 background: 'linear-gradient(135deg, #171C62 0%, #2d3282 50%, #FF304C 100%)',
@@ -1832,7 +2593,7 @@ export default function CustomerPortal({
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 20px', fontSize: 36, border: '2px solid rgba(255,255,255,0.3)',
                 }}>
-                  🎉
+                  ðŸŽ‰
                 </div>
                 <h2 style={{ fontSize: 26, fontWeight: 800, margin: '0 0 8px' }}>Design Submitted!</h2>
                 <p style={{ opacity: 0.85, fontSize: 14, margin: '0 0 6px' }}>
@@ -1844,13 +2605,13 @@ export default function CustomerPortal({
                 {/* Status chips */}
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
                   <span style={{ background: 'rgba(15,190,136,0.25)', borderRadius: 99, padding: '5px 14px', fontSize: 12, fontWeight: 700, border: '1px solid rgba(15,190,136,0.4)' }}>
-                    ✓ Design Saved
+                    âœ“ Design Saved
                   </span>
                   <span style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 99, padding: '5px 14px', fontSize: 12, fontWeight: 700, border: '1px solid rgba(255,255,255,0.2)' }}>
-                    📋 Under Admin Review
+                    ðŸ“‹ Under Admin Review
                   </span>
                   <span style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 99, padding: '5px 14px', fontSize: 12, fontWeight: 700, border: '1px solid rgba(255,255,255,0.2)' }}>
-                    📱 WhatsApp Alert Queued
+                    ðŸ“± WhatsApp Alert Queued
                   </span>
                 </div>
                 {/* Actions */}
@@ -1985,7 +2746,7 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: ORDER HISTORY (drafts key)
             ================================================================== */}
-        {subView === 'drafts' && (
+        {activeSubView === 'drafts' && (
           <div className="flex flex-col gap-6">
             <div>
               <button className="btn btn-outline btn-sm mb-2" onClick={() => navTo('dashboard')}>
@@ -2000,18 +2761,18 @@ export default function CustomerPortal({
               <>
                 {/* Show mock delivered history */}
                 {[
-                  { id: 'SP-1039', product: 'Premium Photo Frame 8×10', productType: 'frame' as ProductType, date: 'May 10, 2026', total: '₹899', thumb: 'https://images.unsplash.com/photo-1503455637927-730bce8583c0?q=80&w=150', rating: 5 },
-                  { id: 'SP-1035', product: 'Classic Coffee Mug Wrap', productType: 'mug'   as ProductType, date: 'Apr 24, 2026', total: '₹449', thumb: 'https://images.unsplash.com/photo-1609220136736-443140cffec6?q=80&w=150', rating: 5 },
-                  { id: 'SP-1031', product: 'Stretch Canvas 12×16',    productType: 'canvas'as ProductType, date: 'Mar 12, 2026', total: '₹1,299', thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=150', rating: 4 },
+                  { id: 'SP-1039', product: 'Premium Photo Frame 8Ã—10', productType: 'frame' as ProductType, date: 'May 10, 2026', total: 'â‚¹899', thumb: 'https://images.unsplash.com/photo-1503455637927-730bce8583c0?q=80&w=150', rating: 5 },
+                  { id: 'SP-1035', product: 'Classic Coffee Mug Wrap', productType: 'mug'   as ProductType, date: 'Apr 24, 2026', total: 'â‚¹449', thumb: 'https://images.unsplash.com/photo-1609220136736-443140cffec6?q=80&w=150', rating: 5 },
+                  { id: 'SP-1031', product: 'Stretch Canvas 12Ã—16',    productType: 'canvas'as ProductType, date: 'Mar 12, 2026', total: 'â‚¹1,299', thumb: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=150', rating: 4 },
                 ].map(h => (
                   <div key={h.id} className="card" style={{ padding: '20px 24px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                     <img src={h.thumb} alt={h.product} style={{ width: 72, height: 72, borderRadius: 12, objectFit: 'cover', border: '1px solid var(--border-color)', flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 200 }}>
                       <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--primary)', marginBottom: 4 }}>{h.product}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 6 }}>Order: Shopify-{h.id} · Delivered: {h.date}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 6 }}>Order: Shopify-{h.id} Â· Delivered: {h.date}</div>
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                         <span className="badge badge-success"><i className="bi bi-house-check" /> Delivered</span>
-                        <span style={{ fontSize: 11 }}>{'★'.repeat(h.rating)}{'☆'.repeat(5 - h.rating)}</span>
+                        <span style={{ fontSize: 11 }}>{'â˜…'.repeat(h.rating)}{'â˜†'.repeat(5 - h.rating)}</span>
                         <strong style={{ fontSize: 13, color: 'var(--primary)' }}>{h.total}</strong>
                       </div>
                     </div>
@@ -2036,7 +2797,7 @@ export default function CustomerPortal({
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--primary)', marginBottom: 4 }}>{order.product}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Ref: Shopify-{order.id} · {order.date}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Ref: Shopify-{order.id} Â· {order.date}</div>
                   <div style={{ marginTop: 6 }}><span className="badge badge-success"><i className="bi bi-house-check" /> Delivered</span></div>
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -2051,7 +2812,7 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: TEMPLATES GALLERY
             ================================================================== */}
-        {subView === 'templates' && (
+        {activeSubView === 'templates' && (
           <div className="flex flex-col gap-6">
             <div>
               <button className="btn btn-outline btn-sm mb-2" onClick={() => navTo('dashboard')}>
@@ -2092,7 +2853,7 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: PROFILE
             ================================================================== */}
-        {subView === 'profile' && (
+        {activeSubView === 'profile' && (
           <div className="flex flex-col gap-6">
             <div>
               <button className="btn btn-outline btn-sm mb-2" onClick={() => navTo('dashboard')}>
@@ -2107,7 +2868,7 @@ export default function CustomerPortal({
                 <div className="avatar" style={{ width: 80, height: 80, fontSize: 28 }}>{initials}</div>
                 <div>
                   <h2 style={{ margin: 0, color: 'var(--primary)', fontSize: 22, fontWeight: 800 }}>{customerName}</h2>
-                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 4 }}>VIP Premium Member · Since Jan 2026</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 4 }}>VIP Premium Member Â· Since Jan 2026</div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                     <span className="badge badge-success">Active Account</span>
                     <span className="badge badge-accent">750 Points</span>
@@ -2154,7 +2915,7 @@ export default function CustomerPortal({
         {/* ==================================================================
             SUBVIEW: SUPPORT
             ================================================================== */}
-        {subView === 'support' && (
+        {activeSubView === 'support' && (
           <div className="flex flex-col gap-6">
             <div>
               <button className="btn btn-outline btn-sm mb-2" onClick={() => navTo('dashboard')}>
@@ -2167,7 +2928,7 @@ export default function CustomerPortal({
             <div className="grid grid-3 gap-4">
               {[
                 { icon: 'bi-whatsapp', title: 'WhatsApp Support', desc: 'Chat with our team instantly via WhatsApp for quick help.', btn: 'Chat Now', color: '#25D366', action: () => showToast('Opening WhatsApp support...', 'info') },
-                { icon: 'bi-telephone', title: 'Call Us', desc: 'Speak to a print specialist. Available Mon–Sat, 10am–7pm IST.', btn: 'Call Now', color: 'var(--primary)', action: () => showToast('Call: +91 98765 00000', 'info') },
+                { icon: 'bi-telephone', title: 'Call Us', desc: 'Speak to a print specialist. Available Monâ€“Sat, 10amâ€“7pm IST.', btn: 'Call Now', color: 'var(--primary)', action: () => showToast('Call: +91 98765 00000', 'info') },
                 { icon: 'bi-envelope', title: 'Email Support', desc: 'Send a detailed query. Replies within 24 hours on business days.', btn: 'Email Us', color: 'var(--accent)', action: () => showToast('Email: support@theprink.in', 'info') },
               ].map(s => (
                 <div key={s.title} className="card" style={{ padding: '20px', textAlign: 'center', borderRadius: 20 }}>
@@ -2187,7 +2948,7 @@ export default function CustomerPortal({
                 <h3 style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: 16, fontSize: 16 }}>Frequently Asked Questions</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {[
-                    { q: 'How long does design review take?', a: 'Designs are reviewed within 1–2 hours of submission during business hours.' },
+                    { q: 'How long does design review take?', a: 'Designs are reviewed within 1â€“2 hours of submission during business hours.' },
                     { q: 'Can I modify after submission?', a: 'Once approved, orders move to print queue. Contact us immediately via WhatsApp for urgent changes.' },
                     { q: 'What DPI is recommended?', a: 'We recommend minimum 300 DPI for best print quality. Low-DPI warnings are shown in your order.' },
                     { q: 'How do I track my delivery?', a: 'Go to Track Order in the sidebar. We also send WhatsApp updates at every stage.' },
@@ -2208,7 +2969,7 @@ export default function CustomerPortal({
                     <label className="label">Related Order</label>
                     <select className="input">
                       <option value="">Select order...</option>
-                      {allOrders.map(o => <option key={o.id} value={o.id}>Shopify-{o.id} · {o.product}</option>)}
+                      {allOrders.map(o => <option key={o.id} value={o.id}>Shopify-{o.id} Â· {o.product}</option>)}
                     </select>
                   </div>
                   <div>
@@ -2268,7 +3029,7 @@ export default function CustomerPortal({
             </div>
 
             <div className="flex flex-col gap-2" style={{ marginBottom: '1rem' }}>
-              <label className="label flex align-center justify-between"><span>Rotation</span><span className="text-xs text-muted">{cropRot}°</span></label>
+              <label className="label flex align-center justify-between"><span>Rotation</span><span className="text-xs text-muted">{cropRot}Â°</span></label>
               <input type="range" min="-180" max="180" step="1" value={cropRot} onChange={e => setCropRot(Number(e.target.value))} style={{ width: '100%' }} />
             </div>
 
@@ -2317,7 +3078,7 @@ export default function CustomerPortal({
                         ['Product', <span key="p" className="badge badge-primary">{activeProduct.name}</span>],
                         ['Photos', `${images.length} photo${images.length !== 1 ? 's' : ''}`],
                         ['Theme', activeTheme.name],
-                        ['Message', caption.trim() ? `"${caption.slice(0, 40)}${caption.length > 40 ? '…' : ''}"` : <em key="nc" className="text-muted">No message</em>],
+                        ['Message', caption.trim() ? `"${caption.slice(0, 40)}${caption.length > 40 ? 'â€¦' : ''}"` : <em key="nc" className="text-muted">No message</em>],
                       ].map(([k, v]) => (
                         <tr key={String(k)}>
                           <td style={{ color: 'var(--text-secondary)', paddingBottom: 8, width: '40%' }}>{k}</td>
@@ -2332,7 +3093,7 @@ export default function CustomerPortal({
                   <button className="btn btn-secondary" onClick={() => setConfirmOpen(false)} disabled={placingOrder}>Edit</button>
                   <button className="btn btn-primary" disabled={placingOrder} onClick={handlePlaceOrder}>
                     {placingOrder
-                      ? <><i className="bi bi-arrow-repeat" style={{ animation: 'spin 1s linear infinite' }} /> Placing…</>
+                      ? <><i className="bi bi-arrow-repeat" style={{ animation: 'spin 1s linear infinite' }} /> Placingâ€¦</>
                       : <><i className="bi bi-bag-check" /> Place Order</>}
                   </button>
                 </div>
@@ -2342,10 +3103,187 @@ export default function CustomerPortal({
                 <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #22c55e, #16a34a)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', animation: 'scaleIn 0.4s ease' }}>
                   <i className="bi bi-check-lg" style={{ color: '#fff', fontSize: 32 }} />
                 </div>
-                <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.3rem', marginBottom: 6 }}>Order Placed! 🎉</div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Redirecting to tracking…</div>
+                <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: '1.3rem', marginBottom: 6 }}>Order Placed! ðŸŽ‰</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Redirecting to trackingâ€¦</div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {/* Optional Customer Login Modal */}
+      {showLoginModal && (
+        <div className="modal-overlay" onClick={() => setShowLoginModal(false)}>
+          <div className="modal-container" onClick={e => e.stopPropagation()} style={{ maxWidth: 440, width: '100%', padding: '24px 28px', borderRadius: 24 }}>
+            <div className="flex align-center justify-between" style={{ marginBottom: '1.25rem' }}>
+              <h2 style={{ fontWeight: 800, color: 'var(--primary)', margin: 0, fontSize: '1.2rem' }}>Customer Workspace</h2>
+              <button className="btn btn-outline btn-sm" onClick={() => setShowLoginModal(false)}><i className="bi bi-x-lg" /></button>
+            </div>
+
+            {/* Reuse Tab switcher */}
+            <div className="tab-bar" style={{ marginBottom: '1.25rem', display: 'flex', gap: 4, background: 'var(--bg-tertiary)', borderRadius: 10, padding: 2 }}>
+              {[
+                { id: 'password' as const, label: 'Password' },
+                { id: 'otp' as const, label: 'OTP Login' },
+                { id: 'register' as const, label: 'Register' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`tab-item ${loginTab === t.id ? 'active' : ''}`}
+                  style={{ flex: 1, padding: '8px 12px', fontSize: 11, borderRadius: 8, background: loginTab === t.id ? 'var(--bg-primary)' : 'transparent', border: 'none', cursor: 'pointer', fontWeight: 600, color: loginTab === t.id ? 'var(--primary)' : 'var(--text-secondary)' }}
+                  onClick={() => setLoginTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {/* TAB: PASSWORD LOGIN */}
+            {loginTab === 'password' && (
+              <form onSubmit={async (e) => { await handlePasswordLogin(e); setShowLoginModal(false); }} className="flex flex-col gap-3">
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="login-modal-ident">Email or Mobile Number</label>
+                  <input
+                    id="login-modal-ident"
+                    type="text"
+                    className="input"
+                    placeholder="Enter email or mobile number"
+                    value={emailOrPhone}
+                    onChange={e => setEmailOrPhone(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="login-modal-pass">Password</label>
+                  <input
+                    id="login-modal-pass"
+                    type="password"
+                    className="input"
+                    placeholder="Enter password"
+                    value={loginPassword}
+                    onChange={e => setLoginPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '0.5rem', justifyContent: 'center' }}>
+                  <i className="bi bi-box-arrow-in-right" /> Log In
+                </button>
+              </form>
+            )}
+
+            {/* TAB: OTP LOGIN */}
+            {loginTab === 'otp' && (
+              <div className="flex flex-col gap-3">
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="modal-cp-phone">Mobile Number</label>
+                  <div className="input-group" style={{ marginBottom: 0, display: 'flex' }}>
+                    <select id="modal-cp-country" className="input" value={countryCode}
+                      onChange={e => setCountryCode(e.target.value)}
+                      style={{ flex: '0 0 96px', borderRight: '1px solid var(--border-color)', borderRadius: 'var(--radius-md) 0 0 var(--radius-md)' }}>
+                      <option value="+91">ðŸ‡®ðŸ‡³ +91</option>
+                      <option value="+1">ðŸ‡ºðŸ‡¸ +1</option>
+                      <option value="+44">ðŸ‡¬ðŸ‡§ +44</option>
+                      <option value="+61">ðŸ‡¦ðŸ‡º +61</option>
+                      <option value="+971">ðŸ‡¦ðŸ‡ª +971</option>
+                    </select>
+                    <input id="modal-cp-phone" type="tel" className="input" placeholder="Phone number"
+                      value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                      style={{ flex: 1, borderRadius: '0 var(--radius-md) var(--radius-md) 0' }} />
+                  </div>
+                </div>
+
+                <button id="modal-cp-otp-btn" className="btn btn-primary w-full" style={{ justifyContent: 'center' }} onClick={async () => { await handleOtpRequest(); setShowLoginModal(false); }}>
+                  <i className="bi bi-phone" /> {otpSent ? 'Resend OTP' : 'Send OTP'}
+                </button>
+
+                <div className="auth-divider"><span>or continue with</span></div>
+
+                <button id="modal-cp-wa-btn" className="btn btn-outline w-full" style={{ borderColor: '#25D366', color: '#25D366', justifyContent: 'center' }} onClick={async () => { await handleWhatsAppLogin(); setShowLoginModal(false); }}>
+                  <i className="bi bi-whatsapp" style={{ fontSize: 18 }} /> Login via WhatsApp
+                </button>
+              </div>
+            )}
+
+            {/* TAB: REGISTER */}
+            {loginTab === 'register' && (
+              <form onSubmit={async (e) => { await handleRegister(e); setShowLoginModal(false); }} className="flex flex-col gap-3">
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="modal-reg-name">Full Name</label>
+                  <input
+                    id="modal-reg-name"
+                    type="text"
+                    className="input"
+                    placeholder="E.g. Sarah Connor"
+                    value={regName}
+                    onChange={e => setRegName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="modal-reg-email">Email Address</label>
+                  <input
+                    id="modal-reg-email"
+                    type="email"
+                    className="input"
+                    placeholder="name@example.com"
+                    value={regEmail}
+                    onChange={e => setRegEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="modal-reg-phone">Mobile Number</label>
+                  <input
+                    id="modal-reg-phone"
+                    type="tel"
+                    className="input"
+                    placeholder="E.g. +919876543210"
+                    value={regPhone}
+                    onChange={e => setRegPhone(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label text-xxs font-semibold" htmlFor="modal-reg-pass">Create Password</label>
+                  <input
+                    id="modal-reg-pass"
+                    type="password"
+                    className="input"
+                    placeholder="Create password"
+                    value={regPassword}
+                    onChange={e => setRegPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn btn-primary w-full" style={{ marginTop: '0.5rem', justifyContent: 'center' }}>
+                  <i className="bi bi-person-plus" /> Create Account &amp; Login
+                </button>
+              </form>
+            )}
+
+            <button className="btn btn-secondary btn-sm"
+              style={{ width: '100%', marginTop: '1rem', opacity: 0.7, justifyContent: 'center' }}
+              onClick={async () => {
+                try {
+                  const res = await fetch('/api/auth/demo-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: 'Sarah Connor', phone: '+91 98765 43210', role: 'customer' }),
+                  });
+                  const data = await res.json();
+                  if (res.ok && data.token) {
+                    localStorage.setItem('customer_token', data.token);
+                    setCustomerName(data.user.name);
+                    setAuthView('dashboard');
+                    setForceDashboard(true);
+                    setShowLoginModal(false);
+                  }
+                } catch {
+                  setShowLoginModal(false);
+                }
+              }}>
+              <i className="bi bi-eye" /> Demo Bypass (Sarah Connor)
+            </button>
           </div>
         </div>
       )}

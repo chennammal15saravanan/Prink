@@ -7,7 +7,7 @@ export type CustomerSubView = 'dashboard' | 'editor' | 'tracking' | 'drafts' | '
 export type AdminSection = 'overview' | 'orders' | 'monitor' | 'templates' | 'queue' | 'reports' | 'settings' | 'workflow' | 'sku-mappings';
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 export type CropMaskType = 'circle' | 'square' | 'rect';
-export type ProductType = 'mug' | 'canvas' | 'frame' | 'calendar' | 'photobook';
+export type ProductType = 'mug' | 'canvas' | 'frame' | 'calendar' | 'photobook' | 'tshirt' | 'mobilecase' | 'pillow' | 'keychain';
 export type DpiStatus = 'ok' | 'low' | 'none';
 export type UploadStatus = 'ready' | 'awaiting' | 'pending';
 export type PrintStatus = 'pending' | 'processing' | 'print-ready' | 'completed';
@@ -107,6 +107,9 @@ export interface Order {
   date: string;
   phone?: string;
   images?: UploadedImage[];
+  adminApprovalStatus?: 'pending' | 'approved' | 'rejected' | 'reupload';
+  printStatus?: 'pending' | 'printing' | 'completed';
+  submissionTime?: string;
 }
 
 export interface PrinterQueueItem {

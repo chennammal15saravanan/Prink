@@ -53,40 +53,60 @@ const SEED_USERS = [
 ];
 
 const SEED_ORDERS = [
-  { id: '#1042-1', customer: 'John Doe',    product: 'Coffee Mug Wrap',      productType: 'mug',       sku: 'MUG-11OZ',    quantity: 1, customizationStatus: 'completed',   deliveryStatus: 'delivered', dpi: '300 DPI',  dpiStatus: 'ok',   uploadStatus: 'ready',    date: 'Jun 16, 2026', phone: '+91 98765 43210' },
-  { id: '#1043-1', customer: 'Jane Smith',  product: 'Stretch Canvas 12×16', productType: 'canvas',    sku: 'CANVAS-12X16', quantity: 1, customizationStatus: 'in-progress', deliveryStatus: 'pending',   dpi: '150 DPI',  dpiStatus: 'low',  uploadStatus: 'awaiting', date: 'Jun 16, 2026', phone: '+91 87654 32109' },
-  { id: '#1044-1', customer: 'Robert Lee',  product: 'Stretch Canvas 12×16', productType: 'canvas',    sku: 'CANVAS-12X16', quantity: 2, customizationStatus: 'completed',   deliveryStatus: 'shipped',   dpi: '300 DPI',  dpiStatus: 'ok',   uploadStatus: 'ready',    date: 'Jun 15, 2026', phone: '+91 76543 21098' },
-  { id: '#1045-1', customer: 'Emily Davis', product: 'Coffee Mug Wrap',      productType: 'mug',       sku: 'MUG-CLASSIC',  quantity: 1, customizationStatus: 'pending',     deliveryStatus: 'pending',   dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending',  date: 'Jun 15, 2026', phone: '+91 65432 10987' },
-  { id: '#1046-1', customer: 'Priya Singh', product: 'Photo Frame 8×10',     productType: 'frame',     sku: 'FRAME-8X10',   quantity: 1, customizationStatus: 'completed',   deliveryStatus: 'delivered', dpi: '300 DPI',  dpiStatus: 'ok',   uploadStatus: 'ready',    date: 'Jun 14, 2026', phone: '+91 54321 09876' },
-  { id: '#1047-1', customer: 'Ravi Kumar',  product: 'Wall Calendar 2027',   productType: 'calendar',  sku: 'CAL-2027',     quantity: 1, customizationStatus: 'in-progress', deliveryStatus: 'pending',   dpi: '72 DPI',   dpiStatus: 'low',  uploadStatus: 'awaiting', date: 'Jun 14, 2026', phone: '+91 43210 98765' },
+  { id: 'SP-2001', customer: 'Sarah Connor', product: 'Premium Ceramic Coffee Mug Wrap', productType: 'mug', sku: 'PRK-MUG-CLASSIC', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 28, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2002', customer: 'Sarah Connor', product: 'Magic Color Changing Mug (15oz)', productType: 'mug', sku: 'PRK-MUG-MAGIC', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2003', customer: 'Sarah Connor', product: 'Custom Classic Cotton T-Shirt (White)', productType: 'tshirt', sku: 'PRK-TSHIRT-WHITE', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2004', customer: 'Sarah Connor', product: 'Custom Classic Cotton T-Shirt (Black)', productType: 'tshirt', sku: 'PRK-TSHIRT-BLACK', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 29, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2005', customer: 'Sarah Connor', product: 'Stretch Canvas Wall Art 12×16', productType: 'canvas', sku: 'PRK-CANVAS-1216', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2006', customer: 'Sarah Connor', product: 'Premium Oak Wood Photo Frame 8×10', productType: 'frame', sku: 'PRK-FRM-810', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2007', customer: 'Sarah Connor', product: 'Custom Desk Calendar 2026', productType: 'calendar', sku: 'PRK-CAL-2026', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2008', customer: 'Sarah Connor', product: 'Hardcover Memories Photo Book', productType: 'photobook', sku: 'PRK-BOOK-20P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2009', customer: 'Sarah Connor', product: 'Ultra Slim Personalized Phone Case', productType: 'mobilecase', sku: 'PRK-CASE-IP15P', quantity: 1, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '' },
+  { id: 'SP-2010', customer: 'Sarah Connor', product: 'Soft Comfort Personalised Pillow', productType: 'pillow', sku: 'PRK-PIL-SOFT', quantity: 2, customizationStatus: 'pending', deliveryStatus: 'pending', dpi: 'No Image', dpiStatus: 'none', uploadStatus: 'pending', adminApprovalStatus: 'pending', date: 'Jun 30, 2026', phone: '+91 98765 43210', images: [], designData: '' }
 ];
 
 const SEED_QUEUE = [
-  { id: '#1042', customer: 'John Doe',    product: 'Coffee Mug (11oz)', trimSize: '8.5"×3.0"',    status: 'print-ready', priority: 'high',   assignedAt: '09:15 AM' },
-  { id: '#1044', customer: 'Robert Lee',  product: 'Canvas 12×16',      trimSize: '12.25"×16.25"', status: 'processing',  priority: 'normal', assignedAt: '09:45 AM' },
-  { id: '#1046', customer: 'Priya Singh', product: 'Photo Frame 8×10',  trimSize: '8.25"×10.25"',  status: 'pending',     priority: 'low',    assignedAt: '10:00 AM' },
+  { id: 'SP-2004', customer: 'Sarah Connor', product: 'Photo Frame 8×10', trimSize: '8.25"×10.25"', status: 'print-ready', priority: 'high', assignedAt: '09:15 AM' },
 ];
 
 const SEED_TEMPLATES = [
-  { id: 't1', name: 'Classic Mug Wrap',     productType: 'mug',       thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200', usageCount: 142, lastModified: 'Jun 15, 2026', elements: [], skuMapping: ['MUG-CLASSIC', 'MUG-11OZ'], isDefault: true, category: 'mug', tags: ['popular'] },
+  { id: 't1', name: 'Classic Mug Wrap',     productType: 'mug',       thumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200', usageCount: 142, lastModified: 'Jun 15, 2026', elements: [], skuMapping: ['PRK-MUG-CLASSIC', 'MUG-11OZ'], isDefault: true, category: 'mug', tags: ['popular'] },
   { id: 't2', name: 'Ocean Canvas',         productType: 'canvas',    thumbnail: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200', usageCount: 98,  lastModified: 'Jun 12, 2026', elements: [], skuMapping: ['CANVAS-12X16', 'CANVAS-16X20'], isDefault: true, category: 'canvas', tags: ['new'] },
-  { id: 't3', name: 'Portrait Frame',       productType: 'frame',     thumbnail: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200', usageCount: 67,  lastModified: 'Jun 10, 2026', elements: [], skuMapping: ['FRAME-8X10', 'FRAME-11X14'], isDefault: true, category: 'frame', tags: [] },
+  { id: 't3', name: 'Portrait Frame',       productType: 'frame',     thumbnail: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=200', usageCount: 67,  lastModified: 'Jun 10, 2026', elements: [], skuMapping: ['PRK-FRM-810', 'FRAME-8X10'], isDefault: true, category: 'frame', tags: [] },
   { id: 't4', name: '2027 Family Calendar', productType: 'calendar',  thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=200', usageCount: 34,  lastModified: 'Jun 8, 2026',  elements: [], skuMapping: ['CAL-2027', 'CAL-WALL'], isDefault: true, category: 'calendar', tags: ['seasonal'] },
-  { id: 't5', name: 'Rose Photo Book',      productType: 'photobook', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200', usageCount: 23,  lastModified: 'Jun 5, 2026',  elements: [], skuMapping: ['BOOK-ROSE', 'BOOK-ALBUM'], isDefault: true, category: 'photobook', tags: [] },
+  { id: 't5', name: 'Rose Photo Book',      productType: 'photobook', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=200', usageCount: 23,  lastModified: 'Jun 5, 2026',  elements: [], skuMapping: ['PRK-BOOK-20P', 'BOOK-ROSE'], isDefault: true, category: 'photobook', tags: [] },
+  { id: 't6', name: 'T-Shirt Front Print',  productType: 'tshirt',    thumbnail: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=200', usageCount: 110, lastModified: 'Jun 22, 2026', elements: [], skuMapping: ['PRK-TSHIRT-L'], isDefault: true, category: 'tshirt', tags: ['popular'] },
+  { id: 't7', name: 'Mobile Case Snap',     productType: 'mobilecase',thumbnail: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?q=80&w=200', usageCount: 88,  lastModified: 'Jun 23, 2026', elements: [], skuMapping: ['PRK-CASE-IP15P'], isDefault: true, category: 'mobilecase', tags: ['new'] },
+  { id: 't8', name: 'Cozy Accent Pillow',   productType: 'pillow',    thumbnail: 'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?q=80&w=200', usageCount: 45,  lastModified: 'Jun 24, 2026', elements: [], skuMapping: ['PRK-PIL-SOFT'], isDefault: true, category: 'pillow', tags: [] },
+  { id: 't9', name: 'Mini Acrylic Keychain',productType: 'keychain',  thumbnail: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=200', usageCount: 120, lastModified: 'Jun 25, 2026', elements: [], skuMapping: ['PRK-KEY-ACRYLIC'], isDefault: true, category: 'keychain', tags: [] }
 ];
 
 const SEED_SKU_MAPPINGS = [
-  { sku: 'MUG-CLASSIC', templateId: 't1', productType: 'mug', customizationRules: { maxPhotos: 3 } },
-  { sku: 'MUG-11OZ', templateId: 't1', productType: 'mug', customizationRules: { maxPhotos: 3 } },
+  { sku: 'PRK-MUG-CLASSIC', templateId: 't1', productType: 'mug', customizationRules: { maxPhotos: 1 } },
+  { sku: 'MUG-11OZ', templateId: 't1', productType: 'mug', customizationRules: { maxPhotos: 1 } },
   { sku: 'CANVAS-12X16', templateId: 't2', productType: 'canvas', customizationRules: { maxPhotos: 5 } },
-  { sku: 'FRAME-8X10', templateId: 't3', productType: 'frame', customizationRules: { maxPhotos: 1 } },
+  { sku: 'PRK-FRM-810', templateId: 't3', productType: 'frame', customizationRules: { maxPhotos: 1 } },
   { sku: 'CAL-2027', templateId: 't4', productType: 'calendar', customizationRules: { maxPhotos: 12 } },
-  { sku: 'BOOK-ROSE', templateId: 't5', productType: 'photobook', customizationRules: { maxPhotos: 30 } },
+  { sku: 'PRK-BOOK-20P', templateId: 't5', productType: 'photobook', customizationRules: { maxPhotos: 20 } },
+  { sku: 'PRK-TSHIRT-L', templateId: 't6', productType: 'tshirt', customizationRules: { maxPhotos: 1 } },
+  { sku: 'PRK-CASE-IP15P', templateId: 't7', productType: 'mobilecase', customizationRules: { maxPhotos: 1 } },
+  { sku: 'PRK-PIL-SOFT', templateId: 't8', productType: 'pillow', customizationRules: { maxPhotos: 1 } },
+  { sku: 'PRK-KEY-ACRYLIC', templateId: 't9', productType: 'keychain', customizationRules: { maxPhotos: 1 } },
 ];
 
 // Initialize JSON files if missing
 if (!fs.existsSync(FILES.users)) writeJson(FILES.users, SEED_USERS);
-if (!fs.existsSync(FILES.orders)) writeJson(FILES.orders, SEED_ORDERS);
+
+// Force update orders JSON if SP-2001 is missing, so demo works out-of-the-box
+let existingOrders = [];
+if (fs.existsSync(FILES.orders)) {
+  existingOrders = readJson(FILES.orders, SEED_ORDERS);
+}
+if (!existingOrders.some(o => o.id === 'SP-2001')) {
+  writeJson(FILES.orders, SEED_ORDERS);
+} else {
+  if (!fs.existsSync(FILES.orders)) writeJson(FILES.orders, SEED_ORDERS);
+}
 if (!fs.existsSync(FILES.uploads)) writeJson(FILES.uploads, []);
 if (!fs.existsSync(FILES.queue)) writeJson(FILES.queue, SEED_QUEUE);
 if (!fs.existsSync(FILES.products)) writeJson(FILES.products, []);
@@ -140,6 +160,7 @@ const UserSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   role: { type: String, enum: ['admin', 'printer', 'customer'], required: true },
   name: { type: String, required: true },
+  phone: { type: String },
 }, { timestamps: true });
 
 const User = mongoose.model('User', UserSchema);
@@ -170,6 +191,9 @@ const OrderSchema = new mongoose.Schema({
   }],
   theme: { type: String },
   caption: { type: String },
+  adminApprovalStatus: { type: String, enum: ['pending', 'approved', 'rejected', 'reupload'], default: 'pending' },
+  printStatus: { type: String, enum: ['pending', 'printing', 'completed'], default: 'pending' },
+  submissionTime: { type: String },
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', OrderSchema);
@@ -328,6 +352,15 @@ module.exports = {
     const users = readJson(FILES.users, SEED_USERS);
     return users.find(u => u.email.toLowerCase() === email.toLowerCase());
   },
+  getUserByPhone: async (phone) => {
+    if (useMongoDb) {
+      try { return await User.findOne({ phone }).lean(); } catch (e) {
+        console.error('[DB MONGO ERROR] getUserByPhone, falling back:', e.message);
+      }
+    }
+    const users = readJson(FILES.users, SEED_USERS);
+    return users.find(u => u.phone === phone);
+  },
   createUser: async (userData) => {
     const newUser = { id: `usr_${Date.now()}`, ...userData };
     if (useMongoDb) {
@@ -401,6 +434,21 @@ module.exports = {
       return orders[index];
     }
     return null;
+  },
+  deleteOrdersByPhone: async (phone) => {
+    if (useMongoDb) {
+      try {
+        await Order.deleteMany({ phone });
+        return true;
+      } catch (e) {
+        console.error('[DB MONGO ERROR] deleteOrdersByPhone, falling back:', e.message);
+      }
+    }
+    const phoneClean = phone.replace(/\D/g, '');
+    let orders = readJson(FILES.orders, SEED_ORDERS);
+    orders = orders.filter(o => !o.phone || !o.phone.replace(/\D/g, '').endsWith(phoneClean));
+    writeJson(FILES.orders, orders);
+    return true;
   },
 
   // Uploads
