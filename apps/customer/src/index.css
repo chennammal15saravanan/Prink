@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#F8F9FC] text-gray-900 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .saas-card {
+    @apply bg-white rounded-2xl shadow-premium border border-gray-100;
+  }
+  
+  .saas-button {
+    @apply px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 active:scale-95;
+  }
+  
+  .saas-button-primary {
+    @apply saas-button bg-primary text-white hover:bg-primary-light shadow-lg hover:shadow-primary/30;
+  }
+  
+  .saas-button-secondary {
+    @apply saas-button bg-white text-gray-700 border border-gray-200 hover:bg-gray-50;
+  }
+}
+
+/* Hide scrollbar for a cleaner canvas look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
