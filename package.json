@@ -1,0 +1,22 @@
+{
+  "name": "the-prink",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev:all",
+    "dev:customer": "cd apps/customer && npx vite",
+    "dev:admin": "cd apps/admin && npx vite",
+    "dev:printer": "cd apps/printer && npx vite",
+    "dev:server": "npm run dev --prefix server",
+    "dev:all": "concurrently \"npm run dev:customer\" \"npm run dev:admin\" \"npm run dev:printer\" \"npm run dev:server\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "@shopify/shopify-api": "^13.1.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
