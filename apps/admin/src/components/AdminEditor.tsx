@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Image as KonvaImage, Rect, Transformer, Text, Circle, Line, Star, Path } from 'react-konva';
-import useImage from 'use-image';
+
 import { 
   ArrowLeft, Download, Upload, ZoomIn, ZoomOut, Save, FileCheck, RefreshCw, 
   Trash2, Move, Crop, Image as ImageIcon, Layers, Type, Sliders, Wand2, 
@@ -310,9 +310,6 @@ export default function AdminEditor({ order, onBack }: AdminEditorProps) {
     photobook: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800',
     calendar: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=800'
   };
-
-  const defaultBg = productDefaults[currentOrder.productType || ''] || 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?q=80&w=800'; // fallback
-  const [bgImage] = useImage(currentOrder.productImage || defaultBg, 'anonymous');
 
   const getPrintArea = (sku: string, pType: string) => {
     if ((sku || '').toUpperCase().includes('CASE') || (pType || '').toLowerCase() === 'mobilecase') {
@@ -1338,8 +1335,8 @@ export default function AdminEditor({ order, onBack }: AdminEditorProps) {
                   ref={stageRef}
                 >
                   <Layer>
-                    {/* Background Product Mockup Image */}
-                    <KonvaImage image={bgImage} width={500} height={600} id="bg" />
+                    {/* Clean Print Canvas Background */}
+                    <Rect width={500} height={600} fill="#ffffff" id="bg" />
                     
                     {/* Bleed Area (Red boundary) */}
                     <Rect 
