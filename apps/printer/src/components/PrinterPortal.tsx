@@ -390,32 +390,55 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: '#F4F7FE', 
+      background: 'linear-gradient(135deg, #0B0F33 0%, #171C62 100%)', 
       padding: '40px 28px',
       fontFamily: "'Inter', sans-serif" 
     }}>
+      <style>{`
+        .tab-bar { display: flex; gap: 10px; margin-bottom: 24px; }
+        .tab-item { padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94A3B8; cursor: pointer; transition: 0.2s; font-size: 13px; font-weight: 500; }
+        .tab-item.active { background: rgba(255, 255, 255, 0.1); color: #FFF; border-color: rgba(255, 255, 255, 0.2); font-weight: 600; }
+        .clean-table { width: 100%; border-collapse: collapse; color: rgba(255,255,255,0.85); font-size: 13px; }
+        .clean-table th { text-align: left; padding: 16px; color: #94A3B8; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .clean-table td { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .clean-table tr:hover { background: rgba(255,255,255,0.02); }
+        .dark-input::placeholder { color: rgba(255,255,255,0.4); }
+        .btn-dark-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #FFF; transition: 0.2s; }
+        .btn-dark-outline:hover { background: rgba(255,255,255,0.1); }
+        .priority-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .priority-badge.high { background: rgba(255, 48, 76, 0.15); color: #FF304C; }
+        .priority-badge.normal { background: rgba(255, 255, 255, 0.1); color: #E2E8F0; }
+        .status-chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .status-chip.print-ready { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-chip.processing { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+        .status-chip.pending { background: rgba(255, 255, 255, 0.1); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .status-chip.completed { background: rgba(255, 255, 255, 0.05); color: #94A3B8; }
+      `}</style>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* ── Page Header ── */}
-        <div className="glass-header flex justify-between align-center section-header mb-8" style={{ flexWrap: 'wrap', gap: 16, alignItems: 'center', padding: '24px 32px', borderRadius: '24px', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+        <div className="glass-header flex justify-between align-center section-header mb-8" style={{ flexWrap: 'wrap', gap: 16, alignItems: 'center', padding: '24px 32px', borderRadius: '24px', background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <img src={mainLogo} alt="the Prink" style={{ height: 42, width: 'auto', display: 'block' }} />
-            <div style={{ borderLeft: '2px solid #E2E8F0', paddingLeft: 20, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h2 className="page-heading" style={{ fontSize: 24, fontWeight: 800, color: '#171C62', margin: 0, paddingLeft: 0, borderLeft: 'none', letterSpacing: '0.02em' }}>
+            {/* For dark mode, you typically want a white logo, assuming mainLogo has good contrast or we drop brightness. Let's just use it as is or add a filter if it's dark text */}
+            <div style={{ background: '#FFF', padding: '8px 12px', borderRadius: '12px' }}>
+              <img src={mainLogo} alt="the Prink" style={{ height: 32, width: 'auto', display: 'block' }} />
+            </div>
+            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: 20, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h2 className="page-heading" style={{ fontSize: 24, fontWeight: 800, color: '#FFFFFF', margin: 0, paddingLeft: 0, borderLeft: 'none', letterSpacing: '0.02em' }}>
                 Printer Operator Terminal
               </h2>
-              <p className="text-sm text-muted" style={{ marginTop: 4, marginBottom: 0, color: '#64748b' }}>
+              <p className="text-sm" style={{ marginTop: 4, marginBottom: 0, color: '#94A3B8' }}>
                 Manage and download compiled print-ready vector layouts.
               </p>
             </div>
           </div>
           <div className="flex gap-3 align-center flex-wrap">
-            <button className="btn btn-outline btn-sm" style={{ borderColor: '#E2E8F0', color: '#475569' }} onClick={fetchQueue}>
+            <button className="btn btn-dark-outline btn-sm" onClick={fetchQueue}>
               <i className="bi bi-arrow-repeat" /> Refresh
             </button>
-            <button className="btn btn-primary btn-sm" style={{ background: '#FF304C', border: 'none', boxShadow: '0 4px 12px rgba(255,48,76,0.2)' }} onClick={batchDownload}>
+            <button className="btn btn-primary btn-sm" style={{ background: '#FF304C', border: 'none', boxShadow: '0 4px 12px rgba(255,48,76,0.3)', color: '#FFF' }} onClick={batchDownload}>
               <i className="bi bi-download" /> Batch Download
             </button>
-            <button className="btn btn-outline btn-sm" style={{ padding: '6px 12px', borderColor: '#E2E8F0', color: '#475569' }} onClick={handleLogout}>
+            <button className="btn btn-dark-outline btn-sm" style={{ padding: '6px 12px' }} onClick={handleLogout}>
               <i className="bi bi-box-arrow-right" /> Terminal Log Out
             </button>
           </div>
@@ -429,20 +452,20 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             { label: 'Print Ready',    value: countByStatus('print-ready'),        icon: 'bi-check-circle',   variant: ' success' },
             { label: 'Completed Today',value: countByStatus('completed') + 12,    icon: 'bi-bag-check',      variant: '' },
           ].map((m, i) => (
-            <div key={i} className={`glass-panel metric-card${m.variant}`} style={{ borderRadius: '24px', padding: '24px', background: '#FFFFFF', borderColor: '#F1F5F9', color: '#1E293B', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+            <div key={i} className={`glass-panel metric-card${m.variant}`} style={{ borderRadius: '24px', padding: '24px', background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
               <div className="flex justify-between align-center mb-4">
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#94A3B8' }}>{m.label}</p>
-                <span style={{ width: 36, height: 36, background: m.variant.includes('accent') ? '#FFF1F2' : m.variant.includes('success') ? '#ECFDF5' : '#F8FAFC', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className={`bi ${m.icon}`} style={{ fontSize: 16, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#64748b' }} />
+                <span style={{ width: 36, height: 36, background: m.variant.includes('accent') ? 'rgba(255,48,76,0.15)' : m.variant.includes('success') ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className={`bi ${m.icon}`} style={{ fontSize: 16, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#E2E8F0' }} />
                 </span>
               </div>
-              <h3 style={{ fontSize: 36, fontWeight: 800, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#1E293B', lineHeight: 1, margin: '0' }}>{m.value}</h3>
+              <h3 style={{ fontSize: 36, fontWeight: 800, color: '#FFFFFF', lineHeight: 1, margin: '0' }}>{m.value}</h3>
             </div>
           ))}
         </div>
 
         {/* ── Print Queue Card ── */}
-        <div className="glass-panel card p-8 mb-8" style={{ borderRadius: '32px', background: '#FFFFFF', border: 'none', boxShadow: '0 12px 36px rgba(0,0,0,0.04)' }}>
+        <div className="glass-panel p-8 mb-8" style={{ borderRadius: '32px', background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}>
         {/* Tab Bar */}
         <div className="tab-bar">
           {tabs.map(t => (
@@ -452,7 +475,7 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             >
               {t.label}
               {t.count !== undefined && (
-                <span className="tab-count">{t.count}</span>
+                <span style={{ marginLeft: 6, opacity: 0.7 }}>{t.count}</span>
               )}
             </button>
           ))}
@@ -466,14 +489,16 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
               placeholder="Search by Order ID, Customer, SKU, Status..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input"
+              className="dark-input"
               style={{
                 width: '100%',
-                padding: '0.625rem 1rem 0.625rem 2.5rem',
+                padding: '0.75rem 1rem 0.75rem 2.5rem',
                 fontSize: '0.875rem',
-                borderRadius: '8px',
-                border: '1px solid var(--border-color)',
-                backgroundColor: '#f9fafb'
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.1)',
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                color: '#FFF',
+                outline: 'none'
               }}
             />
             <i className="bi bi-search" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', fontSize: '0.9rem' }} />
@@ -489,7 +514,7 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
         </div>
 
         {/* Table */}
-        <div className="clean-table-wrapper">
+        <div style={{ overflowX: 'auto' }}>
           <table className="clean-table" id="printer-queue-tbody">
             <thead>
               <tr>
@@ -506,29 +531,29 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             <tbody>
               {filteredQueue.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '32px', color: 'var(--text-tertiary)' }}>
-                    <i className="bi bi-inbox" style={{ fontSize: 28, display: 'block', marginBottom: 8, opacity: 0.4 }} />
+                  <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>
+                    <i className="bi bi-inbox" style={{ fontSize: 32, display: 'block', marginBottom: 12, opacity: 0.5 }} />
                     No jobs matching this filter.
                   </td>
                 </tr>
               ) : filteredQueue.map(item => (
                 <tr key={item.id} id={`printer-row-${item.id}`}>
-                  <td><span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: 13 }}>{item.id}</span></td>
+                  <td><span style={{ fontWeight: 700, color: '#FFF', fontSize: 13 }}>{item.id}</span></td>
                   <td>
-                    <div style={{ fontWeight: 500, fontSize: 13 }}>
+                    <div style={{ fontWeight: 500, fontSize: 13, color: '#E2E8F0' }}>
                       {customerName(item.customer)}
                     </div>
                   </td>
 
-                  <td><span className="text-sm text-muted">{item.product}</span></td>
+                  <td><span style={{ color: '#94A3B8' }}>{item.product}</span></td>
                   <td>
-                    <span style={{ fontWeight: 600, fontSize: 12 }}>{item.trimSize}</span>
+                    <span style={{ fontWeight: 600, fontSize: 12, color: '#E2E8F0' }}>{item.trimSize}</span>
                     <br />
-                    <span className="text-xs text-muted">+0.125" bleed</span>
+                    <span style={{ fontSize: 11, color: '#64748B' }}>+0.125" bleed</span>
                   </td>
                   <td>
                     <span className={`priority-badge ${item.priority}`}>
-                      {item.priority === 'high' && <i className="bi bi-arrow-up" />}
+                      {item.priority === 'high' && <i className="bi bi-arrow-up" style={{ marginRight: 4 }} />}
                       {item.priority}
                     </span>
                   </td>
@@ -537,16 +562,17 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
                       {STATUS_META[item.status]?.label ?? item.status}
                     </span>
                   </td>
-                  <td><span className="text-xs text-muted">{item.assignedAt}</span></td>
+                  <td><span style={{ color: '#94A3B8', fontSize: 12 }}>{item.assignedAt}</span></td>
                   <td style={{ textAlign: 'right', paddingRight: '24px', whiteSpace: 'nowrap' }}>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'nowrap', alignItems: 'center' }}>
                       {item.status === 'print-ready' && (
                         <>
                           <button className="btn btn-primary btn-sm"
+                            style={{ background: '#FF304C', border: 'none', color: '#FFF' }}
                             onClick={() => downloadPDF(item.id, customerName(item.customer))}>
                             <i className="bi bi-file-earmark-pdf" /> PDF
                           </button>
-                          <button className="btn btn-secondary btn-sm"
+                          <button className="btn btn-dark-outline btn-sm"
                             onClick={() => updateJobStatus(item.id, 'completed')}>
                             Done
                           </button>
@@ -555,10 +581,11 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
                       {item.status === 'processing' && (
                         <>
                           <button className="btn btn-primary btn-sm"
+                            style={{ background: '#FF304C', border: 'none', color: '#FFF' }}
                             onClick={() => downloadPDF(item.id, customerName(item.customer))}>
                             <i className="bi bi-file-earmark-pdf" /> PDF
                           </button>
-                          <button className="btn btn-secondary btn-sm"
+                          <button className="btn btn-dark-outline btn-sm"
                             onClick={() => updateJobStatus(item.id, 'completed')}>
                             Done
                           </button>
@@ -567,19 +594,19 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
                         {item.status === 'pending' && (
                           <>
                             <button className="btn btn-primary btn-sm"
+                              style={{ background: '#FF304C', border: 'none', color: '#FFF' }}
                               onClick={() => downloadPDF(item.id, customerName(item.customer))}>
                               <i className="bi bi-file-earmark-pdf" /> PDF
                             </button>
-                            <button className="btn btn-outline btn-sm"
-                              style={{ borderColor: '#E2E8F0', color: '#475569' }}
+                            <button className="btn btn-dark-outline btn-sm"
                               onClick={() => updateJobStatus(item.id, 'processing')}>
                               <i className="bi bi-play" /> Start
                             </button>
                           </>
                         )}
                       {item.status === 'completed' && (
-                        <span className="badge badge-success" style={{ fontSize: 11 }}>
-                          <i className="bi bi-check" /> Delivered
+                        <span className="status-chip completed">
+                          <i className="bi bi-check" style={{ marginRight: 4 }} /> Delivered
                         </span>
                       )}
                     </div>
@@ -592,53 +619,52 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
       </div>
 
       {/* ── Registration calibration preview ── */}
-      <div className="card p-6">
-        <div className="flex justify-between align-center mb-4">
+      <div className="glass-panel p-8" style={{ borderRadius: '32px', background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 12px 40px rgba(0,0,0,0.2)' }}>
+        <div className="flex justify-between align-center mb-6">
           <div>
-            <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            <h4 style={{ fontSize: 14, fontWeight: 700, color: '#FFF', letterSpacing: '0.06em', textTransform: 'uppercase', margin: 0 }}>
               Registration Mark Preview
             </h4>
-            <p className="text-xs text-muted" style={{ marginTop: 2 }}>Alignment reference for press operators</p>
+            <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 4, marginBottom: 0 }}>Alignment reference for press operators</p>
           </div>
-          <span className="badge badge-primary"><i className="bi bi-printer" /> Print Calibration</span>
+          <span className="status-chip" style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF' }}><i className="bi bi-printer" style={{ marginRight: 6 }} /> Print Calibration</span>
         </div>
 
         <div style={{
-          height: 240,
-          background: 'var(--bg-tertiary)',
-          borderRadius: 'var(--radius-lg)',
+          height: 260,
+          background: 'rgba(0,0,0,0.2)',
+          borderRadius: '16px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: '1px solid var(--border-color)',
+          border: '1px solid rgba(255,255,255,0.05)',
           position: 'relative', overflow: 'hidden',
         }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'var(--gradient-subtle)' }} />
           {/* Print Sheet Mockup */}
-          <div style={{ background: 'white', width: 380, height: 175, border: '1px solid #d1d5db', boxShadow: 'var(--shadow-lg)', position: 'relative', borderRadius: 2 }}>
+          <div style={{ background: '#F8FAFC', width: 420, height: 190, border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', position: 'relative', borderRadius: 4 }}>
             {/* Bleed border */}
-            <div style={{ position: 'absolute', top: -5, left: -5, right: -5, bottom: -5, border: '1.5px dashed var(--accent)', borderRadius: 2, opacity: 0.6 }} />
+            <div style={{ position: 'absolute', top: -6, left: -6, right: -6, bottom: -6, border: '1.5px dashed #FF304C', borderRadius: 4, opacity: 0.8 }} />
             {/* Crosshairs */}
-            {([[-18,-18], [-18,'calc(100% + 6px)'], ['calc(100% + 6px)',-18], ['calc(100% + 6px)','calc(100% + 6px)']] as [number|string, number|string][]).map((pos, i) => (
-              <span key={i} style={{ position: 'absolute', top: pos[0], left: pos[1], fontSize: 13, fontWeight: 900, color: 'var(--primary)', lineHeight: 1 }}>⊕</span>
+            {([[-20,-20], [-20,'calc(100% + 6px)'], ['calc(100% + 6px)',-20], ['calc(100% + 6px)','calc(100% + 6px)']] as [number|string, number|string][]).map((pos, i) => (
+              <span key={i} style={{ position: 'absolute', top: pos[0], left: pos[1], fontSize: 14, fontWeight: 900, color: '#171C62', lineHeight: 1 }}>⊕</span>
             ))}
             {/* Calibration + brand colour bars */}
-            <div style={{ position: 'absolute', top: 7, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 3 }}>
+            <div style={{ position: 'absolute', top: 8, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 4 }}>
               {['#00b4d8','#e040fb','#ffd60a','#1a1a1a','#171C62','#FF304C','#0fbe88'].map((c, i) => (
-                <div key={i} style={{ width: 14, height: 14, background: c, borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+                <div key={i} style={{ width: 16, height: 16, background: c, borderRadius: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
               ))}
             </div>
             {/* Job metadata */}
-            <span style={{ position: 'absolute', bottom: 5, left: 8, fontFamily: 'monospace', fontSize: 8, color: '#64748b', letterSpacing: '0.04em' }}>
+            <span style={{ position: 'absolute', bottom: 6, left: 10, fontFamily: 'monospace', fontSize: 9, color: '#475569', letterSpacing: '0.05em' }}>
               JOB: {queue[0]?.id ?? '#----'} · the PRINK PRINT ENGINE · v2.1 · RGB/300DPI
             </span>
             {/* Image fill */}
-            <div style={{ width: '100%', height: '100%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.82, borderRadius: 1 }}>
-              <i className="bi bi-card-image" style={{ fontSize: '40px', color: '#94a3b8' }} />
+            <div style={{ width: '100%', height: '100%', background: 'rgba(15, 23, 42, 0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 2 }}>
+              <i className="bi bi-images" style={{ fontSize: '48px', color: '#CBD5E1' }} />
             </div>
           </div>
         </div>
 
         {/* Spec Cards */}
-        <div className="flex gap-4 mt-4">
+        <div className="flex gap-4 mt-6">
           {[
             { label: 'Color Profile', value: 'sRGB (RGB out)' },
             { label: 'Resolution',    value: '300 DPI min'    },
@@ -647,9 +673,9 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             { label: 'File Format',   value: 'PDF/X-1a'       },
             { label: 'Colour Mode',   value: 'ISO Coated v2'  },
           ].map(spec => (
-            <div key={spec.label} style={{ flex: 1, padding: '10px 12px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-              <p className="text-xs text-muted">{spec.label}</p>
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', marginTop: 2 }}>{spec.value}</p>
+            <div key={spec.label} style={{ flex: 1, padding: '14px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <p style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{spec.label}</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#FFF', margin: 0 }}>{spec.value}</p>
             </div>
           ))}
         </div>
