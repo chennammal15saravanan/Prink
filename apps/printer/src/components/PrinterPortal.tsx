@@ -390,32 +390,32 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #0B0F33 0%, #171C62 100%)', 
+      background: '#F4F7FE', 
       padding: '40px 28px',
       fontFamily: "'Inter', sans-serif" 
     }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         {/* ── Page Header ── */}
-        <div className="glass-header flex justify-between align-center section-header mb-8" style={{ flexWrap: 'wrap', gap: 16, alignItems: 'center', padding: '24px 32px', borderRadius: '24px' }}>
+        <div className="glass-header flex justify-between align-center section-header mb-8" style={{ flexWrap: 'wrap', gap: 16, alignItems: 'center', padding: '24px 32px', borderRadius: '24px', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <img src={mainLogo} alt="the Prink" style={{ height: 42, width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
-            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: 20, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <h2 className="page-heading" style={{ fontSize: 24, fontWeight: 800, color: '#ffffff', margin: 0, paddingLeft: 0, borderLeft: 'none', letterSpacing: '0.02em' }}>
+            <img src={mainLogo} alt="the Prink" style={{ height: 42, width: 'auto', display: 'block' }} />
+            <div style={{ borderLeft: '2px solid #E2E8F0', paddingLeft: 20, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h2 className="page-heading" style={{ fontSize: 24, fontWeight: 800, color: '#171C62', margin: 0, paddingLeft: 0, borderLeft: 'none', letterSpacing: '0.02em' }}>
                 Printer Operator Terminal
               </h2>
-              <p className="text-sm text-muted" style={{ marginTop: 4, marginBottom: 0, color: 'rgba(255,255,255,0.7)' }}>
+              <p className="text-sm text-muted" style={{ marginTop: 4, marginBottom: 0, color: '#64748b' }}>
                 Manage and download compiled print-ready vector layouts.
               </p>
             </div>
           </div>
           <div className="flex gap-3 align-center flex-wrap">
-            <button className="btn btn-outline btn-sm" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#fff' }} onClick={fetchQueue}>
+            <button className="btn btn-outline btn-sm" style={{ borderColor: '#E2E8F0', color: '#475569' }} onClick={fetchQueue}>
               <i className="bi bi-arrow-repeat" /> Refresh
             </button>
-            <button className="btn btn-primary btn-sm" style={{ background: '#FF304C', border: 'none', boxShadow: '0 8px 24px rgba(255,48,76,0.3)' }} onClick={batchDownload}>
+            <button className="btn btn-primary btn-sm" style={{ background: '#FF304C', border: 'none', boxShadow: '0 4px 12px rgba(255,48,76,0.2)' }} onClick={batchDownload}>
               <i className="bi bi-download" /> Batch Download
             </button>
-            <button className="btn btn-outline btn-sm" style={{ padding: '6px 12px', borderColor: 'rgba(255,255,255,0.2)', color: '#fff' }} onClick={handleLogout}>
+            <button className="btn btn-outline btn-sm" style={{ padding: '6px 12px', borderColor: '#E2E8F0', color: '#475569' }} onClick={handleLogout}>
               <i className="bi bi-box-arrow-right" /> Terminal Log Out
             </button>
           </div>
@@ -429,20 +429,20 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             { label: 'Print Ready',    value: countByStatus('print-ready'),        icon: 'bi-check-circle',   variant: ' success' },
             { label: 'Completed Today',value: countByStatus('completed') + 12,    icon: 'bi-bag-check',      variant: '' },
           ].map((m, i) => (
-            <div key={i} className={`glass-panel metric-card${m.variant}`} style={{ borderRadius: '24px', padding: '24px', background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}>
+            <div key={i} className={`glass-panel metric-card${m.variant}`} style={{ borderRadius: '24px', padding: '24px', background: '#FFFFFF', borderColor: '#F1F5F9', color: '#1E293B', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
               <div className="flex justify-between align-center mb-4">
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>{m.label}</p>
-                <span style={{ width: 36, height: 36, background: 'rgba(255,255,255,0.1)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className={`bi ${m.icon}`} style={{ fontSize: 16, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#fff' }} />
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#94A3B8' }}>{m.label}</p>
+                <span style={{ width: 36, height: 36, background: m.variant.includes('accent') ? '#FFF1F2' : m.variant.includes('success') ? '#ECFDF5' : '#F8FAFC', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className={`bi ${m.icon}`} style={{ fontSize: 16, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#64748b' }} />
                 </span>
               </div>
-              <h3 style={{ fontSize: 36, fontWeight: 800, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#fff', lineHeight: 1, margin: '0' }}>{m.value}</h3>
+              <h3 style={{ fontSize: 36, fontWeight: 800, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#1E293B', lineHeight: 1, margin: '0' }}>{m.value}</h3>
             </div>
           ))}
         </div>
 
         {/* ── Print Queue Card ── */}
-        <div className="glass-panel card p-8 mb-8" style={{ borderRadius: '32px', background: 'rgba(255,255,255,0.95)', border: 'none', boxShadow: '0 24px 48px rgba(0,0,0,0.2)' }}>
+        <div className="glass-panel card p-8 mb-8" style={{ borderRadius: '32px', background: '#FFFFFF', border: 'none', boxShadow: '0 12px 36px rgba(0,0,0,0.04)' }}>
         {/* Tab Bar */}
         <div className="tab-bar">
           {tabs.map(t => (
