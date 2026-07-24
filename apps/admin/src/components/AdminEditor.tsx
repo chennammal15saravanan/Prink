@@ -1071,13 +1071,13 @@ export default function AdminEditor({ order, onBack }: AdminEditorProps) {
                     {(currentOrder.images || []).map((img: any) => (
                       <div key={img.id} className="group relative border border-gray-200 rounded-lg overflow-hidden bg-blue-50 flex items-center justify-center">
                         <img 
-                          src={img.url} alt={img.name} 
+                          src={img.src || img.url} alt={img.name} 
                           onClick={() => {
                             const freshArea = printArea;
                             const newItem = {
                               id: `cust-img-${Date.now()}`,
                               type: 'image',
-                              src: img.url,
+                              src: img.src || img.url,
                               x: freshArea.x + 40,
                               y: freshArea.y + 40,
                               width: freshArea.width - 80,
@@ -1108,13 +1108,13 @@ export default function AdminEditor({ order, onBack }: AdminEditorProps) {
                     {(Array.isArray(recentUploads) ? recentUploads : []).map((img: any) => (
                       <div key={img.id} className="group relative border border-gray-100 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
                         <img 
-                          src={img.url} alt={img.originalName} 
+                          src={img.src || img.url} alt={img.originalName} 
                           onClick={() => {
                             const freshArea = printArea;
                             const newItem = {
                               id: `cust-img-${Date.now()}`,
                               type: 'image',
-                              src: img.url,
+                              src: img.src || img.url,
                               x: freshArea.x + 40,
                               y: freshArea.y + 40,
                               width: freshArea.width - 80,
