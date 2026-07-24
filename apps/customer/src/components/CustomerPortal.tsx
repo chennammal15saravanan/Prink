@@ -182,8 +182,8 @@ export default function CustomerPortal({
 
   const renderButterflySheet = (isReview = false) => (
     <div style={{
-      width: '297px',
-      height: '210px',
+      width: '420px',
+      height: '297px',
       background: '#ffffff',
       borderRadius: '2px',
       boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
@@ -199,55 +199,37 @@ export default function CustomerPortal({
       {/* Red Safe Margin */}
       <div style={{ position: 'absolute', top: '12px', left: '12px', right: '12px', bottom: '12px', border: '1px dashed #ef4444', pointerEvents: 'none', zIndex: 5 }} />
 
-      <div style={{ zIndex: 6, textAlign: 'center', marginBottom: '14px' }}>
+      <div style={{ zIndex: 6, textAlign: 'center', marginBottom: '10px' }}>
         <div style={{ fontSize: '9px', fontWeight: 800, color: '#000', marginBottom: '2px' }}>Butterfly Box Print Template</div>
-        <div style={{ fontSize: '5px', fontWeight: 600, color: '#94a3b8', letterSpacing: '0.5px' }}>A4 SHEET - 300 DPI - CMYK - LIVE PREVIEW</div>
+        <div style={{ fontSize: '5px', fontWeight: 600, color: '#94a3b8', letterSpacing: '0.5px' }}>A3 SHEET - 300 DPI - CMYK - LIVE PREVIEW</div>
       </div>
 
-      <div style={{ display: 'flex', gap: '30px', zIndex: 6 }}>
-        {/* Product 1 */}
-        <div style={{ display: 'flex', flexDirection: 'column', width: '81px' }}>
-          <div style={{ background: '#e0f2fe', color: '#0284c7', fontSize: '5px', fontWeight: 800, textAlign: 'center', padding: '3px 0', border: '1px solid #0ea5e9', borderBottom: 'none' }}>
-            PRODUCT 1 - 81x81mm
-          </div>
-          <div style={{ width: '81px', height: '81px', border: '1.5px solid #0ea5e9', background: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
-            {[0].map(idx => {
-              const crop = butterflyCrops[idx] || { scale: 1, rotation: 0, x: 0, y: 0 };
-              const ratio = 81 / 140; 
-              const isActive = !isReview && activeButterflyIndex === idx;
-              return (
-                <div key={idx} onClick={() => !isReview && changeActiveButterflyPhoto(idx)} style={{ width: '100%', height: '100%', position: 'absolute', left: 0, top: 0, border: '1px solid #fff', boxSizing: 'border-box', cursor: isReview ? 'default' : 'pointer', outline: isActive ? '2px solid #0ea5e9' : 'none', outlineOffset: '-2px', zIndex: isActive ? 10 : 1, overflow: 'hidden' }}>
-                  {images[idx] ? (
-                    <img crossOrigin="anonymous" src={images[idx].src} alt={`p1-${idx}`} style={{ position: 'absolute', left: 0, top: 0, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'cover', transform: `translate(${crop.x * ratio}px, ${crop.y * ratio}px) scale(${crop.scale}) rotate(${crop.rotation}deg)`, transition: 'transform 0.1s' }} />
-                  ) : <div style={{ width: '100%', height: '100%', background: '#f1f5f9' }} />}
-                  <div style={{ position: 'absolute', bottom: '1px', left: '1px', background: 'rgba(255,255,255,0.8)', fontSize: '5px', fontWeight: 700, padding: '1px 3px', borderRadius: '1px' }}>Photo 1</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', zIndex: 6, justifyContent: 'center', maxWidth: '380px' }}>
+        {[0, 1, 2, 3, 4, 5, 6, 7].map(idx => {
+          const isProduct1 = idx < 4;
+          const label = isProduct1 ? `P1 - Face ${idx + 1}` : `P2 - Face ${idx - 3}`;
+          const color = isProduct1 ? '#0ea5e9' : '#e11d48';
+          const bgColor = isProduct1 ? '#e0f2fe' : '#fce7f3';
+          const crop = butterflyCrops[idx] || { scale: 1, rotation: 0, x: 0, y: 0 };
+          const ratio = 81 / 140; 
+          const isActive = !isReview && activeButterflyIndex === idx;
 
-        {/* Product 2 */}
-        <div style={{ display: 'flex', flexDirection: 'column', width: '81px' }}>
-          <div style={{ background: '#fce7f3', color: '#be123c', fontSize: '5px', fontWeight: 800, textAlign: 'center', padding: '3px 0', border: '1px solid #e11d48', borderBottom: 'none' }}>
-            PRODUCT 2 - 81x81mm
-          </div>
-          <div style={{ width: '81px', height: '81px', border: '1.5px solid #e11d48', background: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
-            {[1].map(idx => {
-              const crop = butterflyCrops[idx] || { scale: 1, rotation: 0, x: 0, y: 0 };
-              const ratio = 81 / 140; 
-              const isActive = !isReview && activeButterflyIndex === idx;
-              return (
-                <div key={idx} onClick={() => !isReview && changeActiveButterflyPhoto(idx)} style={{ width: '100%', height: '100%', position: 'absolute', left: 0, top: 0, border: '1px solid #fff', boxSizing: 'border-box', cursor: isReview ? 'default' : 'pointer', outline: isActive ? '2px solid #e11d48' : 'none', outlineOffset: '-2px', zIndex: isActive ? 10 : 1, overflow: 'hidden' }}>
+          return (
+            <div key={idx} style={{ display: 'flex', flexDirection: 'column', width: '81px' }}>
+              <div style={{ background: bgColor, color: color, fontSize: '5px', fontWeight: 800, textAlign: 'center', padding: '3px 0', border: `1px solid ${color}`, borderBottom: 'none' }}>
+                {label} (81x81mm)
+              </div>
+              <div style={{ width: '81px', height: '81px', border: `1.5px solid ${color}`, background: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
+                <div onClick={() => !isReview && changeActiveButterflyPhoto(idx)} style={{ width: '100%', height: '100%', position: 'absolute', left: 0, top: 0, border: '1px solid #fff', boxSizing: 'border-box', cursor: isReview ? 'default' : 'pointer', outline: isActive ? `2px solid ${color}` : 'none', outlineOffset: '-2px', zIndex: isActive ? 10 : 1, overflow: 'hidden' }}>
                   {images[idx] ? (
-                    <img crossOrigin="anonymous" src={images[idx].src} alt={`p2-${idx}`} style={{ position: 'absolute', left: 0, top: 0, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'cover', transform: `translate(${crop.x * ratio}px, ${crop.y * ratio}px) scale(${crop.scale}) rotate(${crop.rotation}deg)`, transition: 'transform 0.1s' }} />
+                    <img crossOrigin="anonymous" src={images[idx].src} alt={`photo-${idx}`} style={{ position: 'absolute', left: 0, top: 0, transformOrigin: 'center', width: '100%', height: '100%', objectFit: 'cover', transform: `translate(${crop.x * ratio}px, ${crop.y * ratio}px) scale(${crop.scale}) rotate(${crop.rotation}deg)`, transition: 'transform 0.1s' }} />
                   ) : <div style={{ width: '100%', height: '100%', background: '#f1f5f9' }} />}
-                  <div style={{ position: 'absolute', bottom: '1px', left: '1px', background: 'rgba(255,255,255,0.8)', fontSize: '5px', fontWeight: 700, padding: '1px 3px', borderRadius: '1px' }}>Photo 2</div>
+                  <div style={{ position: 'absolute', bottom: '1px', left: '1px', background: 'rgba(255,255,255,0.8)', fontSize: '5px', fontWeight: 700, padding: '1px 3px', borderRadius: '1px' }}>Photo {idx + 1}</div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -2726,8 +2708,8 @@ export default function CustomerPortal({
                     className="wiz-btn-next"
                     onClick={() => {
                       if ((activeOrder.productType === 'butterfly' || (activeOrder.product || '').toLowerCase().includes('butterfly'))) {
-                        if (images.length !== 2 && !selectedOccasionTheme) {
-                          showToast('The Butterfly Box template requires exactly 2 photos or a selected theme.', 'warning');
+                        if (images.length !== 8 && !selectedOccasionTheme) {
+                          showToast('The Butterfly Box template requires exactly 8 photos or a selected theme.', 'warning');
                           return;
                         }
                       } else {

@@ -1320,6 +1320,7 @@ export default function AdminEditor({ order, onBack }: AdminEditorProps) {
                 <ButterflySheet 
                   images={(currentOrder.images && currentOrder.images.length > 0) ? currentOrder.images : []} 
                   butterflyCrops={butterflyCrops || {}} 
+                  orderId={currentOrder.id || currentOrder._id || currentOrder.orderNumber}
                 />
               </div>
             ) : (
