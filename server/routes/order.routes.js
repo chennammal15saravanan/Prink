@@ -517,7 +517,10 @@ router.post('/:id/submit-design', adminMiddleware, async (req, res) => {
       printFiles: printFiles.length ? printFiles : refreshed.printFiles,
       pdfUrl: printFiles.length ? printFiles[0].url : refreshed.pdfUrl,
       printGenerationStatus: failures.length ? (printFiles.length ? 'partial' : 'failed') : 'completed',
-      printGenerationErrors: failures
+      printGenerationErrors: failures,
+      printStatus: 'queued',
+      orderStatus: 'Approved',
+      printerAssignedAt: new Date()
     });
 
     await db.addActivityLog(id, 'ADMIN_EDITED_DESIGN', 'An administrator edited the design layout or photos.');

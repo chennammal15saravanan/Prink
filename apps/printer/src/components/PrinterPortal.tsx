@@ -388,56 +388,61 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
 
   // ── RENDER TERMINAL VIEW ──
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', padding: '36px 28px' }}>
-
-      {/* ── Page Header ── */}
-      <div className="flex justify-between align-center section-header mb-6" style={{ flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <img src={mainLogo} alt="the Prink" style={{ height: 36, width: 'auto', display: 'block' }} />
-          <div style={{ borderLeft: '2px solid var(--border-color)', paddingLeft: 20, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <h2 className="page-heading" style={{ fontSize: 20, fontWeight: 700, color: 'var(--primary)', margin: 0, paddingLeft: 0, borderLeft: 'none' }}>
-              Printer Operator Terminal
-            </h2>
-            <p className="text-sm text-muted" style={{ marginTop: 2, marginBottom: 0 }}>
-              Manage and download compiled print-ready vector layouts.
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2 align-center flex-wrap">
-          <button className="btn btn-outline btn-sm" onClick={fetchQueue}>
-            <i className="bi bi-arrow-repeat" /> Refresh
-          </button>
-          <button className="btn btn-primary btn-sm" onClick={batchDownload}>
-            <i className="bi bi-download" /> Batch Download
-          </button>
-          <button className="btn btn-danger btn-sm" style={{ padding: '6px 12px' }} onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right" /> Terminal Log Out
-          </button>
-        </div>
-      </div>
-
-      {/* ── KPI Row ── */}
-      <div className="grid grid-4 gap-4 mb-6">
-        {[
-          { label: 'Total Jobs',     value: queue.length,                       icon: 'bi-printer',        variant: '' },
-          { label: 'Pending',        value: countByStatus('pending'),            icon: 'bi-clock',          variant: ' accent' },
-          { label: 'Print Ready',    value: countByStatus('print-ready'),        icon: 'bi-check-circle',   variant: ' success' },
-          { label: 'Completed Today',value: countByStatus('completed') + 12,    icon: 'bi-bag-check',      variant: '' },
-        ].map((m, i) => (
-          <div key={i} className={`metric-card${m.variant}`}>
-            <div className="flex justify-between align-center mb-2">
-              <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-tertiary)' }}>{m.label}</p>
-              <span style={{ width: 28, height: 28, background: 'var(--bg-tertiary)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <i className={`bi ${m.icon}`} style={{ fontSize: 13, color: m.variant.includes('accent') ? 'var(--accent)' : m.variant.includes('success') ? 'var(--success)' : 'var(--primary)' }} />
-              </span>
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #0B0F33 0%, #171C62 100%)', 
+      padding: '40px 28px',
+      fontFamily: "'Inter', sans-serif" 
+    }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        {/* ── Page Header ── */}
+        <div className="glass-header flex justify-between align-center section-header mb-8" style={{ flexWrap: 'wrap', gap: 16, alignItems: 'center', padding: '24px 32px', borderRadius: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <img src={mainLogo} alt="the Prink" style={{ height: 42, width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
+            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: 20, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h2 className="page-heading" style={{ fontSize: 24, fontWeight: 800, color: '#ffffff', margin: 0, paddingLeft: 0, borderLeft: 'none', letterSpacing: '0.02em' }}>
+                Printer Operator Terminal
+              </h2>
+              <p className="text-sm text-muted" style={{ marginTop: 4, marginBottom: 0, color: 'rgba(255,255,255,0.7)' }}>
+                Manage and download compiled print-ready vector layouts.
+              </p>
             </div>
-            <h3 style={{ fontSize: 26, fontWeight: 700, color: m.variant.includes('accent') ? 'var(--accent)' : m.variant.includes('success') ? 'var(--success)' : 'var(--primary)', lineHeight: 1, margin: '2px 0 4px' }}>{m.value}</h3>
           </div>
-        ))}
-      </div>
+          <div className="flex gap-3 align-center flex-wrap">
+            <button className="btn btn-outline btn-sm" style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#fff' }} onClick={fetchQueue}>
+              <i className="bi bi-arrow-repeat" /> Refresh
+            </button>
+            <button className="btn btn-primary btn-sm" style={{ background: '#FF304C', border: 'none', boxShadow: '0 8px 24px rgba(255,48,76,0.3)' }} onClick={batchDownload}>
+              <i className="bi bi-download" /> Batch Download
+            </button>
+            <button className="btn btn-outline btn-sm" style={{ padding: '6px 12px', borderColor: 'rgba(255,255,255,0.2)', color: '#fff' }} onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right" /> Terminal Log Out
+            </button>
+          </div>
+        </div>
 
-      {/* ── Print Queue Card ── */}
-      <div className="card p-6 mb-6">
+        {/* ── KPI Row ── */}
+        <div className="grid grid-4 gap-6 mb-8">
+          {[
+            { label: 'Total Jobs',     value: queue.length,                       icon: 'bi-printer',        variant: '' },
+            { label: 'Pending',        value: countByStatus('pending'),            icon: 'bi-clock',          variant: ' accent' },
+            { label: 'Print Ready',    value: countByStatus('print-ready'),        icon: 'bi-check-circle',   variant: ' success' },
+            { label: 'Completed Today',value: countByStatus('completed') + 12,    icon: 'bi-bag-check',      variant: '' },
+          ].map((m, i) => (
+            <div key={i} className={`glass-panel metric-card${m.variant}`} style={{ borderRadius: '24px', padding: '24px', background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: '#fff' }}>
+              <div className="flex justify-between align-center mb-4">
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>{m.label}</p>
+                <span style={{ width: 36, height: 36, background: 'rgba(255,255,255,0.1)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <i className={`bi ${m.icon}`} style={{ fontSize: 16, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#fff' }} />
+                </span>
+              </div>
+              <h3 style={{ fontSize: 36, fontWeight: 800, color: m.variant.includes('accent') ? '#FF304C' : m.variant.includes('success') ? '#10b981' : '#fff', lineHeight: 1, margin: '0' }}>{m.value}</h3>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Print Queue Card ── */}
+        <div className="glass-panel card p-8 mb-8" style={{ borderRadius: '32px', background: 'rgba(255,255,255,0.95)', border: 'none', boxShadow: '0 24px 48px rgba(0,0,0,0.2)' }}>
         {/* Tab Bar */}
         <div className="tab-bar">
           {tabs.map(t => (
