@@ -646,6 +646,7 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
             </div>
           ))}
         </div>
+        </div>
       </div>
     </div>
   );
