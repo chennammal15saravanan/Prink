@@ -564,12 +564,19 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
                           </button>
                         </>
                       )}
-                      {item.status === 'pending' && (
-                        <button className="btn btn-outline btn-sm"
-                          onClick={() => updateJobStatus(item.id, 'processing')}>
-                          <i className="bi bi-play" /> Start
-                        </button>
-                      )}
+                        {item.status === 'pending' && (
+                          <>
+                            <button className="btn btn-primary btn-sm"
+                              onClick={() => downloadPDF(item.id, customerName(item.customer))}>
+                              <i className="bi bi-file-earmark-pdf" /> PDF
+                            </button>
+                            <button className="btn btn-outline btn-sm"
+                              style={{ borderColor: '#E2E8F0', color: '#475569' }}
+                              onClick={() => updateJobStatus(item.id, 'processing')}>
+                              <i className="bi bi-play" /> Start
+                            </button>
+                          </>
+                        )}
                       {item.status === 'completed' && (
                         <span className="badge badge-success" style={{ fontSize: 11 }}>
                           <i className="bi bi-check" /> Delivered

@@ -228,13 +228,39 @@ router.post('/:id/design', authMiddleware(), async (req, res) => {
       }
     }
 
-      const updates = {
-        uploadStatus: customizationStatus === 'completed' ? 'completed' : 'in_progress',
-        customizationStatus: customizationStatus || 'completed',
-        images: images || existingOrder.images || [],
-        designData: designData || existingOrder.designData || {},
-        uploadedAt: customizationStatus === 'completed' ? new Date().toISOString() : existingOrder.uploadedAt
-      };
+            const processedImages = [];
+      for (const img of (images || [])) {
+        if (img.src && img.src.startsWith('data:image/')) {
+          try {
+            const matches = img.src.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+            if (matches && matches.length === 3) {
+              const crypto = require('crypto');
+              const fs = require('fs');
+              const path = require('path');
+              const buffer = Buffer.from(matches[2], 'base64');
+              const ext = matches[1].split('/')[1] || 'png';
+              const filename = 'orig_' + Date.now() + '_' + crypto.randomBytes(4).toString('hex') + '.' + ext;
+              const uploadsDir = path.join(__dirname, '..', 'uploads', 'originals');
+              if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+              const filepath = path.join(uploadsDir, filename);
+              fs.writeFileSync(filepath, buffer);
+              processedImages.push({ ...img, src: '/uploads/originals/' + filename, url: '/uploads/originals/' + filename });
+              continue;
+            }
+          } catch (e) {
+            console.error('Error saving base64 image to disk:', e);
+          }
+        }
+        processedImages.push(img);
+      }
+  
+        const updates = {
+          uploadStatus: customizationStatus === 'completed' ? 'completed' : 'in_progress',
+          customizationStatus: customizationStatus || 'completed',
+          images: images ? processedImages : (existingOrder.images || []),
+          designData: designData || existingOrder.designData || {},
+          uploadedAt: customizationStatus === 'completed' ? new Date().toISOString() : existingOrder.uploadedAt
+        };
 
     const updatedOrder = await db.updateOrder(id, updates);
     await db.addActivityLog(id, 'CUSTOMER_UPLOADED_DESIGN', 'Customer uploaded design and custom images.');
@@ -742,4 +768,6 @@ router.delete('/:id', adminMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+
 
