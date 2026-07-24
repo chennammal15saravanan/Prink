@@ -182,8 +182,8 @@ export default function CustomerPortal({
 
   const renderButterflySheet = (isReview = false) => (
     <div style={{
-      width: '420px',
-      height: '297px',
+      width: '297px',
+      height: '420px',
       background: '#ffffff',
       borderRadius: '2px',
       boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
