@@ -344,7 +344,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setSkuMappings(data);
+        setSkuMappings(Array.isArray(data) ? data : (data.skus || []));
       }
     } catch (err) {
       console.error('Failed to fetch SKU mappings:', err);
@@ -358,7 +358,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
       });
       if (res.ok) {
         const data = await res.json();
-        setDbTemplates(data);
+        setDbTemplates(Array.isArray(data) ? data : (data.templates || []));
       }
     } catch (err) {
       console.error('Failed to fetch templates:', err);
