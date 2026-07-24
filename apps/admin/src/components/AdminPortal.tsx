@@ -1331,7 +1331,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                                 <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                                   {o.images.map((img: any, idx: number) => {
                                     let url = img.src || img.url || '';
-                                    if (url && !url.startsWith('/') && !url.startsWith('http')) {
+                                    if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
                                       url = '/' + url;
                                     }
                                     return (
@@ -1526,7 +1526,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                               <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                                 {o.images.map((img: any, idx: number) => {
                                   let url = img.src || img.url || '';
-                                  if (url && !url.startsWith('/') && !url.startsWith('http')) {
+                                  if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
                                     url = '/' + url;
                                   }
                                   return (
@@ -1617,7 +1617,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                               }
                               o.images.forEach((img: any, idx: number) => {
                                 let url = img.src || img.url || '';
-                                if (url && !url.startsWith('/') && !url.startsWith('http')) {
+                                if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
                                   url = '/' + url;
                                 }
                                 const link = document.createElement('a');
@@ -1779,7 +1779,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                         <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
                           {o.images.map((img: any, idx: number) => {
                             let url = img.src || img.url || '';
-                            if (url && !url.startsWith('/') && !url.startsWith('http')) {
+                            if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
                               url = '/' + url;
                             }
                             return (
@@ -2773,7 +2773,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                     {activePhotosModalOrder.images && activePhotosModalOrder.images.length > 0 ? (
                       activePhotosModalOrder.images.map((img: any, idx: number) => {
                         let url = img.src || img.url || '';
-                        if (url && !url.startsWith('/') && !url.startsWith('http')) {
+                        if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
                           url = '/' + url;
                         }
                         
@@ -2892,7 +2892,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                     onClick={() => {
                       activePhotosModalOrder.images?.forEach((img: any, idx: number) => {
                         let url = img.src || img.url || '';
-                        if (url && !url.startsWith('/') && !url.startsWith('http')) {
+                        if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
                           url = '/' + url;
                         }
                         const link = document.createElement('a');
