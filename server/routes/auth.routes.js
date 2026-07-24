@@ -110,6 +110,16 @@ async function bootstrapFirstAdmin(email, password) {
   return db.createUser({ email, password, name: 'Admin', role: 'admin' });
 }
 
+async function bootstrapFirstPrinter(email, password) {
+  const users = await db.getUsers();
+  if ((users || []).some(u => u.role === 'printer')) return null;
+  if (!password || String(password).length < 8) {
+    throw Object.assign(new Error('The first printer password must be at least 8 characters.'), { status: 400 });
+  }
+  console.warn(`[AUTH] Bootstrapping the first printer account: ${email}`);
+  return db.createUser({ email, password, name: 'Printer Operator', role: 'printer' });
+}
+
 router.post('/admin-login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -171,8 +181,21 @@ router.post('/demo-login', async (req, res) => {
 
 router.post('/printer-login', async (req, res) => {
   try {
-    // Printer accounts are provisioned by an admin; there is no self-signup.
     const { email, password } = req.body || {};
+    if (!email || !password) {
+      return res.status(400).json({ success: false, error: 'Email and password are required' });
+    }
+
+    const bootstrapped = await bootstrapFirstPrinter(email, password);
+    if (bootstrapped) {
+      return res.json({
+        success: true,
+        bootstrapped: true,
+        token: issueToken(bootstrapped),
+        user: { id: bootstrapped.id, email: bootstrapped.email, role: 'printer' }
+      });
+    }
+
     const result = await authenticate(email, password, 'printer');
     if (!result.ok) return res.status(result.status).json({ success: false, error: result.error });
 
