@@ -228,12 +228,13 @@ router.post('/:id/design', authMiddleware(), async (req, res) => {
       }
     }
 
-    const updates = {
-      uploadStatus: customizationStatus === 'completed' ? 'completed' : 'in_progress',
-      customizationStatus: customizationStatus || 'completed',
-      images: images || existingOrder.images || [],
-      designData: designData || existingOrder.designData || {}
-    };
+      const updates = {
+        uploadStatus: customizationStatus === 'completed' ? 'completed' : 'in_progress',
+        customizationStatus: customizationStatus || 'completed',
+        images: images || existingOrder.images || [],
+        designData: designData || existingOrder.designData || {},
+        uploadedAt: customizationStatus === 'completed' ? new Date().toISOString() : existingOrder.uploadedAt
+      };
 
     const updatedOrder = await db.updateOrder(id, updates);
     await db.addActivityLog(id, 'CUSTOMER_UPLOADED_DESIGN', 'Customer uploaded design and custom images.');

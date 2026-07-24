@@ -1580,7 +1580,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                       <td className="text-sm">{o.product}</td>
                       <td>{dpiStatusBadge(o.dpiStatus, o.dpi)}</td>
                       <td>{uploadStatusBadge(o.uploadStatus, o.submissionStatus)}</td>
-                      <td className="text-sm text-muted">{o.date}</td>
+                      <td className="text-sm text-muted">
+                        {o.uploadedAt ? new Date(o.uploadedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : (o.date || '-')}
+                      </td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                           <button
@@ -1835,7 +1837,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
                   <div style={{ minWidth: 80 }}>
                     {dpiStatusBadge(o.dpiStatus, o.dpi)}
                   </div>
-                  <div className="text-sm text-muted" style={{ minWidth: 90 }}>{o.date}</div>
+                  <div className="text-sm text-muted" style={{ minWidth: 90 }}>
+                    {o.uploadedAt ? new Date(o.uploadedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : (o.date || '-')}
+                  </div>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     {(o.uploadStatus === 'ready' || (o.images && o.images.length > 0)) && (
                       <button
