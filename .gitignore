@@ -6,3 +6,6 @@ data/*.json
 server/data/*.json
 *.log
 .gemini/
+
+.vercel
+.env*

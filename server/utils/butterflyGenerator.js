@@ -203,42 +203,42 @@ async function generateButterflyBoxPdf({ orderId, images, order, orderId2, image
 
     // 5. HD Order Information Print block (printed in the empty space)
     if (order || order2) {
-      doc.fillColor('#1e3a8a').fontSize(16).text('BUTTERFLY BOX ORDER', mmToPt(155), mmToPt(30), { width: mmToPt(150), align: 'left' });
+      doc.fillColor('#1e3a8a').fontSize(12).text('BUTTERFLY BOX ORDER', mmToPt(95), mmToPt(105), { width: mmToPt(56), align: 'left' });
       
-      doc.fillColor('#333333').fontSize(11).font('Helvetica');
-      let y = 40;
-      doc.text(`Blue Order ID:`, mmToPt(155), mmToPt(y)).font('Helvetica-Bold').text(`${order?.orderNumber || order?.id || 'N/A'}`, mmToPt(185), mmToPt(y));
+      doc.fillColor('#333333').fontSize(8).font('Helvetica');
+      let y = 115;
+      doc.text(`Blue Order ID:`, mmToPt(95), mmToPt(y)).font('Helvetica-Bold').text(`${order?.orderNumber || order?.id || 'N/A'}`, mmToPt(118), mmToPt(y));
       y += 6;
-      doc.font('Helvetica').text(`Red Order ID:`, mmToPt(155), mmToPt(y)).font('Helvetica-Bold').text(`${order2?.orderNumber || order2?.id || 'N/A'}`, mmToPt(185), mmToPt(y));
+      doc.font('Helvetica').text(`Red Order ID:`, mmToPt(95), mmToPt(y)).font('Helvetica-Bold').text(`${order2?.orderNumber || order2?.id || 'N/A'}`, mmToPt(118), mmToPt(y));
       y += 6;
-      doc.font('Helvetica').text(`Date:`, mmToPt(155), mmToPt(y)).font('Helvetica-Bold').text(`${order?.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}`, mmToPt(185), mmToPt(y));
+      doc.font('Helvetica').text(`Date:`, mmToPt(95), mmToPt(y)).font('Helvetica-Bold').text(`${order?.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}`, mmToPt(118), mmToPt(y));
       y += 10;
       
-      doc.fillColor('#1e3a8a').fontSize(12).text('CUSTOMER DETAILS', mmToPt(155), mmToPt(y));
+      doc.fillColor('#1e3a8a').fontSize(9).text('CUSTOMER DETAILS', mmToPt(95), mmToPt(y));
       y += 6;
-      doc.fillColor('#333333').fontSize(10).font('Helvetica-Bold');
+      doc.fillColor('#333333').fontSize(7.5).font('Helvetica-Bold');
       const cust = order?.customer || {};
       const cust2 = order2?.customer || {};
-      doc.text(`Blue: ${cust.name || 'No Name provided'}`, mmToPt(155), mmToPt(y));
+      doc.text(`Blue: ${cust.name || 'No Name provided'}`, mmToPt(95), mmToPt(y));
       y += 5;
-      doc.font('Helvetica').text(`${cust.phone || 'No Phone'} | ${cust.email || 'No Email'}`, mmToPt(155), mmToPt(y));
+      doc.font('Helvetica').text(`${cust.phone || 'No Phone'} | ${cust.email || 'No Email'}`, mmToPt(95), mmToPt(y));
       y += 5;
-      doc.font('Helvetica-Bold').text(`Red: ${cust2.name || 'No Name provided'}`, mmToPt(155), mmToPt(y));
+      doc.font('Helvetica-Bold').text(`Red: ${cust2.name || 'No Name provided'}`, mmToPt(95), mmToPt(y));
       y += 5;
-      doc.font('Helvetica').text(`${cust2.phone || 'No Phone'} | ${cust2.email || 'No Email'}`, mmToPt(155), mmToPt(y));
+      doc.font('Helvetica').text(`${cust2.phone || 'No Phone'} | ${cust2.email || 'No Email'}`, mmToPt(95), mmToPt(y));
       y += 10;
 
       if (order.shippingAddress) {
-        doc.fillColor('#1e3a8a').fontSize(12).font('Helvetica-Bold').text('SHIPPING ADDRESS', mmToPt(155), mmToPt(y));
+        doc.fillColor('#1e3a8a').fontSize(9).font('Helvetica-Bold').text('SHIPPING ADDRESS', mmToPt(95), mmToPt(y));
         y += 6;
-        doc.fillColor('#333333').fontSize(10).font('Helvetica');
+        doc.fillColor('#333333').fontSize(7.5).font('Helvetica');
         const addr = order.shippingAddress;
-        doc.text(`${addr.address1 || ''}`, mmToPt(155), mmToPt(y));
+        doc.text(`${addr.address1 || ''}`, mmToPt(95), mmToPt(y), { width: mmToPt(56) });
         y += 5;
-        if (addr.address2) { doc.text(`${addr.address2}`, mmToPt(155), mmToPt(y)); y += 5; }
-        doc.text(`${addr.city || ''}, ${addr.province || ''} ${addr.zip || ''}`, mmToPt(155), mmToPt(y));
+        if (addr.address2) { doc.text(`${addr.address2}`, mmToPt(95), mmToPt(y), { width: mmToPt(56) }); y += 5; }
+        doc.text(`${addr.city || ''}, ${addr.province || ''} ${addr.zip || ''}`, mmToPt(95), mmToPt(y), { width: mmToPt(56) });
         y += 5;
-        doc.text(`${addr.country || ''}`, mmToPt(155), mmToPt(y));
+        doc.text(`${addr.country || ''}`, mmToPt(95), mmToPt(y), { width: mmToPt(56) });
       }
     }
 
