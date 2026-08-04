@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.history/
+.env
+data/*.json
+server/data/*.json
+*.log
+.gemini/
