@@ -109,6 +109,13 @@ export default function CustomerPortal({
 }: CustomerPortalProps) {
   const { showToast } = useToast();
 
+  // Redirect to the login page if not logged in
+  useEffect(() => {
+    if (!localStorage.getItem('customer_token')) {
+      window.location.href = '/customer/auth';
+    }
+  }, []);
+
   // ── Auth state ──────────────────────────────────────────────────────────────
   const [authView, setAuthView]       = useState<'login' | 'upload'>(() => {
     return localStorage.getItem('customer_token') ? 'upload' : 'login';
@@ -176,7 +183,7 @@ export default function CustomerPortal({
     setPhotoOffsetY(saved.y);
     setActiveButterflyIndex(newIdx);
     if (images[newIdx]) {
-      setLivePreviewPhoto(images[newIdx].src);
+      setLivePreviewPhoto(images[newIdx].src || null);
     }
   };
 
@@ -581,11 +588,8 @@ export default function CustomerPortal({
     }
   }, [selectedCustomerId, manualIdOrEmail, showToast]);
 
-  useEffect(() => {
-    if (authView === 'login') {
-      loadShopifyCustomers();
-    }
-  }, [authView, loadShopifyCustomers]);
+  // Shopify customer list was used by the dev login UI (now removed).
+  // Kept empty to avoid removing the state variables that may still be referenced.
 
   // ── Orders filter ───────────────────────────────────────────────────────────
   const [ordersFilter, setOrdersFilter] = useState<'all' | 'active' | 'completed' | 'delivered'>('all');
@@ -766,9 +770,8 @@ export default function CustomerPortal({
       } else if (resOrders.status === 401 || resOrders.status === 403) {
         // Token is expired or invalid — clear it and force re-login
         localStorage.removeItem('customer_token');
-        setAuthView('login');
-        setForceDashboard(false);
         showToast('Your session has expired. Please log in again.', 'error');
+        window.location.href = '/customer/auth';
         return;
       } else {
         setOrders([]);
@@ -1217,8 +1220,8 @@ export default function CustomerPortal({
       if (res.ok) { showToast('Design draft saved!', 'success'); fetchActiveOrder(); }
       else if (res.status === 401 || res.status === 403) {
         localStorage.removeItem('customer_token');
-        setAuthView('login');
         showToast('Session expired. Please log in again.', 'error');
+        window.location.href = '/customer/auth';
       }
       else showToast('Failed to save draft.', 'error');
     } catch { showToast('Network error.', 'error'); }
@@ -1671,6 +1674,13 @@ export default function CustomerPortal({
   }, [phone, countryCode, showToast]);
 
   if (authView === 'login') {
+    // Redirect to the clean login page instead of showing the dev login UI
+    window.location.href = '/customer/auth';
+    return null;
+  }
+
+  // DEAD CODE BELOW — kept for reference, will never be reached
+  if (false) {
     return (
       <div className="auth-wrapper" style={{ position: 'relative' }}>
         {/* Floating orbs for ambient depth */}
@@ -2402,7 +2412,7 @@ export default function CustomerPortal({
                           </button>
                           {isCustomizable(order) && (
                             <>
-                              <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }} onClick={() => { setActiveOrder(order); navTo('preview'); }}>
+                              <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }} onClick={() => { setActiveOrder(order); setWizardStep(2); setForceDashboard(false); setMobileNavOpen(false); }}>
                                 <UploadCloud style={{ width: 12, height: 12 }} /> Upload Photos
                               </button>
                               <button className="btn btn-primary btn-sm" style={{ borderRadius: 8, background: 'var(--primary)', color: '#fff', border: 'none' }} onClick={() => loadSkuTemplate(order)}>
@@ -2660,6 +2670,32 @@ export default function CustomerPortal({
                           </div>
                         </div>
 
+                        {/* Customer Uploaded Photos List */}
+                        {order.images && order.images.length > 0 && (
+                          <div style={{ marginBottom: 12, padding: '10px 12px', background: 'var(--bg-tertiary)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <i className="bi bi-images" style={{ color: 'var(--accent)' }} /> Uploaded Photos ({order.images.length})
+                            </div>
+                            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                              {order.images.map((img, imgIdx) => {
+                                let url = img.url || '';
+                                if (url && !url.startsWith('/') && !url.startsWith('http') && !url.startsWith('data:') && !url.startsWith('blob:')) {
+                                  url = '/' + url;
+                                }
+                                return (
+                                  <div key={img.id || imgIdx} style={{
+                                    width: 38, height: 38, borderRadius: 6,
+                                    border: '1px solid var(--border-color)', overflow: 'hidden',
+                                    background: 'var(--bg-secondary)'
+                                  }}>
+                                    <img src={url} alt={img.name || 'upload'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
                         {/* Admin feedback */}
                         {order.adminComments && (
                           <div style={{ background: 'rgba(255,48,76,0.06)', border: '1px solid rgba(255,48,76,0.15)', borderRadius: 10, padding: '10px 14px', marginBottom: 12 }}>
@@ -2677,7 +2713,7 @@ export default function CustomerPortal({
                           </button>
                           {isCustomizable(order) && (
                             <>
-                              <button className="btn btn-outline btn-sm" onClick={() => { setActiveOrder(order); navTo('preview'); }}>
+                              <button className="btn btn-outline btn-sm" onClick={() => { setActiveOrder(order); setWizardStep(2); setForceDashboard(false); setMobileNavOpen(false); }}>
                                 <i className="bi bi-cloud-upload" /> Upload Photos
                               </button>
                               {order.deliveryStatus !== 'delivered' && (
@@ -3072,7 +3108,7 @@ export default function CustomerPortal({
                       
                       const reqPreview = getProductConfig(activeOrder.productType).requiresPreview;
                       if (images.length > 0) {
-                        setLivePreviewPhoto(images[0].src);
+                        setLivePreviewPhoto(images[0].src || null);
                       } else {
                         setLivePreviewPhoto(null);
                       }
@@ -3281,7 +3317,7 @@ export default function CustomerPortal({
                           {images.map(img => (
                             <div key={img.id} className="wiz-thumb"
                               style={{ border: livePreviewPhoto === img.src ? '2.5px solid var(--accent)' : undefined }}
-                              onClick={() => setLivePreviewPhoto(img.src)}>
+                              onClick={() => setLivePreviewPhoto(img.src || null)}>
                               <img src={img.src} alt={img.name} />
                             </div>
                           ))}
@@ -3598,7 +3634,7 @@ export default function CustomerPortal({
                       {images.map(img => (
                         <div key={img.id}
                           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', background: 'var(--bg-tertiary)', borderRadius: 8, cursor: 'pointer', border: '1px solid var(--border-color)' }}
-                          onClick={() => addImageLayer(img.src)}>
+                          onClick={() => addImageLayer(img.src || '')}>
                           <img src={img.src} alt={img.name} style={{ width: 32, height: 32, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }} />
                           <span style={{ fontSize: 10, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-secondary)' }}>{img.name}</span>
                           <i className="bi bi-plus-lg" style={{ fontSize: 11, color: 'var(--accent)' }} />

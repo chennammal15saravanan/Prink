@@ -22,7 +22,8 @@ export interface ToastMessage {
 
 export interface UploadedImage {
   id: string;
-  src: string;
+  src?: string;
+  url?: string;
   name: string;
   serverFilename?: string;
 }
