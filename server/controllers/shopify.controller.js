@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const shopifyConfig = require('../config/shopify.config');
 const shopifyService = require('../services/shopify.service');
+const { createShopifyClient } = require('../utils/apiClient');
 const db = require('../db');
 
 // Map to store random state tokens to prevent CSRF attacks in OAuth
@@ -254,7 +255,7 @@ const syncHandler = async (req, res) => {
     console.log('[API MANUAL SYNC] Starting fast recent orders and products sync...');
     
     // Sync only the 50 most recent orders
-    const client = shopifyService.createShopifyClient(shop, token);
+    const client = createShopifyClient(shop, token);
     const response = await client.get('/orders.json', { params: { limit: 50, status: 'any' } });
     const orders = response.data.orders || [];
     

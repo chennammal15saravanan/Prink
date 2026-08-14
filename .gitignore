@@ -10,3 +10,6 @@ server/config/google-credentials.json
 
 .vercel
 .env*
+
+.vercel
+.env*
