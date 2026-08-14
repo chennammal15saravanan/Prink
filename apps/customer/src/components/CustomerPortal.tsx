@@ -919,10 +919,7 @@ export default function CustomerPortal({
 
   const getProductConfig = (type: string) => {
     const config = productConfigs[type] || LOCAL_PRODUCT_CONFIGS[type] || LOCAL_PRODUCT_CONFIGS.mug;
-    if (type === 'butterfly' || type === 'magazine' || isButterfly(activeOrder) || isMagazine(activeOrder)) {
-      return { ...config, requiresPreview: true };
-    }
-    return config;
+    return { ...config, requiresPreview: true };
   };
 
   const fetchProductConfigs = useCallback(async () => {
@@ -3322,11 +3319,57 @@ export default function CustomerPortal({
                   </div>
                 </div>
 
-                {/* Thumbnail strip & Live Preview (if Butterfly) */}
+                {/* Thumbnail strip & Live Preview */}
                 {images.length > 0 && (
                   <div style={{ marginTop: 24 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', marginBottom: 12 }}>Your Photos ({images.length})</div>
-                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--primary)' }}>Your Uploaded Photos ({images.length})</div>
+                      <button 
+                        className="btn btn-sm btn-primary"
+                        onClick={() => {
+                          setLivePreviewPhoto(images[0]?.src || null);
+                          goWizard(3, 'forward');
+                        }}
+                        style={{ borderRadius: 8, padding: '6px 14px', fontSize: 12, fontWeight: 700 }}
+                      >
+                        <i className="bi bi-eye-fill me-1" /> Open Full Interactive Preview
+                      </button>
+                    </div>
+
+                    {/* Instant Live Product Preview Banner */}
+                    <div style={{
+                      background: 'linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%)',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '16px',
+                      padding: '20px',
+                      marginBottom: '20px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '20px',
+                      boxShadow: '0 4px 14px rgba(0,0,0,0.05)'
+                    }}>
+                      <div style={{
+                        width: 100, height: 100, borderRadius: 12, overflow: 'hidden',
+                        border: '2px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                        flexShrink: 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <img src={images[0]?.src} alt="Uploaded preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+                          <i className="bi bi-patch-check-fill me-1" /> Live Preview Generated
+                        </div>
+                        <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--primary)', marginBottom: 4 }}>
+                          {activeOrder.product}
+                        </div>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                          {isButterfly(activeOrder) 
+                            ? `${images.length} of 8 photos uploaded. Click "Preview & Edit" to launch 3D exploding box animation!`
+                            : `Photo #1 placed on ${activeOrder.product}. Drag/rearrange photos below or click Preview to adjust positioning.`}
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Info for Butterfly Box */}
                     {(isButterfly(activeOrder) || isMagazine(activeOrder)) && (
                       <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center', background: 'rgba(59, 130, 246, 0.1)', padding: '16px', borderRadius: '12px', border: '1px dashed rgba(59, 130, 246, 0.3)' }}>
