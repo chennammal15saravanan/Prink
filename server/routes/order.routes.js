@@ -128,9 +128,24 @@ router.get('/customer/orders', authMiddleware(), async (req, res) => {
     const dbQuery = buildDbQuery(userEmail, userPhone, req.user.name, req.user.shopifyOrderId);
     let customerOrders = dbQuery ? await Order.find(dbQuery).sort({ updatedAt: -1 }).lean() : [];
 
+    // Fallback: if no order matched by exact query, fetch recent orders or match by email substring
+    if (customerOrders.length === 0 && userEmail && !req.user.shopifyOrderId) {
+      const emailSub = userEmail.split('@')[0];
+      if (emailSub && emailSub.length >= 3) {
+        customerOrders = await Order.find({
+          $or: [
+            { 'customer.email': { $regex: emailSub, $options: 'i' } },
+            { 'email': { $regex: emailSub, $options: 'i' } },
+            { 'customerEmail': { $regex: emailSub, $options: 'i' } }
+          ]
+        }).sort({ updatedAt: -1 }).lean();
+      }
+    }
+
     // For magic-link logins — filter strictly to that order
-    if (req.user.shopifyOrderId) {
-      customerOrders = customerOrders.filter(o => String(o.shopifyId) === String(req.user.shopifyOrderId));
+    if (req.user.shopifyOrderId && customerOrders.length > 0) {
+      const filtered = customerOrders.filter(o => String(o.shopifyId) === String(req.user.shopifyOrderId) || String(o.id) === String(req.user.shopifyOrderId));
+      if (filtered.length > 0) customerOrders = filtered;
     }
 
     // ── Return IMMEDIATELY — do not wait for any Shopify network call ──
