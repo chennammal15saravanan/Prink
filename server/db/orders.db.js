@@ -2,7 +2,6 @@ const Order = require('../models/Order');
 
 async function getOrders(query = {}) {
   return await Order.find(query)
-    .select('-activityLogs -designRevisions -customerApprovedImages -designData')
     .sort({ createdAt: -1 })
     .lean();
 }

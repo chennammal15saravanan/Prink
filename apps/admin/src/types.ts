@@ -161,6 +161,9 @@ export interface Order {
   size?: string;
   frameType?: string;
   dueDate?: string;
+  deliveryTemplate?: string;
+  shippingMethod?: string;
+  courierName?: string;
 }
 
 export interface PrinterQueueItem {

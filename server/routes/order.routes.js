@@ -27,7 +27,7 @@ router.get('/', adminMiddleware, async (req, res) => {
     const mongoose = require('mongoose');
     const Order = require('../models/Order');
     const page   = Math.max(1, parseInt(req.query.page)  || 1);
-    const limit  = Math.min(200, parseInt(req.query.limit) || 50);
+    const limit  = Math.min(10000, parseInt(req.query.limit) || 500);
     const status = req.query.status || '';
     const search = (req.query.search || '').trim();
 
@@ -53,10 +53,9 @@ router.get('/', adminMiddleware, async (req, res) => {
       });
     }
 
-    // Run all queries in parallel for speed
+    // Run all queries in parallel for speed — fetch full unstripped orders
     const [orders, total, pending, ready, revision] = await Promise.all([
       Order.find(filter)
-        .select('-activityLogs -designRevisions -customerApprovedImages -designData -images')
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)

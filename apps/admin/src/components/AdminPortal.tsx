@@ -351,7 +351,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
     try {
       const params = new URLSearchParams({
         page: String(page),
-        limit: '50',
+        limit: '500',
         ...(status && status !== 'all' ? { status } : {}),
         ...(search.trim() ? { search: search.trim() } : {})
       });
@@ -1008,6 +1008,23 @@ const AdminPortal: React.FC<AdminPortalProps> = ({ onRouteToPrinter }) => {
         <div style={{ fontSize: '0.75rem', color: '#6b7280', paddingLeft: '2.25rem', marginTop: '0.1rem' }}>
           {o.customerEmail || (o.customer && typeof o.customer === 'object' ? (o.customer as any).email : '') || o.email || 'N/A'}
         </div>
+        {(o.shippingAddress || o.deliveryTemplate) && (
+          <div style={{ fontSize: '0.7rem', color: '#4b5563', paddingLeft: '2.25rem', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.3rem', flexWrap: 'wrap' }}>
+            <i className="bi bi-geo-alt-fill" style={{ color: '#ec4899' }} />
+            <span>
+              {o.shippingAddress
+                ? (typeof o.shippingAddress === 'object'
+                  ? `${(o.shippingAddress as any).address1 || ''}, ${(o.shippingAddress as any).city || ''} ${(o.shippingAddress as any).zip || ''}`
+                  : String(o.shippingAddress))
+                : 'Standard Delivery'}
+            </span>
+            {(o.deliveryTemplate || o.shippingMethod || o.courierName) && (
+              <span className="badge badge-info" style={{ fontSize: '0.65rem', padding: '1px 5px' }}>
+                🚚 {o.deliveryTemplate || o.shippingMethod || o.courierName}
+              </span>
+            )}
+          </div>
+        )}
 
         {o.images && o.images.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginTop: '0.25rem', paddingLeft: '2.25rem' }}>
