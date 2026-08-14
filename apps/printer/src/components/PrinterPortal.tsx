@@ -27,8 +27,8 @@ export default function PrinterPortal({ extraItems = [] }: PrinterPortalProps) {
   const [screen, setScreen] = useState<'login' | 'dashboard'>(() => {
     return localStorage.getItem('printer_token') ? 'dashboard' : 'login';
   });
-  const [email, setEmail]         = useState('');
-  const [password, setPassword]   = useState('');
+  const [email, setEmail]         = useState('printer@theprink.com');
+  const [password, setPassword]   = useState('printer123');
   const [loginErr, setLoginErr]   = useState('');
   const [loggingIn, setLoggingIn] = useState(false);
   const [isRegister, setIsRegister] = useState(false);

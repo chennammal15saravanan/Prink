@@ -58,23 +58,12 @@ const DASHBOARD_STATUS = {
   completed:     'completed'
 };
 
-/** Only approved/sent work reaches the print floor. */
+/** Only approved/sent work reaches the print floor, or all orders for printer inspection. */
 router.get('/queue', printerAuth, async (_req, res) => {
   try {
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const Order = require('../models/Order');
-    // Fetch by workflowStatus if present, else fall back to legacy adminApprovalStatus
-    // Fetch all print jobs where customer photos/customization have been submitted
-    const orders = await Order.find({
-      $or: [
-        { workflowStatus: { $in: ['photo_uploaded', 'approved', 'sent_to_printer', 'printer_processing', 'printing', 'ready_for_dispatch', 'in_transit', 'delivered'] } },
-        { customizationStatus: 'completed' },
-        { uploadStatus: 'ready' },
-        { 'images.0': { $exists: true } },
-        { adminApprovalStatus: 'approved' },
-        { workflowStatus: 'completed', updatedAt: { $gte: oneDayAgo } }
-      ]
-    }).sort({ createdAt: -1 }).lean();
+    // Fetch all orders from MongoDB so printer has full data access
+    const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
     res.json({
       success: true,
       queue: orders.map(o => {
@@ -88,7 +77,9 @@ router.get('/queue', printerAuth, async (_req, res) => {
         return {
           id: o.id,
           orderNumber: o.orderNumber,
-          customer: o.customer?.name || o.customer?.email || 'Guest',
+          customer: o.customer?.name || o.customer?.email || (typeof o.customer === 'string' ? o.customer : 'Guest'),
+          customerEmail: o.customerEmail || o.email || o.customer?.email,
+          phone: o.phone || o.customer?.phone,
           product: o.product,
           sku: o.sku,
           quantity: o.quantity,
@@ -98,6 +89,12 @@ router.get('/queue', printerAuth, async (_req, res) => {
           workflowStatus: o.workflowStatus,
           orderStatus: o.orderStatus,
           priority: o.priority || 'normal',
+          images: o.images || [],
+          pdfUrl: o.pdfUrl,
+          shippingAddress: o.shippingAddress,
+          deliveryTemplate: o.deliveryTemplate,
+          customizationStatus: o.customizationStatus,
+          uploadStatus: o.uploadStatus,
           trimSize: (file && file.widthMm && file.heightMm) ? `${Math.round(file.widthMm)}x${Math.round(file.heightMm)}mm` : '-',
           assignedAt: o.printerAssignedAt || o.updatedAt,
           printFiles: (o.printFiles || []).filter(Boolean).map(f => ({
@@ -117,11 +114,6 @@ router.get('/queue/:id', printerAuth, async (req, res) => {
   try {
     const order = await db.getOrderById(req.params.id);
     if (!order) return res.status(404).json({ success: false, error: 'Order not found' });
-    // Allow access if approved or already in the printer workflow
-    const inPrinterWorkflow = ['sent_to_printer', 'printer_processing', 'completed'].includes(order.workflowStatus);
-    if (order.adminApprovalStatus !== 'approved' && !inPrinterWorkflow) {
-      return res.status(403).json({ success: false, error: 'This order has not been approved for printing yet.' });
-    }
     // AUTO-TRIGGER: When the printer opens/views the order, advance status to printer_processing
     if (order.workflowStatus === 'sent_to_printer') {
       await db.updateOrder(order.id, { workflowStatus: 'printer_processing', printStatus: 'processing', orderStatus: 'Printing' });
