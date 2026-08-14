@@ -10,7 +10,7 @@ export type CropMaskType = 'circle' | 'square' | 'rect';
 export type ProductType = 'mug' | 'canvas' | 'frame' | 'calendar' | 'photobook' | 'tshirt' | 'mobilecase' | 'pillow' | 'keychain' | 'butterfly';
 export type DpiStatus = 'ok' | 'low' | 'none';
 export type UploadStatus = 'ready' | 'awaiting' | 'pending';
-export type PrintStatus = 'pending' | 'processing' | 'print-ready' | 'completed';
+export type PrintStatus = 'pending' | 'processing' | 'printing' | 'queued' | 'hold' | 'print-ready' | 'completed';
 export type Priority = 'high' | 'normal' | 'low';
 export type UploadMethod = 'file' | 'camera' | 'cloud';
 
@@ -111,6 +111,7 @@ export interface Order {
   shopifyId?: string;
   orderNumber?: string;
   name?: string;
+  createdAt?: string | Date;
   designLockedAt?: string | Date;
   requiresCustomization?: boolean;
   requiredPhotoCount?: number;
