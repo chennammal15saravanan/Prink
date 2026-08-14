@@ -253,7 +253,33 @@ async function renderPrintRaster(image, template, transformInput) {
 async function generatePrintPdf({ orderId, order, image, template, transform }) {
   ensureDirs();
 
-  const raster = await renderPrintRaster(image, template, transform);
+  const { fromLegacyImage } = require('./designTransform');
+
+  const allImages = (order && order.images && order.images.length > 0) 
+    ? order.images 
+    : (image ? [image] : []);
+
+  if (allImages.length === 0) {
+    throw new Error('No customer images available for PDF generation.');
+  }
+
+  // Render rasters for ALL images
+  const rasters = [];
+  for (const img of allImages) {
+    try {
+      const imgTransform = img.transform || transform || fromLegacyImage(img);
+      const r = await renderPrintRaster(img, template, imgTransform);
+      rasters.push(r);
+    } catch (err) {
+      console.warn(`[PRINT RENDERER] Warning rendering image for order ${orderId}:`, err.message);
+    }
+  }
+
+  if (rasters.length === 0) {
+    throw new Error('Failed to render rasters for order images.');
+  }
+
+  const raster = rasters[0];
   const { widthMm, heightMm, bleedMm } = template.physical;
 
   const mmToPt = mm => (mm / 25.4) * 72;
@@ -290,13 +316,13 @@ async function generatePrintPdf({ orderId, order, image, template, transform }) 
     // Reset stroke color
     doc.strokeColor('#e2e8f0');
 
-    let currentY = 95;
+    let currentY = 85;
     const addRow = (label, value) => {
-      doc.fontSize(11).font('Helvetica-Bold').fillColor('#475569').text(label + ':', 45, currentY);
-      doc.fontSize(11).font('Helvetica').fillColor('#0f172a').text(String(value || '-'), 180, currentY, {
+      doc.fontSize(10).font('Helvetica-Bold').fillColor('#475569').text(label + ':', 45, currentY);
+      doc.fontSize(10).font('Helvetica').fillColor('#0f172a').text(String(value || '-'), 180, currentY, {
         width: infoPageW - 225
       });
-      currentY += Math.max(22, doc.heightOfString(String(value || '-'), { width: infoPageW - 225 }) + 8);
+      currentY += Math.max(18, doc.heightOfString(String(value || '-'), { width: infoPageW - 225 }) + 4);
     };
 
     addRow('Order ID', orderId);
@@ -319,6 +345,7 @@ async function generatePrintPdf({ orderId, order, image, template, transform }) 
     addRow('Customer Phone', customerPhone);
     addRow('Product Name', order?.product);
     addRow('SKU', order?.sku);
+    addRow('Total Photos Uploaded', `${allImages.length} Photo(s)`);
     addRow('Quantity', order?.quantity);
     addRow('Template ID', template.id);
     addRow('Bleed Size', `${bleedMm}mm`);
@@ -327,31 +354,56 @@ async function generatePrintPdf({ orderId, order, image, template, transform }) 
     addRow('Resolution Status', raster.belowMinimumDpi ? 'Warning: Below Minimum DPI' : 'Optimal');
     addRow('Compilation Date', new Date().toLocaleString());
 
-    // Add Page 2 for the actual print-ready artwork (no margins, custom size)
-    doc.addPage({
-      size: [pageW, pageH],
-      margin: 0
-    });
-
-    // Artwork covers the full bleed box.
-    doc.image(raster.buffer, 0, 0, { width: pageW, height: pageH });
-
-    // Crop marks at the trim box corners.
-    const bleedPt = mmToPt(bleedMm);
-    if (bleedPt > 0) {
-      const markLen = Math.min(bleedPt, mmToPt(5));
-      doc.lineWidth(0.5).strokeColor('#000000');
-      const corners = [
-        [bleedPt, bleedPt, -1, -1],
-        [pageW - bleedPt, bleedPt, 1, -1],
-        [bleedPt, pageH - bleedPt, -1, 1],
-        [pageW - bleedPt, pageH - bleedPt, 1, 1]
-      ];
-      for (const [x, y, dx, dy] of corners) {
-        doc.moveTo(x + dx * 1, y).lineTo(x + dx * markLen, y).stroke();
-        doc.moveTo(x, y + dy * 1).lineTo(x, y + dy * markLen).stroke();
-      }
+    // Thumbnail Preview Grid of ALL Uploaded Photos on Page 1
+    if (rasters.length > 0 && currentY < 650) {
+      doc.fillColor('#171C62').font('Helvetica-Bold').fontSize(11).text('UPLOADED PHOTOS PREVIEW', 45, currentY + 10);
+      doc.moveTo(45, currentY + 25).lineTo(infoPageW - 36, currentY + 25).lineWidth(1).strokeColor('#e2e8f0').stroke();
+      
+      const gridStartY = currentY + 32;
+      const thumbSize = 45;
+      const gap = 10;
+      const maxCols = 8;
+      
+      rasters.slice(0, 16).forEach((r, idx) => {
+        const col = idx % maxCols;
+        const row = Math.floor(idx / maxCols);
+        const tx = 45 + col * (thumbSize + gap);
+        const ty = gridStartY + row * (thumbSize + gap);
+        
+        doc.lineWidth(0.5).strokeColor('#cbd5e1').rect(tx, ty, thumbSize, thumbSize).stroke();
+        try {
+          doc.image(r.buffer, tx + 1, ty + 1, { width: thumbSize - 2, height: thumbSize - 2 });
+        } catch (e) {}
+      });
     }
+
+    // Add Artwork Pages for EACH rendered photo
+    rasters.forEach((r, idx) => {
+      doc.addPage({
+        size: [pageW, pageH],
+        margin: 0
+      });
+
+      // Artwork covers the full bleed box.
+      doc.image(r.buffer, 0, 0, { width: pageW, height: pageH });
+
+      // Crop marks at the trim box corners.
+      const bleedPt = mmToPt(bleedMm);
+      if (bleedPt > 0) {
+        const markLen = Math.min(bleedPt, mmToPt(5));
+        doc.lineWidth(0.5).strokeColor('#000000');
+        const corners = [
+          [bleedPt, bleedPt, -1, -1],
+          [pageW - bleedPt, bleedPt, 1, -1],
+          [bleedPt, pageH - bleedPt, -1, 1],
+          [pageW - bleedPt, pageH - bleedPt, 1, 1]
+        ];
+        for (const [x, y, dx, dy] of corners) {
+          doc.moveTo(x + dx * 1, y).lineTo(x + dx * markLen, y).stroke();
+          doc.moveTo(x, y + dy * 1).lineTo(x, y + dy * markLen).stroke();
+        }
+      }
+    });
 
     doc.end();
     stream.on('finish', async () => {
